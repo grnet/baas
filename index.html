@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html class="no-js">
+	<head>
+		<title>BaaS GUI</title>
+		<link rel="stylesheet" href="static/stylesheets/foundation.css" />
+		<link rel="stylesheet" href="static/stylesheets/font-awesome-4.4.0/css/font-awesome.min.css" />
+		<script src="static/js/vendor/modernizr.js"></script>
+		<script src="config.js"></script>
+		<script type="text/javascript">
+			
+	//		$(document).ready(function() {
+	//			create_baas_dir();
+	//			load_conf();
+	//		});
+			var gui = require('nw.gui');
+
+			var win = gui.Window.get();
+			win.resizeTo(800, 700);
+			var menubar = new gui.Menu({
+        		type: 'menubar'
+		    });
+
+			var settings_edit = new gui.Menu();
+			settings_edit.append(new gui.MenuItem({
+				label: 'Edit',
+				click: function() {
+					$('#main').load('cloud-list.html');
+				}
+			}));
+
+			var backup = new gui.Menu();
+			backup.append(new gui.MenuItem({
+				label: 'New',
+				click: function() {
+					$('#main').load('backup.html');
+				}
+			}));
+
+			backup.append(new gui.MenuItem({
+				label: 'List',
+				click: function() {
+					$('#main').load('list.html');
+				}
+			}));
+
+			menubar.append(new gui.MenuItem({label: 'Backup/Restore', submenu: backup}));
+			menubar.append(new gui.MenuItem({label: 'Cloud Settings', submenu: settings_edit}));
+			win.menu = menubar;
+
+		</script>
+	</head>
+
+	<body>
+		<div id="main"></div>
+
+		<script src="static/js/vendor/jquery.js"></script>
+		<script src="static/js/foundation.min.js"></script>
+		<script type="text/javascript">
+			$(document).foundation();
+		</script>
+	</body>
+</html>
