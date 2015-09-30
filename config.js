@@ -16,6 +16,7 @@ function create_baas_dir() {
 			fs.mkdir(dir, function(error) {
 				if(error) return console.error(error);
 				console.log("Successfully created " + dir);
+				create_conf_file();
 			});
 			return;
 		}
@@ -23,7 +24,6 @@ function create_baas_dir() {
 			return console.error("Failed to create " + dir + ", File exists.");
 		}
 	});
-	create_conf_file();
 }
 
 function create_conf_file() {
@@ -52,19 +52,3 @@ function write_conf_file(data) {
 	});
 
 }
-
-function load_conf() {
-	var conf_file = path.join(process.env.HOME, BAAS_HOME_DIR, BAAS_CONF_FILE);
-    fs.stat(conf_file, function (err, stats) {
-        if(err) return console.error(err);
-		fs.readFile(conf_file, function(error, data) {
-			if(error) return console.error(error);
-			config = JSON.parse(data);
-			process.env['SWIFT_PREAUTHURL'] = config.SWIFT_PREAUTHURL;
-            process.env['SWIFT_PREAUTHTOKEN'] = config.SWIFT_PREAUTHTOKEN;
-
-		});
-	});
-
-}
-

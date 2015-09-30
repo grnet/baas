@@ -10,7 +10,7 @@
 			fs.stat(conf_file, function (err, stats) {
 				if(err) return console.error(err);
 				fs.readFile(conf_file, function(error, data) {
-			 		if(error) return console.error(error);
+					if(error) return console.error(error);
 					clouds = JSON.parse(data).clouds;
 					render_clouds();
 		        });
@@ -46,13 +46,13 @@
 			function check_cloud_name() {
 				var cloud_name = $('#cloud-name').val().replace(/^\s+|\s+$/gm,'');
 				if(!cloud_name) {
-	                $('#cloud-name-error small').text(errors.cloud_name_empty);
-	                $('#cloud-name-error small').show();
+					$('#cloud-name-error small').text(errors.cloud_name_empty);
+					$('#cloud-name-error small').show();
 				} else {
 					var pattern = /^[\w.\-]+$/;
 					if(!cloud_name.match(pattern)) {
-	                	$('#cloud-name-error small').text(errors.cloud_name_illegal);
-		                $('#cloud-name-error small').show();
+						$('#cloud-name-error small').text(errors.cloud_name_illegal);
+						$('#cloud-name-error small').show();
 					} else {
 	                	$('#cloud-name-error small').hide();
 					}
@@ -61,7 +61,7 @@
 
 			var url_error = null;
             var pithos_public = null;
-			
+
 			function check_cloud_url() {
                 var url = $('#cloud-url').val().replace(/^\s+|\s+$/gm,'');
 			    if(!url) {
@@ -137,11 +137,11 @@
                     }
                 }
             }
-			
+
 			function check_fields() {
- //               check_cloud_url();
- //               check_token();
- //               if( auth_error || url_error) return false;
+                check_cloud_url();
+                check_token();
+                if( auth_error || url_error) return false;
                 return true;
             }
 
@@ -149,7 +149,7 @@
 	            $('#cloud-name-error small').hide();
 	            $('#cloud-error small').hide();
 	            $('#token-error small').hide();
-				
+
 				if(cloud) {
 					$("#cloud-name").val(cloud.name);
 					$("#cloud-url").val(cloud.auth_url);
@@ -195,7 +195,7 @@
 				var cloud_to_del = null;
 
 				$.each(clouds, function(i, cloud) {
-                	if(cloud.name == cloud_name) {
+				if(cloud.name == cloud_name) {
 						cloud_to_del = cloud;
                     }
                 });
@@ -212,9 +212,9 @@
 			}
 
 		</script>
-    </head>
+	</head>
 
-    <body>
+	<body>
 		<div class="row">
 			<a href="#" onclick="load_cloud();"><i class="fa fa-plus">Add Cloud</i></a>
 		</div>
@@ -249,22 +249,22 @@
 								<label id="token_label" for="token" class="right inline">User token</label>
 							</div>
 							<div class="small-9 columns" id="token-error">
-        	                   	<input type="text" id="token" placeholder="User token"
+								<input type="text" id="token" placeholder="User token"
 								onchange="check_token();">
-	            	            <small class="error" style="display:none"></small>
-	                		</div>
-					   	</div>
-		               	<div class="clearfix">
-			            	<div class="small-8 columns"></div>
-		    	           	<a id="save_button" class="button radius right" 
+								<small class="error" style="display:none"></small>
+							</div>
+						</div>
+						<div class="clearfix">
+							<div class="small-8 columns"></div>
+							<a id="save_button" class="button radius right"
 								onclick="if(check_fields()) edit_add_cloud();">Save</a>
-		            	   	<a id="del_button" class="button radius alert left"
+							<a id="del_button" class="button radius alert left"
 								onclick="if(confirm('Are you sure you want to delete ' + $('#cloud-name').val() + '?'))	
 								delete_cloud($('#cloud-name').val());">Delete</a>
-			        	</div>
+						</div>
 					</fieldset>
 				</form>
 			</div>
 		</div>
-    </body>
+	</body>
 </html>
