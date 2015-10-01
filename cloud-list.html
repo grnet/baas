@@ -31,7 +31,7 @@
 						.click(function() { load_cloud(cloud) });
 					li.append(a);
 
-					var a_del = $("<a><i class='fa fa-times-circle' style='color:#E10D0D'></i></a>")
+					var a_del = $("<a><i class='fa fa-times-circle delete_icon'></i></a>")
 						.attr("href", "#")
 						.attr("class", "right")
 						.click(function() {
@@ -230,7 +230,7 @@
 				</a>
 			</div>
 			<div class="small-9 columns">
-				<div id="cloud_details" style="display:none" class="panel">
+				<div id="cloud_details" class="panel hide">
 					<form>
 						<div class="clearfix">
 							<div class="small-3 columns">
@@ -239,7 +239,7 @@
 							<div class="small-9 columns error" id="cloud-name-error">
 								<input type="text" id="cloud-name"
 								placeholder="Cloud Name [A-Za-z0-9-_]" onchange="check_cloud_name();">
-								<small class="error" style="display:none"></small>
+								<small class="error"></small>
 							</div>
 						</div>
 						<div class="clearfix">
@@ -249,7 +249,7 @@
 							<div class="small-9 columns error" id="cloud-error">
 								<input type="text" id="cloud-url" placeholder="Authentication URL"
 								onchange="check_cloud_url();">
-								<small class="error" style="display:none"></small>
+								<small class="error"></small>
 							</div>
 						</div>
 						<div class="clearfix">
@@ -259,7 +259,7 @@
 							<div class="small-9 columns error" id="token-error">
 								<input type="text" id="token" placeholder="User token"
 								onchange="check_token();">
-								<small class="error" style="display:none"></small>
+								<small class="error"></small>
 							</div>
 						</div>
 						<div class="clearfix">
