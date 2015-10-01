@@ -17,17 +17,30 @@
 		    });
 
 			function render_clouds() {
-				$("#sidebar").empty();
+				$("#clouds_list").remove();
 				var ul = $("<ul></ul>")
 					.attr("id", "clouds_list")
 					.attr("class", "side-nav");
 				$.each(clouds, function(i, cloud) {
-					var li = $("<li></li>");
+					var li = $("<li></li>")
+						.attr("style", "word-break: break-all");
 					var a = $("<a>" + cloud.name + "</a>")
 						.attr("href", "#")
 						.attr("id", cloud.name)
+						.attr("class", "left")
 						.click(function() { load_cloud(cloud) });
 					li.append(a);
+
+					var a_del = $("<a><i class='fa fa-times-circle' style='color:#E10D0D'></i></a>")
+						.attr("href", "#")
+						.attr("class", "right")
+						.click(function() {
+							if(confirm("Are you sure you want to delete " + cloud.name + '?')) {
+								delete_cloud(cloud);
+							}
+						});
+					li.append(a_del);
+
 					ul.append(li);
 					$("#sidebar").append(ul);
 				});
@@ -141,7 +154,7 @@
 			function check_fields() {
                 check_cloud_url();
                 check_token();
-                if( auth_error || url_error) return false;
+                if(auth_error || url_error || !pithos_public) return false;
                 return true;
             }
 
@@ -190,25 +203,15 @@
 				write_conf_file(root_clouds);
 			}
 
-			function delete_cloud(cloud_name) {
-				cloud_name = cloud_name.replace(/^\s+|\s+$/gm,'');
-				var cloud_to_del = null;
+			function delete_cloud(cloud) {
+				var i = clouds.indexOf(cloud)
+				clouds.splice(i, 1);
+				render_clouds();
 
-				$.each(clouds, function(i, cloud) {
-				if(cloud.name == cloud_name) {
-						cloud_to_del = cloud;
-                    }
-                });
-				if(cloud_to_del) {
-					var i = clouds.indexOf(cloud_to_del);
-					clouds.splice(i, 1);
-					render_clouds();
-
-					var root_clouds = {"clouds" : "" };
-					root_clouds.clouds = clouds;
-					write_conf_file(root_clouds);
-					$("#cloud_details").hide();
-				}
+				var root_clouds = {"clouds" : "" };
+				root_clouds.clouds = clouds;
+				write_conf_file(root_clouds);
+				$("#cloud_details").hide();
 			}
 
 		</script>
@@ -216,21 +219,26 @@
 
 	<body>
 		<div class="row">
-			<a href="#" onclick="load_cloud();"><i class="fa fa-plus">Add Cloud</i></a>
+			<div class="small-9 columns">
+				<p>&nbsp;</p>
+			</div>
 		</div>
 		<div class="row">
-			<div class="small-3 columns" id="sidebar"></div>
+			<div class="small-3 columns panel" id="sidebar">
+				<a href="#" onclick="load_cloud();" class="button small radius">
+					<i class="fa fa-plus-circle">&nbsp;Add Cloud</i>
+				</a>
+			</div>
 			<div class="small-9 columns">
-				<form>
-					<fieldset id="cloud_details" style="display:none">
-						<legend id="cloud_label">Cloud</legend>
+				<div id="cloud_details" style="display:none" class="panel">
+					<form>
 						<div class="clearfix">
 							<div class="small-3 columns">
 								<label id="cloud_name_label" for="cloud-name" class="right inline">Name</label>
 							</div>
-							<div class="small-9 columns" id="cloud-name-error">
-								<input type="text" id="cloud-name" placeholder="Cloud Name [A-Za-z0-9-_]"
-								onchange="check_cloud_name();">
+							<div class="small-9 columns error" id="cloud-name-error">
+								<input type="text" id="cloud-name"
+								placeholder="Cloud Name [A-Za-z0-9-_]" onchange="check_cloud_name();">
 								<small class="error" style="display:none"></small>
 							</div>
 						</div>
@@ -238,7 +246,7 @@
 							<div class="small-3 columns">
 								<label id="url_label" for="cloud-url" class="right inline">Cloud URL</label>
 							</div>
-							<div class="small-9 columns" id="cloud-error">
+							<div class="small-9 columns error" id="cloud-error">
 								<input type="text" id="cloud-url" placeholder="Authentication URL"
 								onchange="check_cloud_url();">
 								<small class="error" style="display:none"></small>
@@ -248,7 +256,7 @@
 							<div class="small-3 columns">
 								<label id="token_label" for="token" class="right inline">User token</label>
 							</div>
-							<div class="small-9 columns" id="token-error">
+							<div class="small-9 columns error" id="token-error">
 								<input type="text" id="token" placeholder="User token"
 								onchange="check_token();">
 								<small class="error" style="display:none"></small>
@@ -258,11 +266,7 @@
 							<div class="small-8 columns"></div>
 							<a id="save_button" class="button radius right"
 								onclick="if(check_fields()) edit_add_cloud();">Save</a>
-							<a id="del_button" class="button radius alert left"
-								onclick="if(confirm('Are you sure you want to delete ' + $('#cloud-name').val() + '?'))	
-								delete_cloud($('#cloud-name').val());">Delete</a>
 						</div>
-					</fieldset>
 				</form>
 			</div>
 		</div>
