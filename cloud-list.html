@@ -4,17 +4,8 @@
         <title>Cloud List</title>
 
 		<script type="text/javascript">
-			var clouds = null;
 
-			var conf_file = path.join(process.env.HOME, BAAS_HOME_DIR, BAAS_CONF_FILE);
-			fs.stat(conf_file, function (err, stats) {
-				if(err) return console.error(err);
-				fs.readFile(conf_file, function(error, data) {
-					if(error) return console.error(error);
-					clouds = JSON.parse(data).clouds;
-					render_clouds();
-		        });
-		    });
+			load_clouds_from_file(render_clouds);
 
 			function render_clouds() {
 				$("#clouds_list").remove();
@@ -177,7 +168,7 @@
 			}
 
 			function edit_add_cloud() {
-				var cloud_name = $("#cloud-name").val();
+				var cloud_name = $("#cloud-name").val().replace(/^\s+|\s+$/gm,'');
 				// edit existing
 				var url = $("#cloud-url").val().replace(/^\s+|\s+$/gm,'');
 				var token = $("#token").val().replace(/^\s+|\s+$/gm,'');

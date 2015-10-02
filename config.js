@@ -1,5 +1,3 @@
-
-
 var fs = require('fs');
 var path = require('path');
 
@@ -51,4 +49,16 @@ function write_conf_file(data) {
 		console.log("Successfully updated " + conf_file);
 	});
 
+}
+
+function load_clouds_from_file(callback) {
+	var conf_file = path.join(process.env.HOME, BAAS_HOME_DIR, BAAS_CONF_FILE);
+	fs.stat(conf_file, function (err, stats) {
+		if(err) return console.error(err);
+		fs.readFile(conf_file, function(error, data) {
+			if(error) return console.error(error);
+			clouds = JSON.parse(data).clouds;
+			callback();
+		});
+	});
 }
