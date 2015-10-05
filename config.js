@@ -4,8 +4,6 @@ var path = require('path');
 var BAAS_HOME_DIR = '.baas';
 var BAAS_CONF_FILE = 'config.rc';
 
-var config = { 'auth_url' : '', 'SWIFT_PREAUTHURL' : '', 'SWIFT_PREAUTHTOKEN' : '' };
-
 function create_baas_dir() {
 
 	var dir = path.join(process.env.HOME, BAAS_HOME_DIR);
@@ -29,7 +27,7 @@ function create_conf_file() {
 	var conf_file = path.join(process.env.HOME, BAAS_HOME_DIR, BAAS_CONF_FILE);
 	fs.stat(conf_file, function (err, stats) {
 		if(err) {
-			fs.writeFile(conf_file, JSON.stringify(config), function(error) {
+			fs.writeFile(conf_file, "", function(error) {
 				if (error) return console.error(error);
 				return console.log("Successfully created " + conf_file);
 			});
@@ -57,7 +55,10 @@ function load_clouds_from_file(callback) {
 		if(err) return console.error(err);
 		fs.readFile(conf_file, function(error, data) {
 			if(error) return console.error(error);
-			clouds = JSON.parse(data).clouds;
+			if(data != "")
+				clouds = JSON.parse(data).clouds;
+			else
+				clouds = [];
 			callback();
 		});
 	});
