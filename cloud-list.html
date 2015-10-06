@@ -5,10 +5,19 @@
 
 		<script type="text/javascript">
 
-			load_clouds_from_file(render_clouds);
+			load_data_from_file(CLOUDS_CONF_FILE, render_clouds);
 
-			function render_clouds() {
+			function render_clouds(data) {
 				$("#clouds_list").remove();
+				// clouds is undefined the first time, when
+				// reading data from file
+				if(typeof clouds === 'undefined') {
+					if(data != "") {
+						clouds = JSON.parse(data).clouds;
+					} else {
+						clouds = [];
+					}
+				}
 				var ul = $("<ul></ul>")
 					.attr("id", "clouds_list")
 					.attr("class", "side-nav");
@@ -192,7 +201,7 @@
 					cloud.token = token;
 
 					clouds.push(cloud);
-					render_clouds();
+					render_clouds("");
 				}
 				var root_clouds = {"clouds" : "" };
 				root_clouds.clouds = clouds;
@@ -202,7 +211,7 @@
 			function delete_cloud(cloud) {
 				var i = clouds.indexOf(cloud)
 				clouds.splice(i, 1);
-				render_clouds();
+				render_clouds("");
 
 				var root_clouds = {"clouds" : "" };
 				root_clouds.clouds = clouds;

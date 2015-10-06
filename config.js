@@ -54,17 +54,13 @@ function write_conf_file(filename, data) {
 
 }
 
-function load_clouds_from_file(callback) {
-	var conf_file = path.join(process.env.HOME, BAAS_HOME_DIR, CLOUDS_CONF_FILE);
+function load_data_from_file(filename, callback) {
+	var conf_file = path.join(process.env.HOME, BAAS_HOME_DIR, filename);
 	fs.stat(conf_file, function (err, stats) {
 		if(err) return console.error(err);
 		fs.readFile(conf_file, function(error, data) {
 			if(error) return console.error(error);
-			if(data != "")
-				clouds = JSON.parse(data).clouds;
-			else
-				clouds = [];
-			callback();
+			callback(data);
 		});
 	});
 }
