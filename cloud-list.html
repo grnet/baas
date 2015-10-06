@@ -52,15 +52,18 @@
 				if(!cloud_name) {
 					$('#cloud-name-error small').text(errors.cloud_name_empty);
 					$('#cloud-name-error small').show();
+					return false;
 				} else {
 					var pattern = /^[\w.\-]+$/;
 					if(!cloud_name.match(pattern)) {
 						$('#cloud-name-error small').text(errors.cloud_name_illegal);
 						$('#cloud-name-error small').show();
+						return false;
 					} else {
 	                	$('#cloud-name-error small').hide();
 					}
 				}
+				return true;
 			}
 
 			var url_error = null;
@@ -145,7 +148,8 @@
 			function check_fields() {
                 check_cloud_url();
                 check_token();
-                if(auth_error || url_error || !pithos_public) return false;
+                if(auth_error || url_error || !pithos_public || !check_cloud_name())
+					return false;
                 return true;
             }
 
