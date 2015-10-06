@@ -196,7 +196,7 @@
 				}
 				var root_clouds = {"clouds" : "" };
 				root_clouds.clouds = clouds;
-				write_conf_file(root_clouds);
+				write_conf_file(CLOUDS_CONF_FILE, root_clouds);
 			}
 
 			function delete_cloud(cloud) {
@@ -206,7 +206,7 @@
 
 				var root_clouds = {"clouds" : "" };
 				root_clouds.clouds = clouds;
-				write_conf_file(root_clouds);
+				write_conf_file(CLOUDS_CONF_FILE, root_clouds);
 				$("#cloud_details").hide();
 			}
 
