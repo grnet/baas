@@ -221,11 +221,18 @@
 				$("#cloud_details").hide();
 			}
 
+			window.setInterval(function() {
+				if($("#clouds_page").attr("id")) {
+					check_cloud_url();
+					check_token();
+				}
+			}, 500);
+
 		</script>
 	</head>
 
 	<body>
-		<div class="row">
+		<div class="row" id="clouds_page">
 			<div class="small-9 columns">
 				<p>&nbsp;</p>
 			</div>
