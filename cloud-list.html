@@ -112,7 +112,7 @@
 			}
 
 			var auth_error = null;
-			var preauth_url = null;
+			var uuid = null;
 
 			function check_token() {
 				var token = $('#token').val().replace(/^\s+|\s+$/gm,'');
@@ -136,7 +136,7 @@
 						.done(function(data) {
 							auth_error = null;
 						    $('#token-error small').hide();
-                            preauth_url = pithos_public + '/' + data.access.token.tenant.id;
+                            uuid = data.access.token.tenant.id;
                         })
                         .fail(function(xhr, status, msg) {
                             auth_error = xhr.status + ' ' + msg;
@@ -192,15 +192,18 @@
 							cloud.auth_url = url;
 							cloud.token = token;
 							cloud.pithos_public = pithos_public;
+							cloud.uuid = uuid;
 						}
 					});
 				// add new cloud
 				} else {
-					var cloud = {"name" : "", "auth_url" : "", "token" : "", "pithos_public" : ""};
+					var cloud = {"name" : "", "auth_url" : "", 
+						"token" : "", "pithos_public" : "", "uuid" : ""};
 					cloud.name = cloud_name;
 					cloud.auth_url = url;
 					cloud.token = token;
 					cloud.pithos_public = pithos_public;
+					cloud.uuid = uuid;
 
 					clouds.push(cloud);
 					render_clouds("");
