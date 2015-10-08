@@ -191,14 +191,16 @@
 						if(cloud.name == cloud_name) {
 							cloud.auth_url = url;
 							cloud.token = token;
+							cloud.pithos_public = pithos_public;
 						}
 					});
 				// add new cloud
 				} else {
-					var cloud = {"name" : "", "auth_url" : "", "token" : "" };
+					var cloud = {"name" : "", "auth_url" : "", "token" : "", "pithos_public" : ""};
 					cloud.name = cloud_name;
 					cloud.auth_url = url;
 					cloud.token = token;
+					cloud.pithos_public = pithos_public;
 
 					clouds.push(cloud);
 					render_clouds("");
@@ -209,7 +211,7 @@
 			}
 
 			function delete_cloud(cloud) {
-				var i = clouds.indexOf(cloud)
+				var i = clouds.indexOf(cloud);
 				clouds.splice(i, 1);
 				render_clouds("");
 
