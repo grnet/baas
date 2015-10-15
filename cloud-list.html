@@ -3,139 +3,139 @@
     <head>
         <title>Cloud List</title>
 
-		<script type="text/javascript">
+        <script type="text/javascript">
 
-			load_data_from_file(CLOUDS_CONF_FILE, render_clouds);
+            load_data_from_file(CLOUDS_CONF_FILE, render_clouds);
 
-			function render_clouds(data) {
-				$("#clouds_list").remove();
-				// clouds is undefined the first time, when
-				// reading data from file
-				if(typeof clouds === 'undefined') {
-					if(data != "") {
-						clouds = JSON.parse(data).clouds;
-					} else {
-						clouds = [];
-					}
-				}
-				var ul = $("<ul></ul>")
-					.attr("id", "clouds_list")
-					.attr("class", "side-nav");
-				$.each(clouds, function(i, cloud) {
-					var li = $("<li></li>")
-						.attr("style", "word-break: break-all");
-					var a = $("<a>" + cloud.name + "</a>")
-						.attr("href", "#")
-						.attr("id", cloud.name)
-						.attr("class", "left")
-						.click(function() { load_cloud(cloud) });
-					li.append(a);
+            function render_clouds(data) {
+                $("#clouds_list").remove();
+                // clouds is undefined the first time, when
+                // reading data from file
+                if(typeof clouds === 'undefined') {
+                    if(data != "") {
+                        clouds = JSON.parse(data).clouds;
+                    } else {
+                        clouds = [];
+                    }
+                }
+                var ul = $("<ul></ul>")
+                    .attr("id", "clouds_list")
+                    .attr("class", "side-nav");
+                $.each(clouds, function(i, cloud) {
+                    var li = $("<li></li>")
+                        .attr("style", "word-break: break-all");
+                    var a = $("<a>" + cloud.name + "</a>")
+                        .attr("href", "#")
+                        .attr("id", cloud.name)
+                        .attr("class", "left")
+                        .click(function() { load_cloud(cloud) });
+                    li.append(a);
 
-					var a_del = $("<a><i class='fa fa-times-circle delete_icon'></i></a>")
-						.attr("href", "#")
-						.attr("class", "right")
-						.click(function() {
-							if(confirm("Are you sure you want to delete " + cloud.name + '?')) {
-								delete_cloud(cloud);
-							}
-						});
-					li.append(a_del);
+                    var a_del = $("<a><i class='fa fa-times-circle delete_icon'></i></a>")
+                        .attr("href", "#")
+                        .attr("class", "right")
+                        .click(function() {
+                            if(confirm("Are you sure you want to delete " + cloud.name + '?')) {
+                                delete_cloud(cloud);
+                            }
+                        });
+                    li.append(a_del);
 
-					ul.append(li);
-					$("#sidebar").append(ul);
-				});
-			}
+                    ul.append(li);
+                    $("#sidebar").append(ul);
+                });
+            }
 
-			var errors = {
+            var errors = {
                 cloud_url_empty: 'Provide a Cloud Authentication URL',
                 cloud_inaccessible: 'Cloud URL did not respond as expected',
                 token_empty: 'Provide a user token',
                 token_error: 'Failed to authenticate',
-	            token_cloudless: 'No cloud to try this token against',
+                token_cloudless: 'No cloud to try this token against',
                 cloud_name_empty: 'Provide a Cloud Name',
                 cloud_name_illegal: 'Invalid Entry. Allowed characters [A-Za-z0-9-_]'
-			};
+            };
 
-			function check_cloud_name() {
-				var cloud_name = $('#cloud-name').val().replace(/^\s+|\s+$/gm,'');
-				if(!cloud_name) {
-					$('#cloud-name-error small').text(errors.cloud_name_empty);
-					$('#cloud-name-error small').show();
-					return false;
-				} else {
-					var pattern = /^[\w.\-]+$/;
-					if(!cloud_name.match(pattern)) {
-						$('#cloud-name-error small').text(errors.cloud_name_illegal);
-						$('#cloud-name-error small').show();
-						return false;
-					} else {
-	                	$('#cloud-name-error small').hide();
-					}
-				}
-				return true;
-			}
+            function check_cloud_name() {
+                var cloud_name = $('#cloud-name').val().replace(/^\s+|\s+$/gm,'');
+                if(!cloud_name) {
+                    $('#cloud-name-error small').text(errors.cloud_name_empty);
+                    $('#cloud-name-error small').show();
+                    return false;
+                } else {
+                    var pattern = /^[\w.\-]+$/;
+                    if(!cloud_name.match(pattern)) {
+                        $('#cloud-name-error small').text(errors.cloud_name_illegal);
+                        $('#cloud-name-error small').show();
+                        return false;
+                    } else {
+                        $('#cloud-name-error small').hide();
+                    }
+                }
+                return true;
+            }
 
-			var url_error = null;
+            var url_error = null;
             var pithos_public = null;
 
-			function check_cloud_url() {
+            function check_cloud_url() {
                 var url = $('#cloud-url').val().replace(/^\s+|\s+$/gm,'');
-			    if(!url) {
-	                $('#cloud-error small').text(errors.cloud_url_empty);
-	                $('#cloud-error small').show();
-				} else {
-                	$.ajax({
-						type : 'POST',
-						url : url + '/tokens',
-                   	})
-					.done(function(data) {
+                if(!url) {
+                    $('#cloud-error small').text(errors.cloud_url_empty);
+                    $('#cloud-error small').show();
+                } else {
+                    $.ajax({
+                        type : 'POST',
+                        url : url + '/tokens',
+                    })
+                    .done(function(data) {
                         var endpoints = data.access.serviceCatalog
                         $.each(endpoints, function(i, endpoint) {
                             switch(endpoint.type) {
-                            	case 'object-store': try {
-									pithos_public = endpoint['endpoints'][0]['publicURL'];
-								    $('#cloud-error small').hide();
-								    url_error = null;
-								} catch(err) { console.log('Failed to get pithos_public ' + err); }
-								break;
-							}
-						});
-					})
-					.fail ( function(xhr, status, msg) {
-	                	pithos_public = null;
-	                    url_error = xhr.status + ' ' + msg;
-	                    console.log(xhr.status + ' ' + xhr.responseText);
-		                $('#cloud-error small').text(errors.cloud_inaccessible + ' [' + url_error  + ']');
+                                case 'object-store': try {
+                                    pithos_public = endpoint['endpoints'][0]['publicURL'];
+                                    $('#cloud-error small').hide();
+                                    url_error = null;
+                                } catch(err) { console.log('Failed to get pithos_public ' + err); }
+                                break;
+                            }
+                        });
+                    })
+                    .fail ( function(xhr, status, msg) {
+                        pithos_public = null;
+                        url_error = xhr.status + ' ' + msg;
+                        console.log(xhr.status + ' ' + xhr.responseText);
+                        $('#cloud-error small').text(errors.cloud_inaccessible + ' [' + url_error  + ']');
                         $('#cloud-error small').show();
- 	                });
-				}
-			}
+                    });
+                }
+            }
 
-			var auth_error = null;
-			var uuid = null;
+            var auth_error = null;
+            var uuid = null;
 
-			function check_token() {
-				var token = $('#token').val().replace(/^\s+|\s+$/gm,'');
+            function check_token() {
+                var token = $('#token').val().replace(/^\s+|\s+$/gm,'');
                 if (!token) {
-					$('#token-error small').text(errors.token_empty);
-					$('#token-error small').show();
-				} else {
-				    var url = $('#cloud-url').val().replace(/^\s+|\s+$/gm,'');
-				    if (pithos_public && url) {
-						$.ajax({
-							type: 'POST', 
-							url: url + '/tokens',
-							beforeSend : function(req) {
-								req.setRequestHeader('X-Auth-Token', token);
-							},
-							headers: {
-								'Content-Type': 'application/json'
-							},
-							data: JSON.stringify({auth: {token: {id: token}}})
-						})
-						.done(function(data) {
-							auth_error = null;
-						    $('#token-error small').hide();
+                    $('#token-error small').text(errors.token_empty);
+                    $('#token-error small').show();
+                } else {
+                    var url = $('#cloud-url').val().replace(/^\s+|\s+$/gm,'');
+                    if (pithos_public && url) {
+                        $.ajax({
+                            type: 'POST', 
+                            url: url + '/tokens',
+                            beforeSend : function(req) {
+                                req.setRequestHeader('X-Auth-Token', token);
+                            },
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            data: JSON.stringify({auth: {token: {id: token}}})
+                        })
+                        .done(function(data) {
+                            auth_error = null;
+                            $('#token-error small').hide();
                             uuid = data.access.token.tenant.id;
                         })
                         .fail(function(xhr, status, msg) {
@@ -154,138 +154,138 @@
                 }
             }
 
-			function check_fields() {
+            function check_fields() {
                 check_cloud_url();
                 check_token();
                 if(auth_error || url_error || !pithos_public || !check_cloud_name())
-					return false;
+                    return false;
                 return true;
             }
 
-			function load_cloud(cloud) {
-	            $('#cloud-name-error small').hide();
-	            $('#cloud-error small').hide();
-	            $('#token-error small').hide();
+            function load_cloud(cloud) {
+                $('#cloud-name-error small').hide();
+                $('#cloud-error small').hide();
+                $('#token-error small').hide();
 
-				if(cloud) {
-					$("#cloud-name").val(cloud.name);
-					$("#cloud-url").val(cloud.auth_url);
-					$("#token").val(cloud.token);
-				} else {
-					$("#cloud-name").val('');
-					$("#cloud-url").val('');
-					$("#token").val('');
-				}
+                if(cloud) {
+                    $("#cloud-name").val(cloud.name);
+                    $("#cloud-url").val(cloud.auth_url);
+                    $("#token").val(cloud.token);
+                } else {
+                    $("#cloud-name").val('');
+                    $("#cloud-url").val('');
+                    $("#token").val('');
+                }
 
-				$("#cloud_details").show();
-			}
+                $("#cloud_details").show();
+            }
 
-			function edit_add_cloud() {
-				var cloud_name = $("#cloud-name").val().replace(/^\s+|\s+$/gm,'');
-				// edit existing
-				var url = $("#cloud-url").val().replace(/^\s+|\s+$/gm,'');
-				var token = $("#token").val().replace(/^\s+|\s+$/gm,'');
+            function edit_add_cloud() {
+                var cloud_name = $("#cloud-name").val().replace(/^\s+|\s+$/gm,'');
+                // edit existing
+                var url = $("#cloud-url").val().replace(/^\s+|\s+$/gm,'');
+                var token = $("#token").val().replace(/^\s+|\s+$/gm,'');
 
-				if($("#" + cloud_name).attr("id")) {
-					$.each(clouds, function(i, cloud) {
-						if(cloud.name == cloud_name) {
-							cloud.auth_url = url;
-							cloud.token = token;
-							cloud.pithos_public = pithos_public;
-							cloud.uuid = uuid;
-						}
-					});
-				// add new cloud
-				} else {
-					var cloud = {"name" : "", "auth_url" : "", 
-						"token" : "", "pithos_public" : "", "uuid" : ""};
-					cloud.name = cloud_name;
-					cloud.auth_url = url;
-					cloud.token = token;
-					cloud.pithos_public = pithos_public;
-					cloud.uuid = uuid;
+                if($("#" + cloud_name).attr("id")) {
+                    $.each(clouds, function(i, cloud) {
+                        if(cloud.name == cloud_name) {
+                            cloud.auth_url = url;
+                            cloud.token = token;
+                            cloud.pithos_public = pithos_public;
+                            cloud.uuid = uuid;
+                        }
+                    });
+                // add new cloud
+                } else {
+                    var cloud = {"name" : "", "auth_url" : "", 
+                        "token" : "", "pithos_public" : "", "uuid" : ""};
+                    cloud.name = cloud_name;
+                    cloud.auth_url = url;
+                    cloud.token = token;
+                    cloud.pithos_public = pithos_public;
+                    cloud.uuid = uuid;
 
-					clouds.push(cloud);
-					render_clouds("");
-				}
-				var root_clouds = {"clouds" : "" };
-				root_clouds.clouds = clouds;
-				write_conf_file(CLOUDS_CONF_FILE, root_clouds);
-			}
+                    clouds.push(cloud);
+                    render_clouds("");
+                }
+                var root_clouds = {"clouds" : "" };
+                root_clouds.clouds = clouds;
+                write_conf_file(CLOUDS_CONF_FILE, root_clouds);
+            }
 
-			function delete_cloud(cloud) {
-				var i = clouds.indexOf(cloud);
-				clouds.splice(i, 1);
-				render_clouds("");
+            function delete_cloud(cloud) {
+                var i = clouds.indexOf(cloud);
+                clouds.splice(i, 1);
+                render_clouds("");
 
-				var root_clouds = {"clouds" : "" };
-				root_clouds.clouds = clouds;
-				write_conf_file(CLOUDS_CONF_FILE, root_clouds);
-				$("#cloud_details").hide();
-			}
+                var root_clouds = {"clouds" : "" };
+                root_clouds.clouds = clouds;
+                write_conf_file(CLOUDS_CONF_FILE, root_clouds);
+                $("#cloud_details").hide();
+            }
 
-			window.setInterval(function() {
-				if($("#clouds_page").attr("id")) {
-					check_cloud_url();
-					check_token();
-				}
-			}, 500);
+            window.setInterval(function() {
+                if($("#clouds_page").attr("id")) {
+                    check_cloud_url();
+                    check_token();
+                }
+            }, 500);
 
-		</script>
-	</head>
+        </script>
+    </head>
 
-	<body>
-		<div class="row" id="clouds_page">
-			<div class="small-9 columns">
-				<p>&nbsp;</p>
-			</div>
-		</div>
-		<div class="row">
-			<div class="small-3 columns panel" id="sidebar">
-				<a href="#" onclick="load_cloud();" class="button small radius">
-					<i class="fa fa-plus-circle">&nbsp;Add Cloud</i>
-				</a>
-			</div>
-			<div class="small-9 columns">
-				<div id="cloud_details" class="panel hide">
-					<form>
-						<div class="clearfix">
-							<div class="small-3 columns">
-								<label id="cloud_name_label" for="cloud-name" class="right inline">Name</label>
-							</div>
-							<div class="small-9 columns error" id="cloud-name-error">
-								<input type="text" id="cloud-name"
-								placeholder="Cloud Name [A-Za-z0-9-_]" onchange="check_cloud_name();">
-								<small class="error"></small>
-							</div>
-						</div>
-						<div class="clearfix">
-							<div class="small-3 columns">
-								<label id="url_label" for="cloud-url" class="right inline">Cloud URL</label>
-							</div>
-							<div class="small-9 columns error" id="cloud-error">
-								<input type="text" id="cloud-url" placeholder="Authentication URL"
-								onchange="check_cloud_url();">
-								<small class="error"></small>
-							</div>
-						</div>
-						<div class="clearfix">
-							<div class="small-3 columns">
-								<label id="token_label" for="token" class="right inline">User token</label>
-							</div>
-							<div class="small-9 columns error" id="token-error">
-								<input type="text" id="token" placeholder="User token"
-								onchange="check_token();">
-								<small class="error"></small>
-							</div>
-						</div>
-						<div class="clearfix">
-							<div class="small-8 columns"></div>
-							<a id="save_button" class="button radius right"
-								onclick="if(check_fields()) edit_add_cloud();">Save</a>
-						</div>
-				</form>
-			</div>
-		</div>
-	</body>
+    <body>
+        <div class="row" id="clouds_page">
+            <div class="small-9 columns">
+                <p>&nbsp;</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-3 columns panel" id="sidebar">
+                <a href="#" onclick="load_cloud();" class="button small radius">
+                    <i class="fa fa-plus-circle">&nbsp;Add Cloud</i>
+                </a>
+            </div>
+            <div class="small-9 columns">
+                <div id="cloud_details" class="panel hide">
+                    <form>
+                        <div class="clearfix">
+                            <div class="small-3 columns">
+                                <label id="cloud_name_label" for="cloud-name" class="right inline">Name</label>
+                            </div>
+                            <div class="small-9 columns error" id="cloud-name-error">
+                                <input type="text" id="cloud-name"
+                                placeholder="Cloud Name [A-Za-z0-9-_]" onchange="check_cloud_name();">
+                                <small class="error"></small>
+                            </div>
+                        </div>
+                        <div class="clearfix">
+                            <div class="small-3 columns">
+                                <label id="url_label" for="cloud-url" class="right inline">Cloud URL</label>
+                            </div>
+                            <div class="small-9 columns error" id="cloud-error">
+                                <input type="text" id="cloud-url" placeholder="Authentication URL"
+                                onchange="check_cloud_url();">
+                                <small class="error"></small>
+                            </div>
+                        </div>
+                        <div class="clearfix">
+                            <div class="small-3 columns">
+                                <label id="token_label" for="token" class="right inline">User token</label>
+                            </div>
+                            <div class="small-9 columns error" id="token-error">
+                                <input type="text" id="token" placeholder="User token"
+                                onchange="check_token();">
+                                <small class="error"></small>
+                            </div>
+                        </div>
+                        <div class="clearfix">
+                            <div class="small-8 columns"></div>
+                            <a id="save_button" class="button radius right"
+                                onclick="if(check_fields()) edit_add_cloud();">Save</a>
+                        </div>
+                </form>
+            </div>
+        </div>
+    </body>
 </html>

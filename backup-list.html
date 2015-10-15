@@ -2,27 +2,27 @@
 <html>
     <head>
         <title>Backup List</title>
-		<script type="text/javascript">
+        <script type="text/javascript">
 
-			$(document).ready(function() {
-				$('#backup-name-error small').hide();
-				$('#cloud-error small').hide();
+            $(document).ready(function() {
+                $('#backup-name-error small').hide();
+                $('#cloud-error small').hide();
 
-				if(typeof clouds === 'undefined') {
-					load_data_from_file(CLOUDS_CONF_FILE, populate_clouds);
-				} else {
-					populate_clouds("");
-				}
-			});
+                if(typeof clouds === 'undefined') {
+                    load_data_from_file(CLOUDS_CONF_FILE, populate_clouds);
+                } else {
+                    populate_clouds("");
+                }
+            });
 
-			var errors = {
-				backup_name_empty: 'Provide a Backup Name',
-				backup_name_illegal: 'Invalid Entry. Allowed characters [A-Za-z0-9-_]',
-				cloud_empty: 'Select cloud configuration'
-			};
+            var errors = {
+                backup_name_empty: 'Provide a Backup Name',
+                backup_name_illegal: 'Invalid Entry. Allowed characters [A-Za-z0-9-_]',
+                cloud_empty: 'Select cloud configuration'
+            };
             var exec = require('child_process').exec;
 
-			load_data_from_file(BACKUP_CONF_FILE, render_backup_sets);
+            load_data_from_file(BACKUP_CONF_FILE, render_backup_sets);
 
             function render_backup_sets(data) {
                 $("#backup_list").remove();
@@ -63,8 +63,8 @@
                 });
             }
 
-			function load_backup(backup) {
-				$('#backup_details_tab').addClass('active');
+            function load_backup(backup) {
+                $('#backup_details_tab').addClass('active');
                 $('#backup-name-error small').hide();
                 $('#directory-error small').hide();
                 $('#cloud-error small').hide();
@@ -74,9 +74,9 @@
                     $("#directory").html(backup.local_dir);
                     $("#cloud").val(backup.cloud);
                     $("#passphrase").val(backup.passphrase);
-					if(backup.passphrase != "") {
-						$("#save_passphrase").prop("checked", true);
-					}
+                    if(backup.passphrase != "") {
+                        $("#save_passphrase").prop("checked", true);
+                    }
                 } else {
                     $("#backup-name").val('');
                     $("#directory").html('');
@@ -86,26 +86,26 @@
                 $("#backup_details_link").trigger("click");
             }
 
-			function check_backup_name() {
+            function check_backup_name() {
                 var backup_name = $('#backup-name').val().replace(/^\s+|\s+$/gm,'');
                 if(!backup_name) {
                     $('#backup-name-error small').text(errors.backup_name_empty);
                     $('#backup-name-error small').show();
-					return false;
+                    return false;
                 } else {
                     var pattern = /^[\w.\-]+$/;
                     if(!backup_name.match(pattern)) {
                         $('#backup-name-error small').text(errors.backup_name_illegal);
                         $('#backup-name-error small').show();
-						return false;
+                        return false;
                     } else {
                         $('#backup-name-error small').hide();
                     }
                 }
-				return true;
+                return true;
             }
 
-			function check_directory() {
+            function check_directory() {
                 if(!$('#directory').html()) {
                     $('#directory-error small').text(errors.dir_not_chosen);
                     $('#directory-error small').show();
@@ -114,155 +114,155 @@
                 return true;
             }
 
-			function check_cloud() {
-				var cloud = $("#cloud").val();
-				if(!cloud) {
-					$('#cloud-error small').text(errors.cloud_empty);
-	                $('#cloud-error small').show();
-					return false;
-				} else {
-	                $('#cloud-error small').hide();
-				}
-				return true;
-			}
+            function check_cloud() {
+                var cloud = $("#cloud").val();
+                if(!cloud) {
+                    $('#cloud-error small').text(errors.cloud_empty);
+                    $('#cloud-error small').show();
+                    return false;
+                } else {
+                    $('#cloud-error small').hide();
+                }
+                return true;
+            }
 
-			function populate_clouds(data) {
-				if(typeof clouds === 'undefined') {
+            function populate_clouds(data) {
+                if(typeof clouds === 'undefined') {
                     if(data != "") {
                         clouds = JSON.parse(data).clouds;
                     } else {
                         clouds = [];
                     }
                 }
-				var cloud_sel = $("#cloud");
-				$.each(clouds, function(i, cloud) {
-					cloud_sel.append($("<option></option>")
-						.attr("value", cloud.name)
-						.text(cloud.name));
-				});
-			}
+                var cloud_sel = $("#cloud");
+                $.each(clouds, function(i, cloud) {
+                    cloud_sel.append($("<option></option>")
+                        .attr("value", cloud.name)
+                        .text(cloud.name));
+                });
+            }
 
-			function save_backup_set() {
+            function save_backup_set() {
                 var backup_name = $("#backup-name").val().replace(/^\s+|\s+$/gm,'');
                 var directory = $("#directory").html();
                 var cloud = $("#cloud").val();
                 var save_pass = $("#save_passphrase").is(":checked");
                 var passphrase = (save_pass) ? $("#passphrase").val() : "";
 
-				if($("#" + backup_name).attr("id")) {
+                if($("#" + backup_name).attr("id")) {
                     $.each(backups, function(i, backup_set) {
                         if(backup_set.name == backup_name) {
-							backup_set.name = backup_name;
-							backup_set.local_dir = directory;
-							backup_set.cloud = cloud;
-							backup_set.passphrase = passphrase;
+                            backup_set.name = backup_name;
+                            backup_set.local_dir = directory;
+                            backup_set.cloud = cloud;
+                            backup_set.passphrase = passphrase;
                         }
                     });
                 } else {
-					var backup_set = {"name" : "", "local_dir" : "",
-						"cloud" : "", "passphrase" : "", "container" : "" };
-					backup_set.name = backup_name;
-					backup_set.local_dir = directory;
-					backup_set.cloud = cloud;
-					backup_set.passphrase = passphrase;
-					backup_set.container = "Backup_" + backup_name;
-					backups.push(backup_set);
-					render_backup_sets("");
-				}
+                    var backup_set = {"name" : "", "local_dir" : "",
+                        "cloud" : "", "passphrase" : "", "container" : "" };
+                    backup_set.name = backup_name;
+                    backup_set.local_dir = directory;
+                    backup_set.cloud = cloud;
+                    backup_set.passphrase = passphrase;
+                    backup_set.container = "Backup_" + backup_name;
+                    backups.push(backup_set);
+                    render_backup_sets("");
+                }
                 var root_backup_sets = {"backups" : "" };
                 root_backup_sets.backups = backups;
                 write_conf_file(BACKUP_CONF_FILE, root_backup_sets);
             }
 
-			function delete_backup(backup) {
+            function delete_backup(backup) {
                 var i = backups.indexOf(backup);
                 backups.splice(i, 1);
-				render_backup_sets("");
+                render_backup_sets("");
 
                 var root_backup_sets = {"backups" : "" };
                 root_backup_sets.backups = backups;
                 write_conf_file(BACKUP_CONF_FILE, root_backup_sets);
             }
 
-			function set_envs() {
-				var passphrase = $('#passphrase').val();
+            function set_envs() {
+                var passphrase = $('#passphrase').val();
                 if(passphrase) {
                     process.env['PASSPHRASE'] = passphrase;
-				}
-				var cloud_name = $("#cloud").val().replace(/^\s+|\s+$/gm,'');
-				$.each(clouds, function(i, cloud) {
-					if(cloud.name == cloud_name) {
-						process.env['SWIFT_PREAUTHURL'] = cloud.pithos_public + '/' + cloud.uuid;
-						process.env['SWIFT_PREAUTHTOKEN'] = cloud.token;
-					}
-				});
-			}
+                }
+                var cloud_name = $("#cloud").val().replace(/^\s+|\s+$/gm,'');
+                $.each(clouds, function(i, cloud) {
+                    if(cloud.name == cloud_name) {
+                        process.env['SWIFT_PREAUTHURL'] = cloud.pithos_public + '/' + cloud.uuid;
+                        process.env['SWIFT_PREAUTHTOKEN'] = cloud.token;
+                    }
+                });
+            }
 
-			function run_duplicity(allow_source_mismatch) {
+            function run_duplicity(allow_source_mismatch) {
 
-				var container = null;
+                var container = null;
                 var backup_name = $("#backup-name").val().replace(/^\s+|\s+$/gm,'');
                 $.each(backups, function(i, backup_set) {
                     if(backup_set.name == backup_name) {
-						container = backup_set.container;
-					}
-				});
+                        container = backup_set.container;
+                    }
+                });
 
-				var directory = $("#directory").html();
-				var allow_arg = "";
-				if(allow_source_mismatch)
-					allow_arg = " --allow-source-mismatch ";
+                var directory = $("#directory").html();
+                var allow_arg = "";
+                if(allow_source_mismatch)
+                    allow_arg = " --allow-source-mismatch ";
 
                 exec("duplicity " + allow_arg + directory + " swift://" + container , function(error, stdout, stderr) {
-					if(error) {
-						$("#msg").addClass("panel");
-						var src_mismatch_error =
-							new RegExp("Backup source directory has changed").exec(error);
-						if(src_mismatch_error) {
-							var cur_dir = new RegExp('Current directory: ([^\n]+)', 'gm').exec(error);
-							var prev_dir = new RegExp('Previous directory: ([^\n]+)', 'gm').exec(error);
-							var msg = src_mismatch_error + "\n" + cur_dir[0] + "\n" + prev_dir[0] + "\n\n";
-							msg += "If this is not a mistake select OK to continue";
+                    if(error) {
+                        $("#msg").addClass("panel");
+                        var src_mismatch_error =
+                            new RegExp("Backup source directory has changed").exec(error);
+                        if(src_mismatch_error) {
+                            var cur_dir = new RegExp('Current directory: ([^\n]+)', 'gm').exec(error);
+                            var prev_dir = new RegExp('Previous directory: ([^\n]+)', 'gm').exec(error);
+                            var msg = src_mismatch_error + "\n" + cur_dir[0] + "\n" + prev_dir[0] + "\n\n";
+                            msg += "If this is not a mistake select OK to continue";
 
-							if(confirm(msg)) {
-								run_duplicity(true);
-							}
-						} else {
-							$("#msg").html(error);
-						}
-					} else {
-						$("#msg").html("");
-						$("#msg").removeClass("panel");
-					}
-					$("#loader").hide();
+                            if(confirm(msg)) {
+                                run_duplicity(true);
+                            }
+                        } else {
+                            $("#msg").html(error);
+                        }
+                    } else {
+                        $("#msg").html("");
+                        $("#msg").removeClass("panel");
+                    }
+                    $("#loader").hide();
 
-				});
+                });
 
-			}
+            }
 
-			function backup() {
-				$("#loader").show();
-				save_backup_set();
-				set_envs();
-				run_duplicity(false);
-			}
+            function backup() {
+                $("#loader").show();
+                save_backup_set();
+                set_envs();
+                run_duplicity(false);
+            }
 
-			function check_fields() {
-				return (check_backup_name() && check_directory() && check_cloud());
-			}
+            function check_fields() {
+                return (check_backup_name() && check_directory() && check_cloud());
+            }
 
-			function load_status() {
-				set_envs();
-				$("#loader").show();
-				$("#status").html("");
+            function load_status() {
+                set_envs();
+                $("#loader").show();
+                $("#status").html("");
 
-				var container = null;
+                var container = null;
                 var backup_name = $("#backup-name").val().replace(/^\s+|\s+$/gm,'');
                 $.each(backups, function(i, backup_set) {
                     if(backup_set.name == backup_name) {
-						container = backup_set.container;
-					}
-				});
+                        container = backup_set.container;
+                    }
+                });
 
                 function puts(error, stdout, stderr) {
                     console.log("error ==== " + error);
@@ -274,25 +274,25 @@
                     } else {
                         $("#msg").html("");
                         $("#msg").removeClass("panel");
-						$("#status").html(stdout.replace(/(?:\r\n|\r|\n)/g, '<br />'));
+                        $("#status").html(stdout.replace(/(?:\r\n|\r|\n)/g, '<br />'));
                     }
                     $("#loader").hide();
                 }
                 exec("duplicity collection-status swift://" + container , puts);
-			}
+            }
 
-			function load_contents() {
-				set_envs();
-				$("#loader").show();
-				$("#contents").html("");
+            function load_contents() {
+                set_envs();
+                $("#loader").show();
+                $("#contents").html("");
 
-				var container = null;
+                var container = null;
                 var backup_name = $("#backup-name").val().replace(/^\s+|\s+$/gm,'');
                 $.each(backups, function(i, backup_set) {
                     if(backup_set.name == backup_name) {
-						container = backup_set.container;
-					}
-				});
+                        container = backup_set.container;
+                    }
+                });
 
                 function puts(error, stdout, stderr) {
                     console.log("error ==== " + error);
@@ -304,14 +304,14 @@
                     } else {
                         $("#msg").html("");
                         $("#msg").removeClass("panel");
-						$("#contents").html(stdout.replace(/(?:\r\n|\r|\n)/g, '<br />'));
+                        $("#contents").html(stdout.replace(/(?:\r\n|\r|\n)/g, '<br />'));
                     }
                     $("#loader").hide();
                 }
                 exec("duplicity list-current-files swift://" + container , puts);
-			}
-		</script>
-	</head>
+            }
+        </script>
+    </head>
 
     <body>
         <div class="row">
@@ -319,109 +319,109 @@
                 <p>&nbsp;</p>
             </div>
         </div>
-		<div class="row">
-			<div class="small-3 columns panel" id="sidebar">
+        <div class="row">
+            <div class="small-3 columns panel" id="sidebar">
                 <a href="#" onclick="load_backup();" class="button small radius">
                     <i class="fa fa-plus-circle">&nbsp;New Backup Set</i>
                 </a>
-			</div>
-			<div class="small-9 columns">
-				<ul class="tabs" data-tab>
-					<li class="tab-title radius" id="backup_details_tab">
-						<a href="#backup_details" id="backup_details_link">Settings</a>
-					</li>
-					<li class="tab-title radius"><a href="#contents" onclick="load_contents();">Contents</a></li>
-					<li class="tab-title radius"><a href="#status" onclick="load_status();">Status</a></li>
-					<li class="tab-title radius"><a href="#schedule">Schedule</a></li>
-				</ul>
-				<div class="tabs-content">
-					<div class="content" id="backup_details">
-						<form>
-							<div class="clearfix">
-								<div class="small-3 columns">
-									 <label id="backup_name_label" for="backup-name" class="right inline">Name</label>
-								</div>
-								<div class="small-9 columns error" id="backup-name-error">
-									<input type="text" id="backup-name"
-									placeholder="Backup Name [A-Za-z0-9-_]" onchange="check_backup_name();">
-									<small class="error"></small>
-								</div>
-							</div>
-							<div class="clearfix">
-								<div class="small-3 columns">
-									<label id="directory_label" for="directory" class="right">
-										Local directory
-									</label>
-								</div>
-								<div id="directory" class="small-6 columns"></div>
-								<div id="dirdialogue_label" onclick="$('#choose-dir').trigger('click');"
-									class="small-3 columns" id="dirpick">
-									<i class="fa fa-folder-o" style="color:#008CBA">&nbsp;</i>
-								</div>
-							</div>
-							<div class="clearfix">
-								<div class="small-3 columns">&nbsp;</div>
-								<div id="directory-error" class="small-6 columns">
-									<small></small>
-								</div>
-								<input type="file" id="choose-dir" nwdirectory
-									style="display:none;"
-									onchange="$('#directory').html($(this).val());
-										check_directory();" />
-							</div>
-							<div class="clearfix">
+            </div>
+            <div class="small-9 columns">
+                <ul class="tabs" data-tab>
+                    <li class="tab-title radius" id="backup_details_tab">
+                        <a href="#backup_details" id="backup_details_link">Settings</a>
+                    </li>
+                    <li class="tab-title radius"><a href="#contents" onclick="load_contents();">Contents</a></li>
+                    <li class="tab-title radius"><a href="#status" onclick="load_status();">Status</a></li>
+                    <li class="tab-title radius"><a href="#schedule">Schedule</a></li>
+                </ul>
+                <div class="tabs-content">
+                    <div class="content" id="backup_details">
+                        <form>
+                            <div class="clearfix">
+                                <div class="small-3 columns">
+                                     <label id="backup_name_label" for="backup-name" class="right inline">Name</label>
+                                </div>
+                                <div class="small-9 columns error" id="backup-name-error">
+                                    <input type="text" id="backup-name"
+                                    placeholder="Backup Name [A-Za-z0-9-_]" onchange="check_backup_name();">
+                                    <small class="error"></small>
+                                </div>
+                            </div>
+                            <div class="clearfix">
+                                <div class="small-3 columns">
+                                    <label id="directory_label" for="directory" class="right">
+                                        Local directory
+                                    </label>
+                                </div>
+                                <div id="directory" class="small-6 columns"></div>
+                                <div id="dirdialogue_label" onclick="$('#choose-dir').trigger('click');"
+                                    class="small-3 columns" id="dirpick">
+                                    <i class="fa fa-folder-o" style="color:#008CBA">&nbsp;</i>
+                                </div>
+                            </div>
+                            <div class="clearfix">
+                                <div class="small-3 columns">&nbsp;</div>
+                                <div id="directory-error" class="small-6 columns">
+                                    <small></small>
+                                </div>
+                                <input type="file" id="choose-dir" nwdirectory
+                                    style="display:none;"
+                                    onchange="$('#directory').html($(this).val());
+                                        check_directory();" />
+                            </div>
+                            <div class="clearfix">
                                 <div class="small-3 columns">
                                      <label id="cloud_label" for="cloud" class="right inline">Cloud</label>
                                 </div>
                                 <div class="small-9 columns error" id="cloud-error">
                                     <select id="cloud" onchange="check_cloud();">
-										<option value="0">&nbsp;</option>
-									</select>
-									<small class="error"></small>
+                                        <option value="0">&nbsp;</option>
+                                    </select>
+                                    <small class="error"></small>
                                 </div>
                             </div>
-							<div class="clearfix">
-								<div class="small-3 columns">
-									<label id="passphrase_label" for="passphrase" class="right inline">Passphrase</label>
-								</div>
-								<div class="small-6 columns" id="passphrase-error">
-									<input type="password" id="passphrase" placeholder="Passphrase">
-								</div>
-								<div class="small-3 columns">
-									<label for="save_passphrase" class="left">Save&nbsp;
-									<input id="save_passphrase" type="checkbox" class="right">
-									</label>
-								</div>
-		                    </div>
-							<div class="clearfix">
-								<div class="small-6 columns">
-									<a id="save_button" class="button radius left"
-									onclick="if(check_fields()) restore();">
-									<i class="fa fa-cloud-download"></i>&nbsp;Restore</a>
-								</div>
-								<div class="small-6 columns">
-									<a id="save_button" class="button radius right"
-									onclick="if(check_fields()) backup();">
-									<i class="fa fa-cloud-upload"></i>&nbsp;Backup</a>
-								</div>
-							</div>
-						</form>
-					</div>
-					<div class="content" id="contents">
-						<p>This is the second panel of the basic tab example.</p>
-					</div>
-					<div class="content" id="status">
-					</div>
-					<div class="content" id="schedule">
-						<p>This is the fourth panel of the basic tab example.</p>
-					</div>
-				</div>
-				<div id="loader" class="hide"><i class="fa fa-spinner fa-pulse fa-2x" style="color:#6e6e6e"></i></div>
-				<div id="msg" class="small-10 columns"></div>
-			</div>
-		</div>
-		<script type="text/javascript">
-			$(document).foundation();
+                            <div class="clearfix">
+                                <div class="small-3 columns">
+                                    <label id="passphrase_label" for="passphrase" class="right inline">Passphrase</label>
+                                </div>
+                                <div class="small-6 columns" id="passphrase-error">
+                                    <input type="password" id="passphrase" placeholder="Passphrase">
+                                </div>
+                                <div class="small-3 columns">
+                                    <label for="save_passphrase" class="left">Save&nbsp;
+                                    <input id="save_passphrase" type="checkbox" class="right">
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="clearfix">
+                                <div class="small-6 columns">
+                                    <a id="save_button" class="button radius left"
+                                    onclick="if(check_fields()) restore();">
+                                    <i class="fa fa-cloud-download"></i>&nbsp;Restore</a>
+                                </div>
+                                <div class="small-6 columns">
+                                    <a id="save_button" class="button radius right"
+                                    onclick="if(check_fields()) backup();">
+                                    <i class="fa fa-cloud-upload"></i>&nbsp;Backup</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="content" id="contents">
+                        <p>This is the second panel of the basic tab example.</p>
+                    </div>
+                    <div class="content" id="status">
+                    </div>
+                    <div class="content" id="schedule">
+                        <p>This is the fourth panel of the basic tab example.</p>
+                    </div>
+                </div>
+                <div id="loader" class="hide"><i class="fa fa-spinner fa-pulse fa-2x" style="color:#6e6e6e"></i></div>
+                <div id="msg" class="small-10 columns"></div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            $(document).foundation();
         </script>
-	</body>
+    </body>
 </html>
