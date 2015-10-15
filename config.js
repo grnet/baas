@@ -5,8 +5,12 @@ var BAAS_HOME_DIR = '.baas';
 var CLOUDS_CONF_FILE = 'clouds.rc';
 var BACKUP_CONF_FILE = 'backups.rc';
 
+function get_user_home() {
+	return process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
+}
+
 function create_baas_dir() {
-	var dir = path.join(process.env.HOME, BAAS_HOME_DIR);
+	var dir = path.join(get_user_home(), BAAS_HOME_DIR);
 	fs.stat(dir, function (err, stats) {
 		if(err) {
 			fs.mkdir(dir, function(error) {
@@ -29,7 +33,7 @@ function create_baas_dir() {
 }
 
 function create_conf_file(filename) {
-	var conf_file = path.join(process.env.HOME, BAAS_HOME_DIR, filename);
+	var conf_file = path.join(get_user_home(), BAAS_HOME_DIR, filename);
 	fs.stat(conf_file, function (err, stats) {
 		if(err) {
 			fs.writeFile(conf_file, "", function(error) {
@@ -46,7 +50,7 @@ function create_conf_file(filename) {
 }
 
 function write_conf_file(filename, data) {
-	var conf_file = path.join(process.env.HOME, BAAS_HOME_DIR, filename);
+	var conf_file = path.join(get_user_home(), BAAS_HOME_DIR, filename);
 	fs.writeFile(conf_file, JSON.stringify(data, null, 2), function(error) {
 		if(error) return console.error(error);
 		console.log("Successfully updated " + conf_file);
@@ -55,7 +59,7 @@ function write_conf_file(filename, data) {
 }
 
 function load_data_from_file(filename, callback) {
-	var conf_file = path.join(process.env.HOME, BAAS_HOME_DIR, filename);
+	var conf_file = path.join(get_user_home(), BAAS_HOME_DIR, filename);
 	fs.stat(conf_file, function (err, stats) {
 		if(err) return console.error(err);
 		fs.readFile(conf_file, function(error, data) {
