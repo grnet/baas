@@ -20,6 +20,7 @@
 				backup_name_illegal: 'Invalid Entry. Allowed characters [A-Za-z0-9-_]',
 				cloud_empty: 'Select cloud configuration'
 			};
+            var exec = require('child_process').exec;
 
 			load_data_from_file(BACKUP_CONF_FILE, render_backup_sets);
 
@@ -200,7 +201,14 @@
 
 			function run_duplicity(allow_source_mismatch) {
 
-                var exec = require('child_process').exec;
+				var container = null;
+                var backup_name = $("#backup-name").val().replace(/^\s+|\s+$/gm,'');
+                $.each(backups, function(i, backup_set) {
+                    if(backup_set.name == backup_name) {
+						container = backup_set.container;
+					}
+				});
+
 				var directory = $("#directory").html();
 				var allow_arg = "";
 				if(allow_source_mismatch)
@@ -268,7 +276,15 @@
 			function load_contents() {
 				$("#loader").show();
 				$("#contents").html("");
-				var exec = require('child_process').exec;
+
+				var container = null;
+                var backup_name = $("#backup-name").val().replace(/^\s+|\s+$/gm,'');
+                $.each(backups, function(i, backup_set) {
+                    if(backup_set.name == backup_name) {
+						container = backup_set.container;
+					}
+				});
+
                 function puts(error, stdout, stderr) {
                     console.log("error ==== " + error);
                     console.log("stdout === " + stdout);
