@@ -90,15 +90,18 @@
                 if(!backup_name) {
                     $('#backup-name-error small').text(errors.backup_name_empty);
                     $('#backup-name-error small').show();
+					return false;
                 } else {
                     var pattern = /^[\w.\-]+$/;
                     if(!backup_name.match(pattern)) {
                         $('#backup-name-error small').text(errors.backup_name_illegal);
                         $('#backup-name-error small').show();
+						return false;
                     } else {
                         $('#backup-name-error small').hide();
                     }
                 }
+				return true;
             }
 
 			function check_directory() {
@@ -112,12 +115,14 @@
 
 			function check_cloud() {
 				var cloud = $("#cloud").val();
-				if(cloud === "0") {
+				if(!cloud) {
 					$('#cloud-error small').text(errors.cloud_empty);
 	                $('#cloud-error small').show();
+					return false;
 				} else {
 	                $('#cloud-error small').hide();
 				}
+				return true;
 			}
 
 			function populate_clouds(data) {
@@ -236,7 +241,7 @@
 			}
 
 			function check_fields() {
-				return true;
+				return (check_backup_name() && check_directory() && check_cloud());
 			}
 
 			function load_status() {
