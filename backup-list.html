@@ -165,8 +165,7 @@
 					backup_set.local_dir = directory;
 					backup_set.cloud = cloud;
 					backup_set.passphrase = passphrase;
-					//backup_set.container = "Backup_" + backup_name;
-					backup_set.container = "synnefoBackup";
+					backup_set.container = "Backup_" + backup_name;
 					backups.push(backup_set);
 					render_backup_sets("");
 				}
@@ -214,7 +213,7 @@
 				if(allow_source_mismatch)
 					allow_arg = " --allow-source-mismatch ";
 
-                exec("duplicity " + allow_arg + directory + " swift://synnefoBackup" , function(error, stdout, stderr) {
+                exec("duplicity " + allow_arg + directory + " swift://" + container , function(error, stdout, stderr) {
 					if(error) {
 						$("#msg").addClass("panel");
 						var src_mismatch_error =
@@ -253,9 +252,18 @@
 			}
 
 			function load_status() {
+				set_envs();
 				$("#loader").show();
 				$("#status").html("");
-				var exec = require('child_process').exec;
+
+				var container = null;
+                var backup_name = $("#backup-name").val().replace(/^\s+|\s+$/gm,'');
+                $.each(backups, function(i, backup_set) {
+                    if(backup_set.name == backup_name) {
+						container = backup_set.container;
+					}
+				});
+
                 function puts(error, stdout, stderr) {
                     console.log("error ==== " + error);
                     console.log("stdout === " + stdout);
@@ -270,10 +278,11 @@
                     }
                     $("#loader").hide();
                 }
-                exec("duplicity collection-status swift://synnefoBackup" , puts);
+                exec("duplicity collection-status swift://" + container , puts);
 			}
 
 			function load_contents() {
+				set_envs();
 				$("#loader").show();
 				$("#contents").html("");
 
@@ -299,7 +308,7 @@
                     }
                     $("#loader").hide();
                 }
-                exec("duplicity list-current-files swift://synnefoBackup" , puts);
+                exec("duplicity list-current-files swift://" + container , puts);
 			}
 		</script>
 	</head>
