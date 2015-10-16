@@ -18,7 +18,8 @@
             var errors = {
                 backup_name_empty: 'Provide a Backup Name',
                 backup_name_illegal: 'Invalid Entry. Allowed characters [A-Za-z0-9-_]',
-                cloud_empty: 'Select cloud configuration'
+                cloud_empty: 'Select cloud configuration',
+                dir_not_chosen : 'Provide a local directory'
             };
             var exec = require('child_process').exec;
 
@@ -362,7 +363,7 @@
                             <div class="clearfix">
                                 <div class="small-3 columns">&nbsp;</div>
                                 <div id="directory-error" class="small-6 columns">
-                                    <small></small>
+                                    <small class="error"></small>
                                 </div>
                                 <input type="file" id="choose-dir" nwdirectory
                                     style="display:none;"
