@@ -5,6 +5,9 @@ var BAAS_HOME_DIR = '.baas';
 var CLOUDS_CONF_FILE = 'clouds.rc';
 var BACKUP_CONF_FILE = 'backups.rc';
 
+var exec_path = path.dirname(process.execPath);
+var CYGWIN_BASH = path.join(exec_path, "bin", "bash.exe");
+
 function get_user_home() {
     return process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
 }
