@@ -1,0 +1,14 @@
+BaaS Client installation build for Windows
+
+I. Cygwin installation and setup
+    1. Download Cygwin setup.exe from https://www.cygwin.com/setup-x86_64.exe
+        Important: Place the setup file in the same directory as the installation scripts 
+    2. Execute install.bat
+        This will install Cygwin and prerequisite packages under .\build.
+II. Node.js
+    1. Install Node.js from https://nodejs.org/en/
+    2. Install nw-builder with npm install nw-builder -g
+III. Clone repo and build
+    1. Clone git repo git clone ssh://phab-vcs-user@phab.dev.grnet.gr:222/diffusion/BAAS/baas.git
+    2. cd into baas directory to install node-webkit : npm install nw
+    2. cd .. to build :  nwbuild -p win64 -v 0.12.0 baas --buildDir <cygwin_installation_root_folder>
