@@ -214,38 +214,78 @@
                 if(allow_source_mismatch)
                     allow_arg = " --allow-source-mismatch ";
 
-                exec("duplicity " + allow_arg + directory + " swift://" + container , function(error, stdout, stderr) {
-                    if(error) {
-                        $("#msg").addClass("panel");
-                        var src_mismatch_error =
-                            new RegExp("Backup source directory has changed").exec(error);
-                        if(src_mismatch_error) {
-                            var cur_dir = new RegExp('Current directory: ([^\n]+)', 'gm').exec(error);
-                            var prev_dir = new RegExp('Previous directory: ([^\n]+)', 'gm').exec(error);
-                            var msg = src_mismatch_error + "\n" + cur_dir[0] + "\n" + prev_dir[0] + "\n\n";
-                            msg += "If this is not a mistake select OK to continue";
+                if(process.platform == 'win32') {
+                    $("#loader").show();
+                    directory = directory.replace(/\\/g, "\\\\");
+                    exec(CYGWIN_BASH + " -c \"/usr/bin/cygpath '" + directory + "' \"",
+                        function(error, stdout, stderr) {
+                            directory = String(stdout).replace(/(\r\n|\n|\r)/gm, "");
+                            if(error) $("#msg").html(error);
 
-                            if(confirm(msg)) {
-                                run_duplicity(true);
+                            var passphrase = $('#passphrase').val();
+                            var cloud_name = $("#cloud").val().replace(/^\s+|\s+$/gm,'');
+                            var preauth_url = null;
+                            var preauth_token = null;
+
+                            $.each(clouds, function(i, cloud) {
+                                if(cloud.name == cloud_name) {
+                                    preauth_url = cloud.pithos_public + '/' + cloud.uuid;
+                                    preauth_token = cloud.token;
+                                }
+                            });
+
+                            var cmd1 = "export PATH=/usr/bin/:$PATH;";
+                            var cmd2 = "ulimit -n 1024;";
+                            var cmd3 = "export PASSPHRASE=" + passphrase + ";";
+                            var cmd4 = "export SWIFT_PREAUTHURL=" + preauth_url + ";";
+                            var cmd5 = "export SWIFT_PREAUTHTOKEN=" + preauth_token + ";";
+                            var cmd6 = "duplicity " + directory + " swift://" + container + ";";
+
+                            exec(CYGWIN_BASH + " -c '" + cmd1 + cmd2 + cmd3 + cmd4 + cmd5 + cmd6 + "'",
+                                function(error, stdout, stderr){
+                                    $("#msg").html(stdout);
+                                    if(error) $("#msg").html(error);
+                                });
+                    });
+                    $("#loader").hide();
+                } else {
+                    set_envs();
+                    exec("duplicity " + allow_arg + directory + " swift://" + container , function(error, stdout, stderr) {
+                        if(error) {
+                            $("#msg").addClass("panel");
+                            var src_mismatch_error =
+                                new RegExp("Backup source directory has changed").exec(error);
+                            if(src_mismatch_error) {
+                                var cur_dir = new RegExp('Current directory: ([^\n]+)', 'gm').exec(error);
+                                var prev_dir = new RegExp('Previous directory: ([^\n]+)', 'gm').exec(error);
+                                var msg = src_mismatch_error + "\n" + cur_dir[0] + "\n" + prev_dir[0] + "\n\n";
+                                msg += "If this is not a mistake select OK to continue";
+
+                                if(confirm(msg)) {
+                                    run_duplicity(true);
+                                }
+                            } else {
+                                $("#msg").html(error);
                             }
                         } else {
-                            $("#msg").html(error);
+                            $("#msg").html("");
+                            $("#msg").removeClass("panel");
                         }
-                    } else {
-                        $("#msg").html("");
-                        $("#msg").removeClass("panel");
-                    }
-                    $("#loader").hide();
+                        $("#loader").hide();
 
-                });
-
+                    });
+                }
             }
 
             function backup() {
                 $("#loader").show();
                 save_backup_set();
-                set_envs();
-                run_duplicity(false);
+                $("#loader").hide();
+                //run_duplicity(false);
+                exec(CYGWIN_BASH + " -c '/usr/bin/pwd'", function(error, stdout, stderr) {
+                    $("#msg").html(stdout);
+                    if(error) $("#msg").html(error);
+                });
             }
 
             function check_fields() {
