@@ -53,7 +53,8 @@
                         .attr("href", "#")
                         .attr("class", "right")
                         .click(function() {
-                            if(confirm("Are you sure you want to delete " + backup.name + '?')) {
+                            if(confirm("Are you sure you want to delete " + backup.name + '?' +
+                                "\nNOTE: To actually remove backup sets from remote container you have to manually purge it.")) {
                                 delete_backup(backup);
                             }
                         });
@@ -65,6 +66,8 @@
             }
 
             function load_backup(backup) {
+                $(".tabs").show();
+                $(".tabs-content").show();
                 $('#backup_details_tab').addClass('active');
                 $('#backup-name-error small').hide();
                 $('#directory-error small').hide();
@@ -183,6 +186,8 @@
                 var root_backup_sets = {"backups" : "" };
                 root_backup_sets.backups = backups;
                 write_conf_file(BACKUP_CONF_FILE, root_backup_sets);
+                $(".tabs").hide();
+                $(".tabs-content").hide();
             }
 
             function set_envs() {
