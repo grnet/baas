@@ -71,6 +71,7 @@
                 $('#backup_details_tab').addClass('active');
                 $('#backup-name-error small').hide();
                 $('#directory-error small').hide();
+                $('#res-directory-error small').hide();
                 $('#cloud-error small').hide();
 
                 if(backup) {
@@ -109,12 +110,12 @@
                 return true;
             }
 
-            function check_directory() {
-                if(!$('#directory').html()) {
-                    $('#directory-error small').text(errors.dir_not_chosen);
-                    $('#directory-error small').show();
+            function check_directory(dir_id) {
+                if(!$('#' + dir_id).html()) {
+                    $('#' + dir_id + '-error small').text(errors.dir_not_chosen);
+                    $('#' + dir_id + '-error small').show();
                     return false;
-                } else $('#directory-error small').hide();
+                } else $('#' + dir_id + '-error small').hide();
                 return true;
             }
 
@@ -214,7 +215,7 @@
                     }
                 });
 
-                var directory = $("#directory").html();
+                var directory = (restore) ? $("#res-directory").html() : $("#directory").html();
                 var allow_arg = "";
                 if(allow_source_mismatch)
                     allow_arg = " --allow-source-mismatch ";
@@ -292,12 +293,12 @@
 
             function backup(restore) {
                 $("#loader").show();
-                save_backup_set();
+                if(!restore) save_backup_set();
                 run_duplicity(false, restore);
             }
 
             function check_fields() {
-                return (check_backup_name() && check_directory() && check_cloud());
+                return (check_backup_name() && check_directory("directory") && check_cloud());
             }
 
             function load_status() {
@@ -395,6 +396,9 @@
                     <li class="tab-title radius" id="backup_details_tab">
                         <a href="#backup_details" id="backup_details_link">Backup</a>
                     </li>
+                    <li class="tab-title radius" id="restore_details_tab">
+                        <a href="#restore_details" id="restore_details_link">Restore</a>
+                    </li>
                     <li class="tab-title radius"><a href="#contents" onclick="load_contents();">Contents</a></li>
                     <li class="tab-title radius"><a href="#status" onclick="load_status();">Status</a></li>
                 </ul>
@@ -431,7 +435,7 @@
                                 <input type="file" id="choose-dir" nwdirectory
                                     style="display:none;"
                                     onchange="$('#directory').html($(this).val());
-                                        check_directory();" />
+                                        check_directory('directory');" />
                             </div>
                             <div class="clearfix">
                                 <div class="small-3 columns">
@@ -460,7 +464,7 @@
                             <div class="clearfix">
                                 <div class="small-6 columns">
                                     <a id="save_button" class="button radius left small"
-                                    onclick="if(check_fields()) backup();">
+                                    onclick="if(check_fields()) backup(false);">
                                     <i class="fa fa-cloud-upload"></i>&nbsp;Backup</a>
                                 </div>
                                 <div class="small-6 columns">
@@ -470,6 +474,38 @@
                                 </div>
                             </div>
                         </form>
+                    </div>
+                    <div class="content" id="restore_details">
+                        <div class="clearfix">
+                            <div class="small-3 columns">
+                                <label id="res_directory_label" for="res-directory" class="right">
+                                    Local directory
+                                </label>
+                            </div>
+                            <div id="res-directory" class="small-6 columns"></div>
+                            <div id="res-dirdialogue_label" onclick="$('#choose-res-dir').trigger('click');"
+                                class="small-3 columns" id="resdirpick">
+                                <i class="fa fa-folder-o" style="color:#008CBA">&nbsp;</i>
+                            </div>
+                        </div>
+                        <div class="clearfix">
+                            <div class="small-3 columns">&nbsp;</div>
+                            <div id="res-directory-error" class="small-6 columns">
+                                <small class="error"></small>
+                            </div>
+                            <input type="file" id="choose-res-dir" nwdirectory
+                                style="display:none;"
+                                onchange="$('#res-directory').html($(this).val());
+                                    check_directory('res-directory');" />
+                        </div>
+                        <div class="clearfix">
+                            <div class="small-6 columns">&nbsp;</div>
+                            <div class="small-6 columns">
+                                <a id="restore_button" class="button radius right small"
+                                onclick="if(check_fields()) backup(true);">
+                                <i class="fa fa-cloud-download"></i>&nbsp;Restore</a>
+                            </div>
+                        </div>
                     </div>
                     <div class="content" id="contents">
                         <p>This is the second panel of the basic tab example.</p>
