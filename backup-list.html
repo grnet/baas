@@ -386,14 +386,14 @@
         </div>
         <div class="row">
             <div class="small-3 columns panel" id="sidebar">
-                <a href="#" onclick="load_backup();" class="button small radius">
+                <a href="#" onclick="load_backup();" class="button radius small">
                     <i class="fa fa-plus-circle">&nbsp;New Backup Set</i>
                 </a>
             </div>
             <div class="small-9 columns">
                 <ul class="tabs" data-tab>
                     <li class="tab-title radius" id="backup_details_tab">
-                        <a href="#backup_details" id="backup_details_link">Settings</a>
+                        <a href="#backup_details" id="backup_details_link">Backup</a>
                     </li>
                     <li class="tab-title radius"><a href="#contents" onclick="load_contents();">Contents</a></li>
                     <li class="tab-title radius"><a href="#status" onclick="load_status();">Status</a></li>
@@ -459,14 +459,14 @@
                             </div>
                             <div class="clearfix">
                                 <div class="small-6 columns">
-                                    <a id="save_button" class="button radius left"
-                                    onclick="if(check_fields()) backup(true);">
-                                    <i class="fa fa-cloud-download"></i>&nbsp;Restore</a>
-                                </div>
-                                <div class="small-6 columns">
-                                    <a id="save_button" class="button radius right"
+                                    <a id="save_button" class="button radius left small"
                                     onclick="if(check_fields()) backup();">
                                     <i class="fa fa-cloud-upload"></i>&nbsp;Backup</a>
+                                </div>
+                                <div class="small-6 columns">
+                                    <a id="save_button" class="button radius right small success"
+                                    onclick="if(check_fields()) save_backup_set();">
+                                    <i class="fa fa-floppy-o"></i>&nbsp;Save</a>
                                 </div>
                             </div>
                         </form>
