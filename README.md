@@ -2,6 +2,30 @@
 
 Backup as a Service
 
+## Build instructions for Windows
+
+I. Cygwin installation and setup
+    1. Download Cygwin setup.exe from https://www.cygwin.com/setup-x86_64.exe
+        Important: Place the setup file in the same directory as the installation scripts.
+    2. Execute install.bat
+        This will install Cygwin and prerequisite packages under .\build. It will also download
+        and install python-lockfile, duplicity and python-swiftclient.
+
+II. Node.js
+    1. Install Node.js from https://nodejs.org/en/
+        Important: npm3 is required. To update:
+        - cd %ProgramFiles%\nodejs
+        - npm -g install npm@latest
+
+    2. Install nw-builder : npm -g install nw-builder
+
+III. Clone repo and build
+    1. git clone ssh://phab-vcs-user@phab.dev.grnet.gr:222/diffusion/BAAS/baas.git
+    2. cd into baas directory to install node-webkit : npm install nw
+    3. cd .. to build :  nwbuild -p win64 -v 0.12.0 baas/
+    4. copy contents of build\baas\win64 folder into build directory
+
+
 ## Copyright and license
 
 Copyright (C) 2015 GRNET S.A.
