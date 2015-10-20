@@ -199,7 +199,7 @@
                 });
             }
 
-            function run_duplicity(allow_source_mismatch) {
+            function run_duplicity(allow_source_mismatch, restore) {
 
                 var container = null;
                 var backup_name = $("#backup-name").val().replace(/^\s+|\s+$/gm,'');
@@ -215,7 +215,6 @@
                     allow_arg = " --allow-source-mismatch ";
 
                 if(process.platform == 'win32') {
-                    $("#loader").show();
                     directory = directory.replace(/\\/g, "\\\\");
                     exec(CYGWIN_BASH + " -c \"/usr/bin/cygpath '" + directory + "' \"",
                         function(error, stdout, stderr) {
@@ -239,18 +238,27 @@
                             var cmd3 = "export PASSPHRASE=" + passphrase + ";";
                             var cmd4 = "export SWIFT_PREAUTHURL=" + preauth_url + ";";
                             var cmd5 = "export SWIFT_PREAUTHTOKEN=" + preauth_token + ";";
-                            var cmd6 = "duplicity " + directory + " swift://" + container + ";";
+
+                            var dirs = directory + " swift://" + container;
+                            if(restore) {
+                                dirs = " swift://" + container + " " + directory;
+                            }
+                            var cmd6 = "duplicity " + dirs + ";";
 
                             exec(CYGWIN_BASH + " -c '" + cmd1 + cmd2 + cmd3 + cmd4 + cmd5 + cmd6 + "'",
                                 function(error, stdout, stderr){
                                     $("#msg").html(stdout);
                                     if(error) $("#msg").html(error);
+                                    $("#loader").hide();
                                 });
                     });
-                    $("#loader").hide();
                 } else {
                     set_envs();
-                    exec("duplicity " + allow_arg + directory + " swift://" + container , function(error, stdout, stderr) {
+                    var dirs = directory + " swift://" + container;
+                    if(restore) {
+                        dirs = " swift://" + container + " " + directory;
+                    }
+                    exec("duplicity " + allow_arg + dirs , function(error, stdout, stderr) {
                         if(error) {
                             $("#msg").addClass("panel");
                             var src_mismatch_error =
@@ -262,7 +270,7 @@
                                 msg += "If this is not a mistake select OK to continue";
 
                                 if(confirm(msg)) {
-                                    run_duplicity(true);
+                                    run_duplicity(true, restore);
                                 }
                             } else {
                                 $("#msg").html(error);
@@ -277,10 +285,10 @@
                 }
             }
 
-            function backup() {
+            function backup(restore) {
                 $("#loader").show();
                 save_backup_set();
-                run_duplicity(false);
+                run_duplicity(false, restore);
             }
 
             function check_fields() {
@@ -301,9 +309,6 @@
                 });
 
                 function puts(error, stdout, stderr) {
-                    console.log("error ==== " + error);
-                    console.log("stdout === " + stdout);
-                    console.log("stderr === " + stderr);
                     if(error) {
                         $("#msg").html(error);
                         $("#msg").addClass("panel");
@@ -331,9 +336,6 @@
                 });
 
                 function puts(error, stdout, stderr) {
-                    console.log("error ==== " + error);
-                    console.log("stdout === " + stdout);
-                    console.log("stderr === " + stderr);
                     if(error) {
                         $("#msg").html(error);
                         $("#msg").addClass("panel");
@@ -431,7 +433,7 @@
                             <div class="clearfix">
                                 <div class="small-6 columns">
                                     <a id="save_button" class="button radius left"
-                                    onclick="if(check_fields()) restore();">
+                                    onclick="if(check_fields()) backup(true);">
                                     <i class="fa fa-cloud-download"></i>&nbsp;Restore</a>
                                 </div>
                                 <div class="small-6 columns">
