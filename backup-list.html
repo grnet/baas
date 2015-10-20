@@ -280,12 +280,7 @@
             function backup() {
                 $("#loader").show();
                 save_backup_set();
-                $("#loader").hide();
-                //run_duplicity(false);
-                exec(CYGWIN_BASH + " -c '/usr/bin/pwd'", function(error, stdout, stderr) {
-                    $("#msg").html(stdout);
-                    if(error) $("#msg").html(error);
-                });
+                run_duplicity(false);
             }
 
             function check_fields() {
@@ -319,7 +314,7 @@
                     }
                     $("#loader").hide();
                 }
-                exec("duplicity collection-status swift://" + container , puts);
+                exec("duplicity collection-status swift://" + container, {maxBuffer: 1000*1024} , puts);
             }
 
             function load_contents() {
