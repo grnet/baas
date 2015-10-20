@@ -301,7 +301,6 @@
             }
 
             function load_status() {
-                set_envs();
                 $("#loader").show();
                 $("#status").html("");
 
@@ -312,19 +311,48 @@
                         container = backup_set.container;
                     }
                 });
+                if(process.platform == 'win32') {
+                    var passphrase = $('#passphrase').val();
+                    var cloud_name = $("#cloud").val().replace(/^\s+|\s+$/gm,'');
+                    var preauth_url = null;
+                    var preauth_token = null;
 
-                function puts(error, stdout, stderr) {
-                    if(error) {
-                        $("#msg").html(error);
-                        $("#msg").addClass("panel");
-                    } else {
-                        $("#msg").html("");
-                        $("#msg").removeClass("panel");
-                        $("#status").html(stdout.replace(/(?:\r\n|\r|\n)/g, '<br />'));
+                    $.each(clouds, function(i, cloud) {
+                        if(cloud.name == cloud_name) {
+                            preauth_url = cloud.pithos_public + '/' + cloud.uuid;
+                            preauth_token = cloud.token;
+                        }
+                    });
+
+                    var cmd1 = "export PATH=/usr/bin/:$PATH;";
+                    var cmd2 = "ulimit -n 1024;";
+                    var cmd3 = "export PASSPHRASE=" + passphrase + ";";
+                    var cmd4 = "export SWIFT_PREAUTHURL=" + preauth_url + ";";
+                    var cmd5 = "export SWIFT_PREAUTHTOKEN=" + preauth_token + ";";
+                    var cmd6 = "duplicity collection-status swift://" + container + ";";
+
+                    exec(CYGWIN_BASH + " -c '" + cmd1 + cmd2 + cmd3 + cmd4 + cmd5 + cmd6 + "'",
+                        function(error, stdout, stderr){
+                            $("#msg").html(stdout);
+                            if(error) $("#msg").html(error);
+                            $("#loader").hide();
+                    });
+                } else {
+                    set_envs();
+
+                    function puts(error, stdout, stderr) {
+                        if(error) {
+                            $("#msg").html(error);
+                            $("#msg").addClass("panel");
+                        } else {
+                            $("#msg").html("");
+                            $("#msg").removeClass("panel");
+                            $("#status").html(stdout.replace(/(?:\r\n|\r|\n)/g, '<br />'));
+                        }
+                        $("#loader").hide();
                     }
-                    $("#loader").hide();
+                    exec("duplicity collection-status swift://" + container, {maxBuffer: 1000*1024} , puts);
                 }
-                exec("duplicity collection-status swift://" + container, {maxBuffer: 1000*1024} , puts);
             }
 
             function load_contents() {
