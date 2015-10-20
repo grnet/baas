@@ -311,6 +311,17 @@
                         container = backup_set.container;
                     }
                 });
+                function puts(error, stdout, stderr) {
+                    if(error) {
+                        $("#msg").html(error);
+                        $("#msg").addClass("panel");
+                    } else {
+                        $("#msg").html("");
+                        $("#msg").removeClass("panel");
+                        $("#status").html(stdout.replace(/(?:\r\n|\r|\n)/g, '<br />'));
+                    }
+                    $("#loader").hide();
+                }
                 if(process.platform == 'win32') {
                     var passphrase = $('#passphrase').val();
                     var cloud_name = $("#cloud").val().replace(/^\s+|\s+$/gm,'');
@@ -331,26 +342,9 @@
                     var cmd5 = "export SWIFT_PREAUTHTOKEN=" + preauth_token + ";";
                     var cmd6 = "duplicity collection-status swift://" + container + ";";
 
-                    exec(CYGWIN_BASH + " -c '" + cmd1 + cmd2 + cmd3 + cmd4 + cmd5 + cmd6 + "'",
-                        function(error, stdout, stderr){
-                            $("#msg").html(stdout);
-                            if(error) $("#msg").html(error);
-                            $("#loader").hide();
-                    });
+                    exec(CYGWIN_BASH + " -c '" + cmd1 + cmd2 + cmd3 + cmd4 + cmd5 + cmd6 + "'", puts);
                 } else {
                     set_envs();
-
-                    function puts(error, stdout, stderr) {
-                        if(error) {
-                            $("#msg").html(error);
-                            $("#msg").addClass("panel");
-                        } else {
-                            $("#msg").html("");
-                            $("#msg").removeClass("panel");
-                            $("#status").html(stdout.replace(/(?:\r\n|\r|\n)/g, '<br />'));
-                        }
-                        $("#loader").hide();
-                    }
                     exec("duplicity collection-status swift://" + container, {maxBuffer: 1000*1024} , puts);
                 }
             }
