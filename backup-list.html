@@ -19,7 +19,8 @@
                 backup_name_empty: 'Provide a Backup Name',
                 backup_name_illegal: 'Invalid Entry. Allowed characters [A-Za-z0-9-_]',
                 cloud_empty: 'Select cloud configuration',
-                dir_not_chosen : 'Provide a local directory'
+                dir_not_chosen : 'Provide a local directory',
+                res_file_illegal: 'Invalid Entry. Provide a valid file name'
             };
             var exec = require('child_process').exec;
 
@@ -73,6 +74,7 @@
                 $('#directory-error small').hide();
                 $('#res-directory-error small').hide();
                 $('#cloud-error small').hide();
+                $('#res-file-error small').hide();
 
                 if(backup) {
                     $("#backup-name").val(backup.name);
@@ -262,10 +264,15 @@
                 } else {
                     set_envs();
                     var dirs = directory + " swift://" + container;
+                    var file_arg = "";
                     if(restore) {
                         dirs = " swift://" + container + " " + directory;
+                        var file_to_restore = $("#res-file").val();
+                        if(file_to_restore) {
+                            file_arg = " --file-to-restore '" + file_to_restore + "' ";
+                        }
                     }
-                    exec("duplicity " + allow_arg + dirs , function(error, stdout, stderr) {
+                    exec("duplicity " + allow_arg + file_arg + dirs , function(error, stdout, stderr) {
                         if(error) {
                             $("#msg").addClass("panel");
                             var src_mismatch_error =
@@ -483,7 +490,10 @@
                         <div class="clearfix">
                             <div class="small-3 columns">
                                 <label id="res_directory_label" for="res-directory" class="right">
-                                    Local directory
+                                    <span data-tooltip aria-haspopup="true" class="has-tip"
+                                        title="If File to Restore is provided, it will be restored in this file">
+                                        Local directory/File
+                                    </span>
                                 </label>
                             </div>
                             <div id="res-directory" class="small-6 columns"></div>
@@ -501,6 +511,21 @@
                                 style="display:none;"
                                 onchange="$('#res-directory').html($(this).val());
                                     check_directory('res-directory');" />
+                        </div>
+                        <div class="clearfix">
+                            <div class="small-3 columns">
+                                 <label id="res-file-label" for="res-file" class="right inline">
+                                     <span data-tooltip aria-haspopup="true" class="has-tip"
+                                     title="Use relative path as shown in Contents listing">
+                                         File to Restore
+                                     </span>
+                                 </label>
+                            </div>
+                            <div class="small-9 columns error" id="res-file-error">
+                                <input type="text" id="res-file"
+                                placeholder="Only restore this file">
+                                <small class="error"></small>
+                            </div>
                         </div>
                         <div class="clearfix">
                             <div class="small-6 columns">&nbsp;</div>
