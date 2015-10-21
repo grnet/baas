@@ -266,10 +266,10 @@
                             if(restore) {
                                 dirs = " swift://" + container + " " + directory;
                             }
-                            var cmd6 = "duplicity " + file_arg + time_arg + dirs + ";";
                             var cmd = build_win_commands();
+                            var dup_cmd = "duplicity " + allow_arg + file_arg + time_arg + dirs + ";";
 
-                            exec(CYGWIN_BASH + " -c '" + cmd + cmd6 + "'",
+                            exec(CYGWIN_BASH + " -c '" + cmd + dup_cmd + "'",
                                 function(error, stdout, stderr){
                                     $("#msg").html(stdout);
                                     if(error) $("#msg").html(error);
@@ -282,7 +282,8 @@
                     if(restore) {
                         dirs = " swift://" + container + " " + directory;
                     }
-                    exec("duplicity " + allow_arg + file_arg + time_arg + dirs , function(error, stdout, stderr) {
+                    var dup_cmd = "duplicity " + allow_arg + file_arg + time_arg + dirs + ";";
+                    exec(dup_cmd , function(error, stdout, stderr) {
                         if(error) {
                             $("#msg").addClass("panel");
                             var src_mismatch_error =
@@ -344,14 +345,13 @@
                     }
                     $("#loader").hide();
                 }
+                var dup_cmd = "duplicity collection-status swift://" + container;
                 if(process.platform == 'win32') {
                     var cmd = build_win_commands();
-                    var cmd6 = "duplicity collection-status swift://" + container + ";";
-
-                    exec(CYGWIN_BASH + " -c '" + cmd + cmd6 + "'", puts);
+                    exec(CYGWIN_BASH + " -c '" + cmd + dup_cmd + "'", puts);
                 } else {
                     set_envs();
-                    exec("duplicity collection-status swift://" + container, {maxBuffer: 1000*1024} , puts);
+                    exec(dup_cmd, {maxBuffer: 1000*1024} , puts);
                 }
             }
 
@@ -379,7 +379,13 @@
                     }
                     $("#loader").hide();
                 }
-                exec("duplicity list-current-files swift://" + container , puts);
+                var dup_cmd = "duplicity list-current-files swift://" + container;
+                if(process.platform == 'win32') {
+                    var cmd = build_win_commands();
+                    exec(CYGWIN_BASH + " -c '" + cmd + dup_cmd + "'", puts);
+                } else {
+                    exec(dup_cmd , puts);
+                }
             }
         </script>
     </head>
