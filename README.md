@@ -27,7 +27,7 @@ III. Clone repo and build
     3. cd .. to build :  nwbuild -p win64 -v 0.12.0 baas/
     4. copy contents of build\baas\win64 folder into build directory
 
-### Build instructions for Windows
+### Build instructions for Linux
 
 I. Building duplicity
    1. You will need python, pip and gnupg.
