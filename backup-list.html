@@ -223,6 +223,11 @@
                 if(allow_source_mismatch)
                     allow_arg = " --allow-source-mismatch ";
 
+                var file_arg = "";
+                var file_to_restore = $("#res-file").val();
+                if(restore && file_to_restore) {
+                    file_arg = " --file-to-restore '" + file_to_restore + "' ";
+                }
                 if(process.platform == 'win32') {
                     directory = directory.replace(/\\/g, "\\\\");
                     exec(CYGWIN_BASH + " -c \"/usr/bin/cygpath '" + directory + "' \"",
@@ -252,7 +257,7 @@
                             if(restore) {
                                 dirs = " swift://" + container + " " + directory;
                             }
-                            var cmd6 = "duplicity " + dirs + ";";
+                            var cmd6 = "duplicity " + file_arg + dirs + ";";
 
                             exec(CYGWIN_BASH + " -c '" + cmd1 + cmd2 + cmd3 + cmd4 + cmd5 + cmd6 + "'",
                                 function(error, stdout, stderr){
@@ -264,13 +269,8 @@
                 } else {
                     set_envs();
                     var dirs = directory + " swift://" + container;
-                    var file_arg = "";
                     if(restore) {
                         dirs = " swift://" + container + " " + directory;
-                        var file_to_restore = $("#res-file").val();
-                        if(file_to_restore) {
-                            file_arg = " --file-to-restore '" + file_to_restore + "' ";
-                        }
                     }
                     exec("duplicity " + allow_arg + file_arg + dirs , function(error, stdout, stderr) {
                         if(error) {
