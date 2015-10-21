@@ -209,6 +209,25 @@
                 });
             }
 
+            function build_win_commands() {
+                var passphrase = $('#passphrase').val();
+                var cloud_name = $("#cloud").val().replace(/^\s+|\s+$/gm,'');
+                var preauth_url = null;
+                var preauth_token = null;
+
+                $.each(clouds, function(i, cloud) {
+                    if(cloud.name == cloud_name) {
+                        preauth_url = cloud.pithos_public + '/' + cloud.uuid;
+                        preauth_token = cloud.token;
+                    }
+                });
+                return "export PATH=/usr/bin/:$PATH;" +
+                    "ulimit -n 1024;" +
+                    "export PASSPHRASE=" + passphrase + ";" +
+                    "export SWIFT_PREAUTHURL=" + preauth_url + ";" +
+                    "export SWIFT_PREAUTHTOKEN=" + preauth_token + ";";
+            }
+
             function run_duplicity(allow_source_mismatch, restore) {
 
                 var container = null;
@@ -243,31 +262,14 @@
                             directory = String(stdout).replace(/(\r\n|\n|\r)/gm, "");
                             if(error) $("#msg").html(error);
 
-                            var passphrase = $('#passphrase').val();
-                            var cloud_name = $("#cloud").val().replace(/^\s+|\s+$/gm,'');
-                            var preauth_url = null;
-                            var preauth_token = null;
-
-                            $.each(clouds, function(i, cloud) {
-                                if(cloud.name == cloud_name) {
-                                    preauth_url = cloud.pithos_public + '/' + cloud.uuid;
-                                    preauth_token = cloud.token;
-                                }
-                            });
-
-                            var cmd1 = "export PATH=/usr/bin/:$PATH;";
-                            var cmd2 = "ulimit -n 1024;";
-                            var cmd3 = "export PASSPHRASE=" + passphrase + ";";
-                            var cmd4 = "export SWIFT_PREAUTHURL=" + preauth_url + ";";
-                            var cmd5 = "export SWIFT_PREAUTHTOKEN=" + preauth_token + ";";
-
                             var dirs = directory + " swift://" + container;
                             if(restore) {
                                 dirs = " swift://" + container + " " + directory;
                             }
                             var cmd6 = "duplicity " + file_arg + time_arg + dirs + ";";
+                            var cmd = build_win_commands();
 
-                            exec(CYGWIN_BASH + " -c '" + cmd1 + cmd2 + cmd3 + cmd4 + cmd5 + cmd6 + "'",
+                            exec(CYGWIN_BASH + " -c '" + cmd + cmd6 + "'",
                                 function(error, stdout, stderr){
                                     $("#msg").html(stdout);
                                     if(error) $("#msg").html(error);
@@ -343,26 +345,10 @@
                     $("#loader").hide();
                 }
                 if(process.platform == 'win32') {
-                    var passphrase = $('#passphrase').val();
-                    var cloud_name = $("#cloud").val().replace(/^\s+|\s+$/gm,'');
-                    var preauth_url = null;
-                    var preauth_token = null;
-
-                    $.each(clouds, function(i, cloud) {
-                        if(cloud.name == cloud_name) {
-                            preauth_url = cloud.pithos_public + '/' + cloud.uuid;
-                            preauth_token = cloud.token;
-                        }
-                    });
-
-                    var cmd1 = "export PATH=/usr/bin/:$PATH;";
-                    var cmd2 = "ulimit -n 1024;";
-                    var cmd3 = "export PASSPHRASE=" + passphrase + ";";
-                    var cmd4 = "export SWIFT_PREAUTHURL=" + preauth_url + ";";
-                    var cmd5 = "export SWIFT_PREAUTHTOKEN=" + preauth_token + ";";
+                    var cmd = build_win_commands();
                     var cmd6 = "duplicity collection-status swift://" + container + ";";
 
-                    exec(CYGWIN_BASH + " -c '" + cmd1 + cmd2 + cmd3 + cmd4 + cmd5 + cmd6 + "'", puts);
+                    exec(CYGWIN_BASH + " -c '" + cmd + cmd6 + "'", puts);
                 } else {
                     set_envs();
                     exec("duplicity collection-status swift://" + container, {maxBuffer: 1000*1024} , puts);
