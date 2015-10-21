@@ -75,6 +75,7 @@
                 $('#res-directory-error small').hide();
                 $('#cloud-error small').hide();
                 $('#res-file-error small').hide();
+                $('#timestamp-error small').hide();
 
                 if(backup) {
                     $("#backup-name").val(backup.name);
@@ -228,6 +229,13 @@
                 if(restore && file_to_restore) {
                     file_arg = " --file-to-restore '" + file_to_restore + "' ";
                 }
+
+                var time_arg = "";
+                var timestamp = $("#timestamp").val();
+                if(restore && timestamp) {
+                    time_arg = " --time " + timestamp;
+                }
+
                 if(process.platform == 'win32') {
                     directory = directory.replace(/\\/g, "\\\\");
                     exec(CYGWIN_BASH + " -c \"/usr/bin/cygpath '" + directory + "' \"",
@@ -257,7 +265,7 @@
                             if(restore) {
                                 dirs = " swift://" + container + " " + directory;
                             }
-                            var cmd6 = "duplicity " + file_arg + dirs + ";";
+                            var cmd6 = "duplicity " + file_arg + time_arg + dirs + ";";
 
                             exec(CYGWIN_BASH + " -c '" + cmd1 + cmd2 + cmd3 + cmd4 + cmd5 + cmd6 + "'",
                                 function(error, stdout, stderr){
@@ -272,7 +280,7 @@
                     if(restore) {
                         dirs = " swift://" + container + " " + directory;
                     }
-                    exec("duplicity " + allow_arg + file_arg + dirs , function(error, stdout, stderr) {
+                    exec("duplicity " + allow_arg + file_arg + time_arg + dirs , function(error, stdout, stderr) {
                         if(error) {
                             $("#msg").addClass("panel");
                             var src_mismatch_error =
@@ -524,6 +532,24 @@
                             <div class="small-9 columns error" id="res-file-error">
                                 <input type="text" id="res-file"
                                 placeholder="Only restore this file">
+                                <small class="error"></small>
+                            </div>
+                        </div>
+                        <div class="clearfix">
+                            <div class="small-3 columns">
+                                 <label id="timestamp-label" for="timestamp" class="right inline">
+                                     <span data-tooltip aria-haspopup="true" class="has-tip"
+                                     title="TIME FORMAT<br>s : seconds, m : minutes, h : hours,
+                                        D : days, W : weeks, M : months, Y : years
+                                        <br>i.e., 2D : 2 days ago, 1h78m one hour and 78 minutes ago
+                                        <br>OR YYYY/MM/DD, YYYY-MM-DD, MM/DD/YYYY, MM-DD-YYYY">
+                                         Timestamp
+                                     </span>
+                                 </label>
+                            </div>
+                            <div class="small-9 columns error" id="timestamp-error">
+                                <input type="text" id="timestamp"
+                                placeholder="Restore from a specific time">
                                 <small class="error"></small>
                             </div>
                         </div>
