@@ -297,8 +297,11 @@
                 run_duplicity(false, restore);
             }
 
-            function check_fields() {
-                return (check_backup_name() && check_directory("directory") && check_cloud());
+            function check_fields(restore) {
+                if(!restore) {
+                    return (check_backup_name() && check_directory("directory") && check_cloud());
+                }
+                return check_directory("res-directory");
             }
 
             function load_status() {
@@ -464,12 +467,12 @@
                             <div class="clearfix">
                                 <div class="small-6 columns">
                                     <a id="save_button" class="button radius left small"
-                                    onclick="if(check_fields()) backup(false);">
+                                    onclick="if(check_fields(false)) backup(false);">
                                     <i class="fa fa-cloud-upload"></i>&nbsp;Backup</a>
                                 </div>
                                 <div class="small-6 columns">
                                     <a id="save_button" class="button radius right small success"
-                                    onclick="if(check_fields()) save_backup_set();">
+                                    onclick="if(check_fields(false)) save_backup_set();">
                                     <i class="fa fa-floppy-o"></i>&nbsp;Save</a>
                                 </div>
                             </div>
@@ -502,7 +505,7 @@
                             <div class="small-6 columns">&nbsp;</div>
                             <div class="small-6 columns">
                                 <a id="restore_button" class="button radius right small"
-                                onclick="if(check_fields()) backup(true);">
+                                onclick="if(check_fields(true)) backup(true);">
                                 <i class="fa fa-cloud-download"></i>&nbsp;Restore</a>
                             </div>
                         </div>
