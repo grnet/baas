@@ -2,7 +2,9 @@
 
 Backup as a Service
 
-## Build instructions for Windows
+## Build instructions
+
+### Build instructions for Windows
 
 I. Cygwin installation and setup
     1. Download Cygwin setup.exe from https://www.cygwin.com/setup-x86_64.exe
@@ -25,6 +27,14 @@ III. Clone repo and build
     3. cd .. to build :  nwbuild -p win64 -v 0.12.0 baas/
     4. copy contents of build\baas\win64 folder into build directory
 
+### Build instructions for Windows
+
+I. Building duplicity
+   1. You will need python, pip and gnupg.
+   2. Make sure you have librsync-dev installed.
+   3. pip install wheel.
+   4. Download and unpack the latest duplicity source code from https://launchpad.net/duplicity/0.6-series
+   5. Run make_duplicity.sh <path_to_duplicity_src>. This will build duplicity and collect its dependencies under build/duplicity. In order to run the executable build/duplicity/duplicity, you need to set PYTHONPATH=build/duplicity/lib.
 
 ## Copyright and license
 
