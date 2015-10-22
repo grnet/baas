@@ -23,7 +23,7 @@
                     .attr("class", "side-nav");
                 $.each(clouds, function(i, cloud) {
                     var li = $("<li></li>")
-                        .attr("style", "word-break: break-all");
+                        .attr("class", "clearfix");
                     var a = $("<a>" + cloud.name + "</a>")
                         .attr("href", "#")
                         .attr("id", cloud.name)

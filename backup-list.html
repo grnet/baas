@@ -41,8 +41,7 @@
                     .attr("id", "backup_list")
                     .attr("class", "side-nav");
                 $.each(backups, function(i, backup) {
-                    var li = $("<li></li>")
-                        .attr("style", "word-break: break-all");
+                    var li = $("<li></li>");
                     var a = $("<a>" + backup.name + "</a>")
                         .attr("href", "#")
                         .attr("id", backup.name)
@@ -435,7 +434,7 @@
                                 <div id="directory" class="small-6 columns"></div>
                                 <div id="dirdialogue_label" onclick="$('#choose-dir').trigger('click');"
                                     class="small-3 columns" id="dirpick">
-                                    <i class="fa fa-folder-o" style="color:#008CBA">&nbsp;</i>
+                                    <i class="fa fa-folder-o blue-folder">&nbsp;</i>
                                 </div>
                             </div>
                             <div class="clearfix">
@@ -499,7 +498,7 @@
                             <div id="res-directory" class="small-6 columns"></div>
                             <div id="res-dirdialogue_label" onclick="$('#choose-res-dir').trigger('click');"
                                 class="small-3 columns" id="resdirpick">
-                                <i class="fa fa-folder-o" style="color:#008CBA">&nbsp;</i>
+                                <i class="fa fa-folder-o blue-folder">&nbsp;</i>
                             </div>
                         </div>
                         <div class="clearfix">
@@ -560,7 +559,7 @@
                     <div class="content" id="status">
                     </div>
                 </div>
-                <div id="loader" class="hide"><i class="fa fa-spinner fa-pulse fa-2x" style="color:#6e6e6e"></i></div>
+                <div id="loader" class="hide"><i class="fa fa-spinner fa-pulse fa-2x gray-spin"></i></div>
                 <div id="msg" class="small-10 columns"></div>
             </div>
         </div>

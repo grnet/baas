@@ -1,3 +1,12 @@
 .delete_icon {
 	color:#E10D0D;
 }
+.side-nav .left {
+    word-break: break-all;
+}
+.blue-folder {
+    color: #008CBA;
+}
+.gray-spin {
+    color: #6e6e6e;
+}
