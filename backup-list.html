@@ -298,8 +298,13 @@
 
                             exec(CYGWIN_BASH + " -c '" + cmd + dup_cmd + "'",
                                 function(error, stdout, stderr){
-                                    $("#msg").html(stdout);
-                                    if(error) $("#msg").html(error);
+                                    if(error) {
+                                        $("#msg").html(error);
+                                        $("#msg").addClass("panel");
+                                    } else {
+                                        $("#msg").html("");
+                                        $("#msg").removeClass("panel");
+                                    }
                                     $("#loader").hide();
                                 });
                     });
