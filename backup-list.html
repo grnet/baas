@@ -252,7 +252,6 @@
                     }
                 });
 
-                var directory = (restore) ? $("#res-directory").html() : $("#directory").html();
                 var allow_arg = "";
                 if(allow_source_mismatch)
                     allow_arg = " --allow-source-mismatch ";
@@ -269,6 +268,20 @@
                     time_arg = " --time " + timestamp;
                 }
 
+                var directory = "";
+                if(restore) {
+                    if(file_to_restore) {
+                        directory = path.join($("#res-directory").html(), file_to_restore);
+                        var mkdirp = require("mkdirp");
+                        mkdirp(directory, function(err) {
+                            if(err) console.error(err);
+                        });
+                    } else {
+                        directory = $("#res-directory").html();
+                    }
+                } else {
+                    directory = $("#directory").html();
+                }
                 if(process.platform == 'win32') {
                     directory = directory.replace(/\\/g, "\\\\");
                     exec(CYGWIN_BASH + " -c \"/usr/bin/cygpath '" + directory + "' \"",
@@ -504,10 +517,7 @@
                         <div class="clearfix">
                             <div class="small-3 columns">
                                 <label id="res_directory_label" for="res-directory" class="right">
-                                    <span data-tooltip aria-haspopup="true" class="has-tip"
-                                        title="If File to Restore is provided, it will be restored in this file">
-                                        Local directory/File
-                                    </span>
+                                    Local directory
                                 </label>
                             </div>
                             <div id="res-directory" class="small-6 columns"></div>
