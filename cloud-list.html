@@ -225,12 +225,12 @@
             }
 
             window.setInterval(function() {
-                if($("#clouds_page").attr("id")) {
+                if($("#clouds_page").attr("id") &&
+                    $("#cloud-url").val() && $("#token").val()) {
                     check_cloud_url();
                     check_token();
                 }
             }, 500);
-
         </script>
     </head>
 
