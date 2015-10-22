@@ -10,3 +10,9 @@
 .gray-spin {
     color: #6e6e6e;
 }
+.vertical-border {
+    border-right: thick solid #E4E2E2;
+}
+.active-li {
+    background-color: gainsboro;
+}

@@ -23,12 +23,16 @@
                     .attr("class", "side-nav");
                 $.each(clouds, function(i, cloud) {
                     var li = $("<li></li>")
-                        .attr("class", "clearfix");
+                        .attr("class", "clearfix")
+                        .attr("id", "li_" + cloud.name);
                     var a = $("<a>" + cloud.name + "</a>")
                         .attr("href", "#")
                         .attr("id", cloud.name)
                         .attr("class", "left")
-                        .click(function() { load_cloud(cloud) });
+                        .click(function() {
+                            load_cloud(cloud);
+                            activate_li("li_" + cloud.name);
+                        });
                     li.append(a);
 
                     var a_del = $("<a><i class='fa fa-times-circle delete_icon'></i></a>")
@@ -43,6 +47,16 @@
 
                     ul.append(li);
                     $("#sidebar").append(ul);
+                });
+            }
+
+            function activate_li(id) {
+                $("li").each(function(i, li) {
+                    if($(this).is("#" + id)) {
+                        $(this).addClass("active-li");
+                    } else {
+                        $(this).removeClass("active-li");
+                    }
                 });
             }
 
@@ -241,13 +255,13 @@
             </div>
         </div>
         <div class="row">
-            <div class="small-3 columns panel" id="sidebar">
+            <div class="small-3 columns vertical-border" id="sidebar">
                 <a href="#" onclick="load_cloud();" class="button small radius">
                     <i class="fa fa-plus-circle">&nbsp;Add Cloud</i>
                 </a>
             </div>
             <div class="small-9 columns">
-                <div id="cloud_details" class="panel hide">
+                <div id="cloud_details" class="hide">
                     <form>
                         <div class="clearfix">
                             <div class="small-3 columns">
@@ -281,7 +295,7 @@
                         </div>
                         <div class="clearfix">
                             <div class="small-8 columns"></div>
-                            <a id="save_button" class="button radius right"
+                            <a id="save_button" class="button radius right small"
                                 onclick="if(check_fields()) edit_add_cloud();">Save</a>
                         </div>
                 </form>

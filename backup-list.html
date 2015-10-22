@@ -41,12 +41,17 @@
                     .attr("id", "backup_list")
                     .attr("class", "side-nav");
                 $.each(backups, function(i, backup) {
-                    var li = $("<li></li>");
+                    var li = $("<li></li>")
+                        .attr("class", "clearfix")
+                        .attr("id", "li_" + backup.name);
                     var a = $("<a>" + backup.name + "</a>")
                         .attr("href", "#")
                         .attr("id", backup.name)
                         .attr("class", "left")
-                        .click(function() { load_backup(backup) });
+                        .click(function() {
+                            load_backup(backup);
+                            activate_li("li_" + backup.name);
+                        });
                     li.append(a);
 
                     var a_del = $("<a><i class='fa fa-times-circle delete_icon'></i></a>")
@@ -62,6 +67,16 @@
 
                     ul.append(li);
                     $("#sidebar").append(ul);
+                });
+            }
+
+            function activate_li(id) {
+                $("li").each(function(i, li) {
+                    if($(this).is("#" + id)) {
+                        $(this).addClass("active-li");
+                    } else {
+                        $(this).removeClass("active-li");
+                    }
                 });
             }
 
@@ -396,9 +411,9 @@
             </div>
         </div>
         <div class="row">
-            <div class="small-3 columns panel" id="sidebar">
+            <div class="small-3 columns vertical-border" id="sidebar">
                 <a href="#" onclick="load_backup();" class="button radius small">
-                    <i class="fa fa-plus-circle">&nbsp;New Backup Set</i>
+                    <i class="fa fa-plus-circle">&nbsp;Add Backup</i>
                 </a>
             </div>
             <div class="small-9 columns">
