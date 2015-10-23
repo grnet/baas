@@ -198,6 +198,7 @@
                 var root_backup_sets = {"backups" : "" };
                 root_backup_sets.backups = backups;
                 write_conf_file(BACKUP_CONF_FILE, root_backup_sets);
+                activate_li("li_" + backup_name);
             }
 
             function delete_backup(backup) {
