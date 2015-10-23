@@ -102,12 +102,20 @@
                     if(backup.passphrase != "") {
                         $("#save_passphrase").prop("checked", true);
                     }
+                    if(backup.first_backup) {
+                        disable_form(true);
+                        disable_actions(false);
+                    } else {
+                        disable_actions(true);
+                    }
                 } else {
                     $("#backup-name").val('');
                     $("#directory").html('');
                     $("#res-directory").html('');
                     $("#cloud").val('');
                     $("#passphrase").val('');
+                    disable_form(false);
+                    disable_actions(true);
                 }
                 $("#backup_details_link").trigger("click");
             }
@@ -346,6 +354,38 @@
                 }
             }
 
+            function disable_form(disable) {
+                $("#backup-name").prop("disabled", disable);
+                $("#choose-dir").prop("disabled", disable);
+                $("#cloud").prop("disabled", disable);
+                var save_pass = $("#save_passphrase").is(":checked");
+                if(save_pass) {
+                    $("#passphrase").prop("disabled", disable);
+                }
+                if(disable) {
+                    $("#save_button").hide();
+                } else {
+                    $("#save_button").show();
+                }
+            }
+
+            function disable_actions(disable) {
+                $("#restore_details_link").prop("disabled", disable);
+                $("#contents_link").prop("disabled", disable);
+                $("#status_link").prop("disabled", disable);
+                if(disable) {
+                    $("#restore_details_link").click(function(e) { e.preventDefault(); });
+                    $("#contents_link").click(function(e) { e.preventDefault(); });
+                    $("#contents_link").unbind("click");
+                    $("#status_link").click(function(e) { e.preventDefault(); });
+                    $("#status_link").unbind("click");
+                } else {
+                    $("#restore_details_link").click(function(e) { return true; });
+                    $("#contents_link").click(function(e) { load_contents(); });
+                    $("#status_link").click(function(e) { load_status(); });
+                }
+            }
+
             function write_first_backup() {
                 var backup_name = $("#backup-name").val().replace(/^\s+|\s+$/gm,'');
                 var first_backup = null;
@@ -363,7 +403,9 @@
                 $("#loader").show();
                 if(!restore) save_backup_set();
                 run_duplicity(false, restore);
+                disable_form(true);
                 write_first_backup();
+                disable_actions(false);
             }
 
             function check_fields(restore) {
@@ -460,8 +502,12 @@
                     <li class="tab-title radius" id="restore_details_tab">
                         <a href="#restore_details" id="restore_details_link">Restore</a>
                     </li>
-                    <li class="tab-title radius"><a href="#contents" onclick="load_contents();">Contents</a></li>
-                    <li class="tab-title radius"><a href="#status" onclick="load_status();">Status</a></li>
+                    <li class="tab-title radius">
+                        <a href="#contents" id="contents_link">Contents</a>
+                    </li>
+                    <li class="tab-title radius">
+                        <a href="#status" id="status_link">Status</a>
+                    </li>
                 </ul>
                 <div class="tabs-content">
                     <div class="content" id="backup_details">
@@ -524,7 +570,7 @@
                             </div>
                             <div class="clearfix">
                                 <div class="small-6 columns">
-                                    <a id="save_button" class="button radius left small"
+                                    <a id="backup_button" class="button radius left small"
                                     onclick="if(check_fields(false)) backup(false);">
                                     <i class="fa fa-cloud-upload"></i>&nbsp;Backup</a>
                                 </div>
@@ -602,7 +648,6 @@
                         </div>
                     </div>
                     <div class="content" id="contents">
-                        <p>This is the second panel of the basic tab example.</p>
                     </div>
                     <div class="content" id="status">
                     </div>
