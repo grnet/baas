@@ -255,7 +255,7 @@
                     "export SWIFT_PREAUTHTOKEN=" + preauth_token + ";";
             }
 
-            function run_duplicity(allow_source_mismatch, restore) {
+            function run_duplicity(restore) {
 
                 var container = null;
                 var backup_name = $("#backup-name").val().replace(/^\s+|\s+$/gm,'');
@@ -264,10 +264,6 @@
                         container = backup_set.container;
                     }
                 });
-
-                var allow_arg = "";
-                if(allow_source_mismatch)
-                    allow_arg = " --allow-source-mismatch ";
 
                 var file_arg = "";
                 var file_to_restore = $("#res-file").val();
@@ -331,26 +327,12 @@
                     exec(dup_cmd , function(error, stdout, stderr) {
                         if(error) {
                             $("#msg").addClass("panel");
-                            var src_mismatch_error =
-                                new RegExp("Backup source directory has changed").exec(error);
-                            if(src_mismatch_error) {
-                                var cur_dir = new RegExp('Current directory: ([^\n]+)', 'gm').exec(error);
-                                var prev_dir = new RegExp('Previous directory: ([^\n]+)', 'gm').exec(error);
-                                var msg = src_mismatch_error + "\n" + cur_dir[0] + "\n" + prev_dir[0] + "\n\n";
-                                msg += "If this is not a mistake select OK to continue";
-
-                                if(confirm(msg)) {
-                                    run_duplicity(true, restore);
-                                }
-                            } else {
-                                $("#msg").html(error);
-                            }
+                            $("#msg").html(error);
                         } else {
                             $("#msg").html("");
                             $("#msg").removeClass("panel");
                         }
                         $("#loader").hide();
-
                     });
                 }
             }
@@ -403,7 +385,7 @@
             function backup(restore) {
                 $("#loader").show();
                 if(!restore) save_backup_set();
-                run_duplicity(false, restore);
+                run_duplicity(restore);
                 disable_form(true);
                 write_first_backup();
                 disable_actions(false);
