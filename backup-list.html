@@ -7,6 +7,7 @@
             $(document).ready(function() {
                 $('#backup-name-error small').hide();
                 $('#cloud-error small').hide();
+                $(".tabs").hide();
 
                 if(typeof clouds === 'undefined') {
                     load_data_from_file(CLOUDS_CONF_FILE, populate_clouds);
