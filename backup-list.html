@@ -91,6 +91,8 @@
                 $('#cloud-error small').hide();
                 $('#res-file-error small').hide();
                 $('#timestamp-error small').hide();
+                $('#msg').html('');
+                $('#msg').removeClass('panel');
 
                 if(backup) {
                     $("#backup-name").val(backup.name);
