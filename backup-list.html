@@ -89,6 +89,7 @@
                 $('#directory-error small').hide();
                 $('#res-directory-error small').hide();
                 $('#cloud-error small').hide();
+                $('#exclude-error small').hide();
                 $('#res-file-error small').hide();
                 $('#timestamp-error small').hide();
                 $('#msg').html('');
@@ -109,14 +110,18 @@
                         disable_actions(true);
                         disable_form(false);
                     }
+                    $("#exclude").val(backup.exclude);
                 } else {
                     $("#backup-name").val('');
                     $("#directory").html('');
                     $("#res-directory").html('');
                     $("#cloud").val('');
                     $("#passphrase").val('');
+                    $("#exclude").val('');
                     disable_form(false);
                     disable_actions(true);
+                    // de-activate all tabs
+                    activate_li("dummy");
                 }
                 $("#backup_details_link").trigger("click");
             }
@@ -183,6 +188,7 @@
                 var cloud = $("#cloud").val();
                 var save_pass = $("#save_passphrase").is(":checked");
                 var passphrase = (save_pass) ? $("#passphrase").val() : "";
+                var exclude = $("#exclude").val();
 
                 if($("#" + backup_name).attr("id")) {
                     $.each(backups, function(i, backup_set) {
@@ -191,16 +197,19 @@
                             backup_set.local_dir = directory;
                             backup_set.cloud = cloud;
                             backup_set.passphrase = passphrase;
+                            backup_set.exclude = exclude;
                         }
                     });
                 } else {
                     var backup_set = {"name" : "", "local_dir" : "",
-                        "cloud" : "", "passphrase" : "", "container" : "", "first_backup" : "" };
+                        "cloud" : "", "passphrase" : "", "container" : "",
+                        "first_backup" : "", "exclude" : "" };
                     backup_set.name = backup_name;
                     backup_set.local_dir = directory;
                     backup_set.cloud = cloud;
                     backup_set.passphrase = passphrase;
                     backup_set.container = "Backup_" + backup_name;
+                    backup_set.exclude = exclude;
                     backups.push(backup_set);
                     render_backup_sets("");
                 }
@@ -277,6 +286,16 @@
                     time_arg = " --time " + timestamp;
                 }
 
+                var exclude_arg = "";
+                var exclude = $("#exclude").val();
+                if(exclude && !restore) {
+                    var args = exclude.split(",");
+                    $.each(args, function(i, value) {
+                        exclude_arg += " --exclude " + value + " ";
+                    });
+                    console.log(exclude_arg);
+                }
+
                 var directory = "";
                 if(restore) {
                     if(file_to_restore) {
@@ -303,7 +322,7 @@
                                 dirs = " swift://" + container + " " + directory;
                             }
                             var cmd = build_win_commands();
-                            var dup_cmd = "duplicity " + allow_arg + file_arg + time_arg + dirs + ";";
+                            var dup_cmd = "duplicity " + exclude_arg + file_arg + time_arg + dirs + ";";
 
                             exec(CYGWIN_BASH + " -c '" + cmd + dup_cmd + "'",
                                 function(error, stdout, stderr){
@@ -323,7 +342,7 @@
                     if(restore) {
                         dirs = " swift://" + container + " " + directory;
                     }
-                    var dup_cmd = "duplicity " + allow_arg + file_arg + time_arg + dirs + ";";
+                    var dup_cmd = "duplicity " + exclude_arg + file_arg + time_arg + dirs + ";";
                     exec(dup_cmd , function(error, stdout, stderr) {
                         if(error) {
                             $("#msg").addClass("panel");
@@ -526,6 +545,18 @@
                                     style="display:none;"
                                     onchange="$('#directory').html($(this).val());
                                         check_directory('directory');" />
+                            </div>
+                            <div class="clearfix">
+                                <div class="small-3 columns">
+                                     <label id="exclude-label" for="exclude" class="right inline">
+                                         Exclude
+                                     </label>
+                                </div>
+                                <div class="small-9 columns error" id="exclude-error">
+                                    <input type="text" id="exclude"
+                                    placeholder="Exclude folders or files">
+                                    <small class="error"></small>
+                                </div>
                             </div>
                             <div class="clearfix">
                                 <div class="small-3 columns">
