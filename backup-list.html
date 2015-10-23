@@ -186,7 +186,7 @@
                     });
                 } else {
                     var backup_set = {"name" : "", "local_dir" : "",
-                        "cloud" : "", "passphrase" : "", "container" : "" };
+                        "cloud" : "", "passphrase" : "", "container" : "", "first_backup" : "" };
                     backup_set.name = backup_name;
                     backup_set.local_dir = directory;
                     backup_set.cloud = cloud;
@@ -346,10 +346,24 @@
                 }
             }
 
+            function write_first_backup() {
+                var backup_name = $("#backup-name").val().replace(/^\s+|\s+$/gm,'');
+                var first_backup = null;
+                $.each(backups, function(i, backup_set) {
+                    if(backup_set.name == backup_name) {
+                        backup_set.first_backup = Date.now();
+                    }
+                });
+                var root_backup_sets = {"backups" : "" };
+                root_backup_sets.backups = backups;
+                write_conf_file(BACKUP_CONF_FILE, root_backup_sets);
+            }
+
             function backup(restore) {
                 $("#loader").show();
                 if(!restore) save_backup_set();
                 run_duplicity(false, restore);
+                write_first_backup();
             }
 
             function check_fields(restore) {
