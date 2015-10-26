@@ -297,7 +297,16 @@
                 if(exclude && !restore) {
                     var args = exclude.split(",");
                     $.each(args, function(i, value) {
-                        exclude_arg += " --exclude '" + value + "' ";
+                        if(process.platform == 'win32') {
+                            exec(CYGWIN_BASH + " -c \"/usr/bin/cygpath '" + value + "' \"",
+                                function(error, stdout, stderr) {
+                                    if(error) $("#msg").html(error);
+                                    var win_value = String(stdout).replace(/(\r\n|\n|\r)/gm, "");
+                                    exclude_arg += " --exclude '" + win_value + "' ";
+                                });
+                        } else {
+                            exclude_arg += " --exclude '" + value + "' ";
+                        }
                     });
                 }
 
@@ -306,7 +315,16 @@
                 if(include && !restore) {
                     var args = include.split(",");
                     $.each(args, function(i, value) {
-                        include_arg += " --include '" + value + "' ";
+                        if(process.platform == 'win32') {
+                            exec(CYGWIN_BASH + " -c \"/usr/bin/cygpath '" + value + "' \"",
+                                function(error, stdout, stderr) {
+                                    if(error) $("#msg").html(error);
+                                    var win_value = String(stdout).replace(/(\r\n|\n|\r)/gm, "");
+                                    include_arg += " --include '" + win_value + "' ";
+                                });
+                        } else {
+                            include_arg += " --include '" + value + "' ";
+                        }
                     });
                 }
 
