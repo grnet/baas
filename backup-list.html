@@ -90,6 +90,7 @@
                 $('#res-directory-error small').hide();
                 $('#cloud-error small').hide();
                 $('#exclude-error small').hide();
+                $('#include-error small').hide();
                 $('#res-file-error small').hide();
                 $('#timestamp-error small').hide();
                 $('#msg').html('');
@@ -111,6 +112,7 @@
                         disable_form(false);
                     }
                     $("#exclude").val(backup.exclude);
+                    $("#include").val(backup.include);
                 } else {
                     $("#backup-name").val('');
                     $("#directory").html('');
@@ -118,6 +120,7 @@
                     $("#cloud").val('');
                     $("#passphrase").val('');
                     $("#exclude").val('');
+                    $("#include").val('');
                     disable_form(false);
                     disable_actions(true);
                     // de-activate all tabs
@@ -189,6 +192,7 @@
                 var save_pass = $("#save_passphrase").is(":checked");
                 var passphrase = (save_pass) ? $("#passphrase").val() : "";
                 var exclude = $("#exclude").val();
+                var include = $("#include").val();
 
                 if($("#" + backup_name).attr("id")) {
                     $.each(backups, function(i, backup_set) {
@@ -198,18 +202,20 @@
                             backup_set.cloud = cloud;
                             backup_set.passphrase = passphrase;
                             backup_set.exclude = exclude;
+                            backup_set.include = include;
                         }
                     });
                 } else {
                     var backup_set = {"name" : "", "local_dir" : "",
                         "cloud" : "", "passphrase" : "", "container" : "",
-                        "first_backup" : "", "exclude" : "" };
+                        "first_backup" : "", "exclude" : "", "include" : "" };
                     backup_set.name = backup_name;
                     backup_set.local_dir = directory;
                     backup_set.cloud = cloud;
                     backup_set.passphrase = passphrase;
                     backup_set.container = "Backup_" + backup_name;
                     backup_set.exclude = exclude;
+                    backup_set.include = include;
                     backups.push(backup_set);
                     render_backup_sets("");
                 }
@@ -291,9 +297,17 @@
                 if(exclude && !restore) {
                     var args = exclude.split(",");
                     $.each(args, function(i, value) {
-                        exclude_arg += " --exclude " + value + " ";
+                        exclude_arg += " --exclude '" + value + "' ";
                     });
-                    console.log(exclude_arg);
+                }
+
+                var include_arg = "";
+                var include = $("#include").val();
+                if(include && !restore) {
+                    var args = include.split(",");
+                    $.each(args, function(i, value) {
+                        include_arg += " --include '" + value + "' ";
+                    });
                 }
 
                 var directory = "";
@@ -322,7 +336,7 @@
                                 dirs = " swift://" + container + " " + directory;
                             }
                             var cmd = build_win_commands();
-                            var dup_cmd = "duplicity " + exclude_arg + file_arg + time_arg + dirs + ";";
+                            var dup_cmd = "duplicity " + include_arg + exclude_arg + file_arg + time_arg + dirs + ";";
 
                             exec(CYGWIN_BASH + " -c '" + cmd + dup_cmd + "'",
                                 function(error, stdout, stderr){
@@ -342,7 +356,7 @@
                     if(restore) {
                         dirs = " swift://" + container + " " + directory;
                     }
-                    var dup_cmd = "duplicity " + exclude_arg + file_arg + time_arg + dirs + ";";
+                    var dup_cmd = "duplicity " + include_arg + exclude_arg + file_arg + time_arg + dirs + ";";
                     exec(dup_cmd , function(error, stdout, stderr) {
                         if(error) {
                             $("#msg").addClass("panel");
@@ -545,6 +559,18 @@
                                     style="display:none;"
                                     onchange="$('#directory').html($(this).val());
                                         check_directory('directory');" />
+                            </div>
+                            <div class="clearfix">
+                                <div class="small-3 columns">
+                                     <label id="include-label" for="include" class="right inline">
+                                         Include
+                                     </label>
+                                </div>
+                                <div class="small-9 columns error" id="include-error">
+                                    <input type="text" id="include"
+                                    placeholder="Include folders or files">
+                                    <small class="error"></small>
+                                </div>
                             </div>
                             <div class="clearfix">
                                 <div class="small-3 columns">
