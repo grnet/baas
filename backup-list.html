@@ -523,6 +523,23 @@
                 }
             }
 
+            function show_contents_by_date(error, stdout, stderr) {
+                $("#timeview-contents-list").empty();
+                if(error) $("#msg").html(error);
+                var ul = $("<ul></ul>")
+                    .attr("class", "no-bullet")
+                    .attr("id", "timeview-contents-list");
+                var contents = JSON.parse(stdout);
+                $.each(contents, function(i, el) {
+                    var icon_class = (el.type == 'dir') ? "fa fa-folder yellow-folder" : "fa fa-file-text-o green-file";
+                    var li = $("<li><i class='" + icon_class + "'></i>&nbsp;" + el.name + "</li>")
+                        .attr("id", el.name);
+                    ul.append(li);
+                });
+                $("#loader").hide();
+                $("#time-contents").html(ul);
+            }
+
             function get_contents_by_date(value) {
                 $("#loader").show();
                 var time_path = $("#time-path").val();
@@ -541,23 +558,16 @@
                         container = backup_set.container;
                     }
                 });
-                exec("python src/timeview.py timeviews/ swift://" + container + " get " + value + " " + time_path,
-                    function(error, stdout, stderr) {
-                        $("#timeview-contents-list").empty();
-                        if(error) $("#msg").html(error);
-                        var ul = $("<ul></ul>")
-                            .attr("class", "no-bullet")
-                            .attr("id", "timeview-contents-list");
-                        var contents = JSON.parse(stdout);
-                        $.each(contents, function(i, el) {
-                            var icon_class = (el.type == 'dir') ? "fa fa-folder yellow-folder" : "fa fa-file-text-o green-file";
-                            var li = $("<li><i class='" + icon_class + "'></i>&nbsp;" + el.name + "</li>")
-                                .attr("id", el.name);
-                            ul.append(li);
-                            $("#loader").hide();
-                        });
-                        $("#time-contents").html(ul);
-                    });
+
+                var time_cmd = "python src/timeview.py timeviews/ swift://" +
+                        container + " get " + value + " " + time_path
+                if(process.platform == 'win32') {
+                    var cmd = build_win_commands();
+                    exec(CYGWIN_BASH + " -c '" + cmd + time_dup_cmd + "'",
+                        show_contents_by_date);
+                } else {
+                    exec(time_cmd, show_contents_by_date);
+                }
             }
 
             function load_timeview() {
