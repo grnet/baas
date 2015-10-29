@@ -16,3 +16,9 @@
 .active-li {
     background-color: gainsboro;
 }
+.yellow-folder {
+    color: #F0CA80;
+}
+.green-file {
+    color: #35a335;
+}

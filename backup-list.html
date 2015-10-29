@@ -5,10 +5,7 @@
         <script type="text/javascript">
 
             $(document).ready(function() {
-                $('#backup-name-error small').hide();
-                $('#cloud-error small').hide();
                 $(".tabs").hide();
-
                 if(typeof clouds === 'undefined') {
                     load_data_from_file(CLOUDS_CONF_FILE, populate_clouds);
                 } else {
@@ -21,7 +18,8 @@
                 backup_name_illegal: 'Invalid Entry. Allowed characters [A-Za-z0-9-_]',
                 cloud_empty: 'Select cloud configuration',
                 dir_not_chosen : 'Provide a local directory',
-                res_file_illegal: 'Invalid Entry. Provide a valid file name'
+                res_file_illegal: 'Invalid Entry. Provide a valid file name',
+                path_empty: 'Provide a path'
             };
             var exec = require('child_process').exec;
 
@@ -93,6 +91,7 @@
                 $('#include-error small').hide();
                 $('#res-file-error small').hide();
                 $('#timestamp-error small').hide();
+                $('#time-head-error small').hide();
                 $('#msg').html('');
                 $('#msg').removeClass('panel');
 
@@ -407,16 +406,20 @@
                 $("#restore_details_link").prop("disabled", disable);
                 $("#contents_link").prop("disabled", disable);
                 $("#status_link").prop("disabled", disable);
+                $("#timeview_link").prop("disabled", disable);
                 if(disable) {
                     $("#restore_details_link").click(function(e) { e.preventDefault(); });
                     $("#contents_link").click(function(e) { e.preventDefault(); });
                     $("#contents_link").unbind("click");
                     $("#status_link").click(function(e) { e.preventDefault(); });
                     $("#status_link").unbind("click");
+                    $("#timeview_link").click(function(e) { e.preventDefault(); });
+                    $("#timeview_link").unbind("click");
                 } else {
                     $("#restore_details_link").click(function(e) { return true; });
                     $("#contents_link").click(function(e) { load_contents(); });
                     $("#status_link").click(function(e) { load_status(); });
+                    $("#timeview_link").click(function(e) { load_timeview(); });
                 }
             }
 
@@ -482,7 +485,6 @@
             }
 
             function load_contents() {
-                set_envs();
                 $("#loader").show();
                 $("#contents").html("");
 
@@ -510,7 +512,92 @@
                     var cmd = build_win_commands();
                     exec(CYGWIN_BASH + " -c '" + cmd + dup_cmd + "'", puts);
                 } else {
+                    set_envs();
                     exec(dup_cmd , puts);
+                }
+            }
+
+            function get_contents_by_date(value) {
+                $("#loader").show();
+                var time_path = $("#time-path").val();
+                if(!time_path) {
+                    $("#time-head-error small").text(errors.path_empty);
+                    $("#time-head-error small").show();
+                    return;
+                } else {
+                    $("#time-head-error small").text('');
+                    $("#time-head-error small").hide();
+                }
+                var container = null;
+                var backup_name = $("#backup-name").val().replace(/^\s+|\s+$/gm,'');
+                $.each(backups, function(i, backup_set) {
+                    if(backup_set.name == backup_name) {
+                        container = backup_set.container;
+                    }
+                });
+                exec("python src/timeview.py timeviews/ swift://" + container + " get " + value + " " + time_path,
+                    function(error, stdout, stderr) {
+                        $("#timeview-contents-list").empty();
+                        if(error) $("#msg").html(error);
+                        var ul = $("<ul></ul>")
+                            .attr("class", "no-bullet")
+                            .attr("id", "timeview-contents-list");
+                        var contents = JSON.parse(stdout);
+                        $.each(contents, function(i, el) {
+                            console.log(el.type);
+                            var icon_class = (el.type == 'dir') ? "fa fa-folder yellow-folder" : "fa fa-file-text-o green-file";
+                            var li = $("<li><i class='" + icon_class + "'></i>&nbsp;" + el.name + "</li>")
+                                .attr("id", el.name);
+                            ul.append(li);
+                            $("#loader").hide();
+                        });
+                        $("#time-contents").html(ul);
+                    });
+            }
+
+            function load_timeview() {
+                $("#loader").show();
+                $("#time-dates").html("");
+                $("#time-contents").html("");
+
+                var container = null;
+                var backup_name = $("#backup-name").val().replace(/^\s+|\s+$/gm,'');
+                $.each(backups, function(i, backup_set) {
+                    if(backup_set.name == backup_name) {
+                        container = backup_set.container;
+                    }
+                });
+                function puts(error, stdout, stderr) {
+                    if(error) {
+                        $("#msg").html(error);
+                        $("#msg").addClass("panel");
+                    } else {
+                        $("#msg").html("");
+                        $("#msg").removeClass("panel");
+                        var reg = "Num volumes:";
+                        var i = stdout.indexOf(reg);
+                        if(i > 0) {
+                            var sets = stdout.substring(i + reg.length);
+                            var datetime_reg = /(\d{4})(-)(\d{2})(-)(\d{2})(.)(\d{2})(:)(\d{2})(:)(\d{2})/g;
+                            var dates = sets.match(datetime_reg);
+                            dates = dates.sort();
+                            var dates_list = "";
+                            $.each(dates, function(i, value) {
+                                dates_list += "<a href='#' onclick='get_contents_by_date(\""
+                                    + value.replace('.', 'T') + "\")'>" + value.replace('.', ' ') + "</a><br>";
+                            });
+                            $("#time-dates").html(dates_list);
+                        }
+                    }
+                    $("#loader").hide();
+                }
+                var dup_cmd = "duplicity collection-status swift://" + container;
+                if(process.platform == 'win32') {
+                    var cmd = build_win_commands();
+                    exec(CYGWIN_BASH + " -c '" + cmd + dup_cmd + "'", puts);
+                } else {
+                    set_envs();
+                    exec(dup_cmd, {maxBuffer: 1000*1024} , puts);
                 }
             }
         </script>
@@ -541,6 +628,9 @@
                     </li>
                     <li class="tab-title radius">
                         <a href="#status" id="status_link">Status</a>
+                    </li>
+                    <li class="tab-title radius">
+                        <a href="#timeview" id="timeview_link">Timeview</a>
                     </li>
                 </ul>
                 <div class="tabs-content">
@@ -705,9 +795,19 @@
                             </div>
                         </div>
                     </div>
-                    <div class="content" id="contents">
-                    </div>
-                    <div class="content" id="status">
+                    <div class="content" id="contents"></div>
+                    <div class="content" id="status"></div>
+                    <div class="content" id="timeview">
+                        <div class="clearfix">
+                            <div class="small-9 columns error" id="time-head-error">
+                                <input type="text" id="time-path" placeholder="Select path">
+                                <small class="error"></small>
+                            </div>
+                        </div>
+                        <div class="clearfix">
+                            <div class="small-6 columns left" id="time-dates"></div>
+                            <div class="small-6 columns" id="time-contents"></div>
+                        </div>
                     </div>
                 </div>
                 <div id="loader" class="hide text-center">
