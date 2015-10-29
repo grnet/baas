@@ -21,6 +21,9 @@
                 res_file_illegal: 'Invalid Entry. Provide a valid file name',
                 path_empty: 'Provide a path'
             };
+
+            var dup_verbosity = " -v8 ";
+            var mkdirp = require("mkdirp");
             var exec = require('child_process').exec;
 
             load_data_from_file(BACKUP_CONF_FILE, render_backup_sets);
@@ -331,7 +334,6 @@
                 if(restore) {
                     if(file_to_restore) {
                         directory = path.join($("#res-directory").html(), file_to_restore);
-                        var mkdirp = require("mkdirp");
                         mkdirp(directory, function(err) {
                             if(err) console.error(err);
                         });
@@ -341,6 +343,9 @@
                 } else {
                     directory = $("#directory").html();
                 }
+                var log_file = path.join(BAAS_LOG_DIR, "dup_" + new Date().toISOString() + ".log");
+                var log_arg = " --log-file '" + log_file + "' ";
+
                 if(process.platform == 'win32') {
                     directory = directory.replace(/\\/g, "\\\\");
                     exec(CYGWIN_BASH + " -c \"/usr/bin/cygpath '" + directory + "' \"",
@@ -353,7 +358,7 @@
                                 dirs = " swift://" + container + " " + directory;
                             }
                             var cmd = build_win_commands();
-                            var dup_cmd = "duplicity " + include_arg + exclude_arg + file_arg + time_arg + dirs + ";";
+                            var dup_cmd = "duplicity " + dup_verbosity + log_arg + include_arg + exclude_arg + file_arg + time_arg + dirs + ";";
 
                             exec(CYGWIN_BASH + " -c '" + cmd + dup_cmd + "'",
                                 function(error, stdout, stderr){
@@ -369,11 +374,12 @@
                     });
                 } else {
                     set_envs();
+
                     var dirs = directory + " swift://" + container;
                     if(restore) {
                         dirs = " swift://" + container + " " + directory;
                     }
-                    var dup_cmd = "duplicity " + include_arg + exclude_arg + file_arg + time_arg + dirs + ";";
+                    var dup_cmd = "duplicity " + dup_verbosity + log_arg + include_arg + exclude_arg + file_arg + time_arg + dirs + ";";
                     exec(dup_cmd , function(error, stdout, stderr) {
                         if(error) {
                             $("#msg").addClass("panel");
@@ -544,7 +550,6 @@
                             .attr("id", "timeview-contents-list");
                         var contents = JSON.parse(stdout);
                         $.each(contents, function(i, el) {
-                            console.log(el.type);
                             var icon_class = (el.type == 'dir') ? "fa fa-folder yellow-folder" : "fa fa-file-text-o green-file";
                             var li = $("<li><i class='" + icon_class + "'></i>&nbsp;" + el.name + "</li>")
                                 .attr("id", el.name);

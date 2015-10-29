@@ -4,6 +4,7 @@ var path = require('path');
 var BAAS_HOME_DIR = '.baas';
 var CLOUDS_CONF_FILE = 'clouds.rc';
 var BACKUP_CONF_FILE = 'backups.rc';
+var BAAS_LOG_DIR = path.join(get_user_home(), BAAS_HOME_DIR, 'log');
 
 var exec_path = path.dirname(process.execPath);
 var CYGWIN_BASH = path.join(exec_path, "bin", "bash.exe");
@@ -22,6 +23,7 @@ function create_baas_dir() {
                 // Create conf files under new directory
                 create_conf_file(CLOUDS_CONF_FILE);
                 create_conf_file(BACKUP_CONF_FILE);
+                create_log_dir();
             });
             return;
         }
@@ -69,5 +71,20 @@ function load_data_from_file(filename, callback) {
             if(error) return console.error(error);
             callback(data);
         });
+    });
+}
+
+function create_log_dir() {
+    fs.stat(BAAS_LOG_DIR, function (err, stats) {
+        if(err) {
+            fs.mkdir(BAAS_LOG_DIR, function(error) {
+                if(error) return console.error(error);
+                console.log("Successfully created " + BAAS_LOG_DIR);
+            });
+            return;
+        }
+        if(stats.isFile()) {
+            return console.error("Failed to create " + BAAS_LOG_DIR + ", File exists.");
+        }
     });
 }
