@@ -11,7 +11,7 @@ function show_contents_by_date(error, stdout, stderr) {
             "open_folder('" + el.name + "')" : "";
         var el_link = $("<a></a>")
             .attr("href", "#")
-            .attr("onclick", f);
+            .attr("ondblclick", f);
         var li = $("<li>&nbsp;" + el.name + "</li>")
             .attr("id", el.name);
         var icon_class = (el.type == 'dir')
@@ -24,18 +24,22 @@ function show_contents_by_date(error, stdout, stderr) {
         el_link.append(li);
         ul.append(el_link);
     });
-    $("#loader").hide();
     $("#time-contents").html(ul);
 }
 
+var init_path = "";
 function open_folder(name) {
-    var time_path = $("#time-path").val();
-    $("#time-path").val(time_path + name + "/");
+    $("#time-path").val(init_path + name);
+    get_contents_by_date(selected_date);
 }
 
+var selected_date = "";
 function get_contents_by_date(value) {
-    $("#loader").show();
+    selected_date = value;
+
     var time_path = $("#time-path").val();
+    init_path = time_path + "/";
+
     if(!time_path) {
         $("#time-head-error small").text(errors.path_empty);
         $("#time-head-error small").show();
@@ -91,8 +95,9 @@ function load_timeview() {
                 dates = dates.sort();
                 var dates_list = "";
                 $.each(dates, function(i, value) {
+                    var iso_time = value.replace('.', 'T');
                     dates_list += "<a href='#' onclick='get_contents_by_date(\""
-                        + value.replace('.', 'T') + "\")'>" + value.replace('.', ' ') + "</a><br>";
+                        + iso_time + "\")'>" + value.replace('.', ' ') + "</a><br>";
                 });
                 $("#time-dates").html(dates_list);
             }
