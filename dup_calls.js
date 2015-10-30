@@ -36,14 +36,6 @@ function build_win_commands() {
 
 function run_duplicity(restore) {
 
-    var container = null;
-    var backup_name = $("#backup-name").val().replace(/^\s+|\s+$/gm,'');
-    $.each(backups, function(i, backup_set) {
-        if(backup_set.name == backup_name) {
-            container = backup_set.container;
-        }
-    });
-
     var file_arg = "";
     var file_to_restore = $("#res-file").val();
     if(restore && file_to_restore) {
@@ -158,13 +150,6 @@ function load_status() {
     $("#loader").show();
     $("#status").html("");
 
-    var container = null;
-    var backup_name = $("#backup-name").val().replace(/^\s+|\s+$/gm,'');
-    $.each(backups, function(i, backup_set) {
-        if(backup_set.name == backup_name) {
-            container = backup_set.container;
-        }
-    });
     function puts(error, stdout, stderr) {
         if(error) {
             $("#msg").html(error);
@@ -189,14 +174,6 @@ function load_status() {
 function load_contents() {
     $("#loader").show();
     $("#contents").html("");
-
-    var container = null;
-    var backup_name = $("#backup-name").val().replace(/^\s+|\s+$/gm,'');
-    $.each(backups, function(i, backup_set) {
-        if(backup_set.name == backup_name) {
-            container = backup_set.container;
-        }
-    });
 
     function puts(error, stdout, stderr) {
         if(error) {

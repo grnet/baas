@@ -1,4 +1,6 @@
 
+var container = "";
+
 function load_backup(backup) {
     $(".tabs").show();
     $(".tabs-content").show();
@@ -20,6 +22,7 @@ function load_backup(backup) {
 
 
     if(backup) {
+        container = backup.container;
         $("#backup-name").val(backup.name);
         $("#directory").html(backup.local_dir);
         $("#cloud").val(backup.cloud);
@@ -37,6 +40,7 @@ function load_backup(backup) {
         $("#exclude").val(backup.exclude);
         $("#include").val(backup.include);
     } else {
+        container = "";
         $("#backup-name").val('');
         $("#directory").html('');
         $("#res-directory").html('');
@@ -81,6 +85,7 @@ function save_backup_set() {
         backup_set.cloud = cloud;
         backup_set.passphrase = passphrase;
         backup_set.container = "Backup_" + backup_name;
+        container = backup_set.container;
         backup_set.exclude = exclude;
         backup_set.include = include;
         backups.push(backup_set);

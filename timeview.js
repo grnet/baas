@@ -76,13 +76,6 @@ function get_contents_by_date(value) {
         $("#time-head-error small").text('');
         $("#time-head-error small").hide();
     }
-    var container = null;
-    var backup_name = $("#backup-name").val().replace(/^\s+|\s+$/gm,'');
-    $.each(backups, function(i, backup_set) {
-        if(backup_set.name == backup_name) {
-            container = backup_set.container;
-        }
-    });
 
     var time_cmd = "python src/timeview.py timeviews/ swift://" +
             container + " get " + value + " " + time_path
@@ -98,13 +91,6 @@ function get_contents_by_date(value) {
 function load_timeview() {
     $("#loader").show();
 
-    var container = null;
-    var backup_name = $("#backup-name").val().replace(/^\s+|\s+$/gm,'');
-    $.each(backups, function(i, backup_set) {
-        if(backup_set.name == backup_name) {
-            container = backup_set.container;
-        }
-    });
     function puts(error, stdout, stderr) {
         if(error) {
             $("#msg").html(error);
