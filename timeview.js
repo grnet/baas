@@ -97,9 +97,6 @@ function get_contents_by_date(value) {
 
 function load_timeview() {
     $("#loader").show();
-    $("#time-dates").html("");
-    $("#time-contents").html("");
-    $("#time-path").val("/");
 
     var container = null;
     var backup_name = $("#backup-name").val().replace(/^\s+|\s+$/gm,'');

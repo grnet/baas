@@ -14,6 +14,10 @@ function load_backup(backup) {
     $('#time-head-error small').hide();
     $('#msg').html('');
     $('#msg').removeClass('panel');
+    $("#time-dates").html("");
+    $("#time-contents").html("");
+    $("#time-path").val("/");
+
 
     if(backup) {
         $("#backup-name").val(backup.name);
