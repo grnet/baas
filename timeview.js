@@ -7,24 +7,37 @@ function show_contents_by_date(error, stdout, stderr) {
         .attr("id", "timeview-contents-list");
     var contents = JSON.parse(stdout);
     $.each(contents, function(i, el) {
-        var f = (el.type == 'dir') ?
-            "open_folder('" + el.name + "')" : "";
+        var f = "open_folder('" + el.name + "')";
+        var restore_f = "show_rest_icon('" + i + "')";
         var el_link = $("<a></a>")
             .attr("href", "#")
-            .attr("ondblclick", f);
-        var li = $("<li>&nbsp;" + el.name + "</li>")
+            .attr("onclick", restore_f);
+        if(el.type == 'dir') {
+            el_link.attr("ondblclick", f);
+        }
+        var li = $("<li>&nbsp;" + el.name + "&nbsp;</li>")
             .attr("id", el.name);
         var icon_class = (el.type == 'dir')
             ? "fa fa-folder yellow-folder left" :
             "fa fa-file-text-o green-file left";
         var icon = $("<i></i>")
             .attr("class", icon_class);
+        var rest_icon = $("<i></i>")
+            .attr("id", "rest_icon_" + i)
+            .attr("title", "Restore")
+            .attr("class", "hide");
 
         li.append(icon);
+        li.append(rest_icon);
         el_link.append(li);
         ul.append(el_link);
     });
     $("#time-contents").html(ul);
+}
+
+function show_rest_icon(name) {
+    $("#rest_icon_" + name).removeClass("hide");
+    $("#rest_icon_" + name).addClass("fa fa-cloud-download");
 }
 
 var init_path = "";
