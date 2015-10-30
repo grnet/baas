@@ -22,3 +22,8 @@
 .green-file {
     color: #35a335;
 }
+.scroll-list {
+    height: 350px;
+    overflow: auto;
+    margin-top: 10px;
+}
