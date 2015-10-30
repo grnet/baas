@@ -25,7 +25,8 @@ function show_contents_by_date(error, stdout, stderr) {
         var rest_icon = $("<i></i>")
             .attr("id", "rest_icon_" + i)
             .attr("title", "Restore")
-            .attr("class", "hide");
+            .attr("class", "hide")
+            .attr("onclick", "go_to_restore('" + el.name + "')");
 
         li.append(icon);
         li.append(rest_icon);
@@ -33,6 +34,17 @@ function show_contents_by_date(error, stdout, stderr) {
         ul.append(el_link);
     });
     $("#time-contents").html(ul);
+}
+
+function go_to_restore(name) {
+    $("#res-directory").html(path.join(get_user_home(), "Backups"));
+    var time_path = $("#time-path").val();
+    if(time_path != "/") time_path += "/";
+    if(time_path.startsWith("/")) time_path = time_path.replace("/", "");
+
+    $("#res-file").val(time_path + name);
+    $("#timestamp").val(selected_date);
+    $("#restore_details_link").trigger("click");
 }
 
 function show_rest_icon(name) {
