@@ -38,8 +38,11 @@ function get_contents_by_date(value) {
     selected_date = value;
 
     var time_path = $("#time-path").val();
-    init_path = time_path + "/";
-
+    if(time_path != "/") {
+        init_path = time_path + "/";
+    } else {
+        init_path = time_path;
+    }
     if(!time_path) {
         $("#time-head-error small").text(errors.path_empty);
         $("#time-head-error small").show();
@@ -71,6 +74,7 @@ function load_timeview() {
     $("#loader").show();
     $("#time-dates").html("");
     $("#time-contents").html("");
+    $("#time-path").val("/");
 
     var container = null;
     var backup_name = $("#backup-name").val().replace(/^\s+|\s+$/gm,'');
