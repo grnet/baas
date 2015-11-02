@@ -1,10 +1,12 @@
 
 function show_contents_by_date(error, stdout, stderr) {
-    $("#timeview-contents-list").empty();
+    $("#time-contents").empty();
     if(error) $("#msg").html(error);
+
     var ul = $("<ul></ul>")
         .attr("class", "no-bullet")
         .attr("id", "timeview-contents-list");
+
     var contents = JSON.parse(stdout);
     $.each(contents, function(i, el) {
         var f = "open_folder('" + el.name + "')";
@@ -15,7 +17,8 @@ function show_contents_by_date(error, stdout, stderr) {
         if(el.type == 'dir') {
             el_link.attr("ondblclick", f);
         }
-        var li = $("<li>&nbsp;" + el.name + "&nbsp;</li>")
+        var li = $("<li>&nbsp;<span>" + el.name + "</span><span class='right'>"
+            + el.timestamp + "</span></li>")
             .attr("id", el.name);
         var icon_class = (el.type == 'dir')
             ? "fa fa-folder yellow-folder left" :
@@ -33,6 +36,7 @@ function show_contents_by_date(error, stdout, stderr) {
         el_link.append(li);
         ul.append(el_link);
     });
+
     $("#time-contents").html(ul);
 }
 
