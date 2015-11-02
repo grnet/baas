@@ -37,7 +37,7 @@ function show_contents_by_date(error, stdout, stderr) {
         ul.append(el_link);
     });
 
-    $("#time-contents").html(ul);
+    $("#time-contents").append(ul);
 }
 
 function go_to_restore(name) {
@@ -59,19 +59,50 @@ function show_rest_icon(name) {
 var init_path = "";
 function open_folder(name) {
     $("#time-path").val(init_path + name);
+    console.log(init_path + name);
     get_contents_by_date(selected_date);
+}
+
+function go_to_path(cur_path) {
+    if( cur_path != "/") {
+        cur_path = cur_path.slice(0,-1);
+    }
+    $("#time-path").val(cur_path);
+    get_contents_by_date(selected_date);
+}
+
+function fill_breadcrumbs(path) {
+    $(".breadcrumbs").empty();
+    var path_parts = [];
+    if(path != "/") {
+        path_parts = path.split("/");
+    } else {
+        path_parts = [path];
+    }
+    var len = path_parts.length;
+    var cur_path = "";
+    $.each(path_parts, function(i, value) {
+        if(value == "/" || !value) {
+            value = "ROOT";
+            cur_path = "/";
+        } else {
+            cur_path += value + "/";
+        }
+        var li_crumb = $("<li></li>");
+        if(i == len-1) {
+            li_crumb.addClass("current");
+        }
+        var a_crumb = $("<a>" + value + "</a>")
+            .attr("href", "#")
+            .attr("onclick", "go_to_path('" + cur_path + "')");
+        li_crumb.append(a_crumb);
+        $(".breadcrumbs").append(li_crumb);
+    });
 }
 
 var selected_date = "";
 function get_contents_by_date(value) {
-    selected_date = value;
-
     var time_path = $("#time-path").val();
-    if(time_path != "/") {
-        init_path = time_path + "/";
-    } else {
-        init_path = time_path;
-    }
     if(!time_path) {
         $("#time-head-error small").text(errors.path_empty);
         $("#time-head-error small").show();
@@ -80,7 +111,13 @@ function get_contents_by_date(value) {
         $("#time-head-error small").text('');
         $("#time-head-error small").hide();
     }
-
+    selected_date = value;
+    fill_breadcrumbs(time_path);
+    if(time_path != "/") {
+        init_path = time_path + "/";
+    } else {
+        init_path = time_path;
+    }
     var time_cmd = "python src/timeview.py timeviews/ swift://" +
             container + " get " + value + " " + time_path
     if(process.platform == 'win32') {
