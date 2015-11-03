@@ -37,7 +37,7 @@ def put_timepoint(config, timepoint, data):
         if not line:
             continue
 
-        parts = line.split(' ', 5)
+        parts = line.split(' ', 2)
         entry_type = parts[0]
         if entry_type not in path_types:
             continue
