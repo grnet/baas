@@ -25,9 +25,6 @@
                 path_empty: 'Provide a path'
             };
 
-            var mkdirp = require("mkdirp");
-            var exec = require('child_process').exec;
-
             load_data_from_file(BACKUP_CONF_FILE, render_backup_sets);
 
             function render_backup_sets(data) {

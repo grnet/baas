@@ -1,5 +1,7 @@
 var fs = require('fs');
 var path = require('path');
+var mkdirp = require("mkdirp");
+var exec = require('child_process').exec;
 
 var BAAS_HOME_DIR = '.baas';
 var CLOUDS_CONF_FILE = 'clouds.rc';
