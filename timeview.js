@@ -17,8 +17,9 @@ function show_contents_by_date(error, stdout, stderr) {
         if(el.type == 'dir') {
             el_link.attr("ondblclick", f);
         }
+        var locale_date = new Date(el.timestamp).toLocaleString();
         var li = $("<li>&nbsp;<span>" + el.name + "</span><span class='right'>"
-            + el.timestamp + "</span></li>")
+            + locale_date + "</span></li>")
             .attr("id", el.name);
         var icon_class = (el.type == 'dir')
             ? "fa fa-folder yellow-folder left" :
@@ -59,7 +60,6 @@ function show_rest_icon(name) {
 var init_path = "";
 function open_folder(name) {
     $("#time-path").val(init_path + name);
-    console.log(init_path + name);
     get_contents_by_date(selected_date);
 }
 
