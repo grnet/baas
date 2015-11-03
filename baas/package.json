@@ -9,8 +9,8 @@
   "window": {
     "toolbar": false
   },
-  "author": "",
-  "license": "BSD-2-Clause",
+  "author": "GRNET S.A.",
+  "license": "GPLv3",
 
   "dependencies": {
     "mkdirp": ""
