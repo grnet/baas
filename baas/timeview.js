@@ -119,13 +119,21 @@ function get_contents_by_date(value) {
         init_path = time_path;
     }
     var time_script = path.join(exec_path, 'timeview.py');
-    var time_cmd = "python " + time_script + " timeviews/ swift://" +
-            container + " get " + value + " '" + time_path + "'"
     if(process.platform == 'win32') {
-        var cmd = build_win_commands();
-        exec(CYGWIN_BASH + " -c '" + cmd + time_dup_cmd + "'",
-            show_contents_by_date);
+        time_script = time_script.replace(/\\/g, "\\\\");
+        exec(CYGWIN_BASH + " -c \"/usr/bin/cygpath '" + time_script + "' \"",
+            function(error, stdout, stderr) {
+                time_script = String(stdout).replace(/(\r\n|\n|\r)/gm, "");
+                if(error) $("#msg").html(error);
+                var cmd = build_win_commands();
+                var time_cmd = "python " + time_script + " timeviews/ swift://" +
+                    container + " get " + value + " '" + time_path + "'"
+                exec(CYGWIN_BASH + " -c '" + cmd + time_cmd + "'",
+                    show_contents_by_date);
+        });
     } else {
+        var time_cmd = "python " + time_script + " timeviews/ swift://" +
+            container + " get " + value + " '" + time_path + "'"
         exec(time_cmd, show_contents_by_date);
     }
 }
