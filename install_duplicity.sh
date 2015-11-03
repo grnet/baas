@@ -7,7 +7,7 @@ pip install python-swiftclient
 pip install lockfile
 
 wget https://code.launchpad.net/duplicity/0.6-series/0.6.26/+download/duplicity-0.6.26.tar.gz
-tar xzvf duplicity-0.6.26.tar
+tar xzvf duplicity-0.6.26.tar.gz
 cd duplicity-0.6.26
 python setup.py install
 cd ..
