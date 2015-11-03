@@ -119,7 +119,7 @@ function get_contents_by_date(value) {
         init_path = time_path;
     }
     var time_cmd = "python src/timeview.py timeviews/ swift://" +
-            container + " get " + value + " " + time_path
+            container + " get " + value + " '" + time_path + "'"
     if(process.platform == 'win32') {
         var cmd = build_win_commands();
         exec(CYGWIN_BASH + " -c '" + cmd + time_dup_cmd + "'",
@@ -150,7 +150,7 @@ function load_timeview() {
                 $.each(dates, function(i, value) {
                     var iso_time = value.replace('.', 'T');
                     dates_list += "<a href='#' onclick='get_contents_by_date(\""
-                        + iso_time + "\")'>" + value.replace('.', ' ') + "</a><br>";
+                        + iso_time + "\")' id='" + iso_time + "'>" + value.replace('.', ' ') + "</a><br>";
                 });
                 $("#time-dates").html(dates_list);
             }
