@@ -7,11 +7,10 @@ Backup as a Service
 ### Build instructions for Windows
 
 I. Cygwin installation and setup
-    1. Download Cygwin setup.exe from https://www.cygwin.com/setup-x86_64.exe
-        Important: Place the setup file in the same directory as the installation scripts.
+    1. Download Cygwin setup.exe from https://www.cygwin.com/setup-x86_64.exe in this directory.
     2. Execute install.bat
-        This will install Cygwin and prerequisite packages under .\build. It will also download
-        and install python-lockfile, duplicity and python-swiftclient.
+        This will install Cygwin and prerequisite packages under .\build\cygwin.
+        It will also download and install python-lockfile, duplicity and python-swiftclient.
 
 II. Node.js
     1. Install Node.js from https://nodejs.org/en/
@@ -22,9 +21,9 @@ II. Node.js
     2. Install nw-builder : npm -g install nw-builder
 
 III. Clone repo and build
-    1. git clone ssh://phab-vcs-user@phab.dev.grnet.gr:222/diffusion/BAAS/baas.git
-    2. cd into baas directory to install node-webkit : npm install nw
-    3. cd .. to build :  nwbuild -p win64 -v 0.12.0 baas/
+    1. Get the code from the baas repo
+    2. cd into baas directory
+    3. nwbuild -p win64 -v 0.12.0 baas
     4. copy contents of build\baas\win64 folder into build directory
 
 ### Build instructions for Linux
