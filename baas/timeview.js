@@ -118,7 +118,8 @@ function get_contents_by_date(value) {
     } else {
         init_path = time_path;
     }
-    var time_cmd = "python src/timeview.py timeviews/ swift://" +
+    var time_script = path.join(exec_path, 'timeview.py');
+    var time_cmd = "python " + time_script + " timeviews/ swift://" +
             container + " get " + value + " '" + time_path + "'"
     if(process.platform == 'win32') {
         var cmd = build_win_commands();
