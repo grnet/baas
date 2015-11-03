@@ -7,7 +7,7 @@ var BACKUP_CONF_FILE = 'backups.rc';
 var BAAS_LOG_DIR = path.join(get_user_home(), BAAS_HOME_DIR, 'log');
 
 var exec_path = path.dirname(process.execPath);
-var CYGWIN_BASH = path.join(exec_path, "bin", "bash.exe");
+var CYGWIN_BASH = path.join(exec_path, "cygwin", "bin", "bash.exe");
 
 function get_user_home() {
     return process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
