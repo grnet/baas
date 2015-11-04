@@ -9,6 +9,7 @@ function load_backup(backup) {
     $('#directory-error small').hide();
     $('#res-directory-error small').hide();
     $('#cloud-error small').hide();
+    $('#passphrase-error small').hide();
     $('#exclude-error small').hide();
     $('#include-error small').hide();
     $('#res-file-error small').hide();

@@ -22,7 +22,8 @@
                 cloud_empty: 'Select cloud configuration',
                 dir_not_chosen : 'Provide a local directory',
                 res_file_illegal: 'Invalid Entry. Provide a valid file name',
-                path_empty: 'Provide a path'
+                path_empty: 'Provide a path',
+                passphrase_empty: 'Provide a Passphrase'
             };
 
             load_data_from_file(BACKUP_CONF_FILE, render_backup_sets);
@@ -121,6 +122,18 @@
                 return true;
             }
 
+            function check_passphrase() {
+                var passphrase = $("#passphrase").val();
+                if(!passphrase) {
+                    $('#passphrase-error small').text(errors.passphrase_empty);
+                    $('#passphrase-error small').show();
+                    return false;
+                } else {
+                    $('#passphrase-error small').hide();
+                }
+                return true;
+            }
+
             function populate_clouds(data) {
                 if(typeof clouds === 'undefined') {
                     if(data != "") {
@@ -180,7 +193,10 @@
 
             function check_fields(restore) {
                 if(!restore) {
-                    return (check_backup_name() && check_directory("directory") && check_cloud());
+                    return (check_backup_name()
+                        && check_directory("directory")
+                        && check_cloud()
+                        && check_passphrase());
                 }
                 return check_directory("res-directory");
             }
@@ -279,7 +295,6 @@
                                 </div>
                                 <div class="small-9 columns error" id="cloud-error">
                                     <select id="cloud" onchange="check_cloud();">
-                                        <option value="0">&nbsp;</option>
                                     </select>
                                     <small class="error"></small>
                                 </div>
@@ -288,8 +303,9 @@
                                 <div class="small-3 columns">
                                     <label id="passphrase_label" for="passphrase" class="right inline">Passphrase</label>
                                 </div>
-                                <div class="small-6 columns" id="passphrase-error">
+                                <div class="small-6 columns error" id="passphrase-error">
                                     <input type="password" id="passphrase" placeholder="Passphrase">
+                                    <small class="error"></small>
                                 </div>
                                 <div class="small-3 columns">
                                     <label for="save_passphrase" class="left">Save&nbsp;
