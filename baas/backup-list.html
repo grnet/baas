@@ -233,86 +233,90 @@
                 <div class="tabs-content">
                     <div class="content" id="backup_details">
                         <form>
-                            <div class="clearfix">
-                                <div class="small-3 columns">
-                                     <label id="backup_name_label" for="backup-name" class="right inline">Name</label>
+                            <fieldset>
+                                <div class="clearfix">
+                                    <div class="small-3 columns">
+                                        <label id="directory_label" for="directory" class="right">
+                                            Local directory
+                                        </label>
+                                    </div>
+                                    <div id="directory" class="small-6 columns"></div>
+                                    <div id="dirdialogue_label" onclick="$('#choose-dir').trigger('click');"
+                                        class="small-3 columns" id="dirpick">
+                                        <i class="fa fa-folder-o blue-folder">&nbsp;</i>
+                                    </div>
                                 </div>
-                                <div class="small-9 columns error" id="backup-name-error">
-                                    <input type="text" id="backup-name"
-                                    placeholder="Backup Name [A-Za-z0-9-_]" onchange="check_backup_name();">
-                                    <small class="error"></small>
+                                <div class="clearfix">
+                                    <div class="small-3 columns">&nbsp;</div>
+                                    <div id="directory-error" class="small-6 columns">
+                                        <small class="error"></small>
+                                    </div>
+                                    <input type="file" id="choose-dir" nwdirectory
+                                        style="display:none;"
+                                        onchange="$('#directory').html($(this).val());
+                                            check_directory('directory');" />
                                 </div>
-                            </div>
-                            <div class="clearfix">
-                                <div class="small-3 columns">
-                                    <label id="directory_label" for="directory" class="right">
-                                        Local directory
-                                    </label>
+                                <div class="clearfix">
+                                    <div class="small-3 columns">
+                                         <label id="cloud_label" for="cloud" class="right inline">Cloud</label>
+                                    </div>
+                                    <div class="small-9 columns error" id="cloud-error">
+                                        <select id="cloud" onchange="check_cloud();">
+                                        </select>
+                                        <small class="error"></small>
+                                    </div>
                                 </div>
-                                <div id="directory" class="small-6 columns"></div>
-                                <div id="dirdialogue_label" onclick="$('#choose-dir').trigger('click');"
-                                    class="small-3 columns" id="dirpick">
-                                    <i class="fa fa-folder-o blue-folder">&nbsp;</i>
+                                <div class="clearfix">
+                                    <div class="small-3 columns">
+                                         <label id="backup_name_label" for="backup-name" class="right inline">Name</label>
+                                    </div>
+                                    <div class="small-9 columns error" id="backup-name-error">
+                                        <input type="text" id="backup-name"
+                                        placeholder="Backup Name [A-Za-z0-9-_]" onchange="check_backup_name();">
+                                        <small class="error"></small>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="clearfix">
-                                <div class="small-3 columns">&nbsp;</div>
-                                <div id="directory-error" class="small-6 columns">
-                                    <small class="error"></small>
+                            </fieldset>
+                            <fieldset>
+                                <div class="clearfix">
+                                    <div class="small-3 columns">
+                                         <label id="exclude-label" for="exclude" class="right inline">
+                                             Exclude
+                                         </label>
+                                    </div>
+                                    <div class="small-9 columns error" id="exclude-error">
+                                        <input type="text" id="exclude"
+                                        placeholder="Exclude folders or files">
+                                        <small class="error"></small>
+                                    </div>
                                 </div>
-                                <input type="file" id="choose-dir" nwdirectory
-                                    style="display:none;"
-                                    onchange="$('#directory').html($(this).val());
-                                        check_directory('directory');" />
-                            </div>
-                            <div class="clearfix">
-                                <div class="small-3 columns">
-                                     <label id="include-label" for="include" class="right inline">
-                                         Include
-                                     </label>
+                                <div class="clearfix">
+                                    <div class="small-3 columns">
+                                         <label id="include-label" for="include" class="right inline">
+                                             Include
+                                         </label>
+                                    </div>
+                                    <div class="small-9 columns error" id="include-error">
+                                        <input type="text" id="include"
+                                        placeholder="Include folders or files">
+                                        <small class="error"></small>
+                                    </div>
                                 </div>
-                                <div class="small-9 columns error" id="include-error">
-                                    <input type="text" id="include"
-                                    placeholder="Include folders or files">
-                                    <small class="error"></small>
+                                <div class="clearfix">
+                                    <div class="small-3 columns">
+                                        <label id="passphrase_label" for="passphrase" class="right inline">Passphrase</label>
+                                    </div>
+                                    <div class="small-6 columns error" id="passphrase-error">
+                                        <input type="password" id="passphrase" placeholder="Passphrase">
+                                        <small class="error"></small>
+                                    </div>
+                                    <div class="small-3 columns">
+                                        <label for="save_passphrase" class="left">Save&nbsp;
+                                        <input id="save_passphrase" type="checkbox" class="right">
+                                        </label>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="clearfix">
-                                <div class="small-3 columns">
-                                     <label id="exclude-label" for="exclude" class="right inline">
-                                         Exclude
-                                     </label>
-                                </div>
-                                <div class="small-9 columns error" id="exclude-error">
-                                    <input type="text" id="exclude"
-                                    placeholder="Exclude folders or files">
-                                    <small class="error"></small>
-                                </div>
-                            </div>
-                            <div class="clearfix">
-                                <div class="small-3 columns">
-                                     <label id="cloud_label" for="cloud" class="right inline">Cloud</label>
-                                </div>
-                                <div class="small-9 columns error" id="cloud-error">
-                                    <select id="cloud" onchange="check_cloud();">
-                                    </select>
-                                    <small class="error"></small>
-                                </div>
-                            </div>
-                            <div class="clearfix">
-                                <div class="small-3 columns">
-                                    <label id="passphrase_label" for="passphrase" class="right inline">Passphrase</label>
-                                </div>
-                                <div class="small-6 columns error" id="passphrase-error">
-                                    <input type="password" id="passphrase" placeholder="Passphrase">
-                                    <small class="error"></small>
-                                </div>
-                                <div class="small-3 columns">
-                                    <label for="save_passphrase" class="left">Save&nbsp;
-                                    <input id="save_passphrase" type="checkbox" class="right">
-                                    </label>
-                                </div>
-                            </div>
+                            </fieldset>
                             <div class="clearfix">
                                 <div class="small-6 columns">
                                     <a id="backup_button" class="button radius left small"
