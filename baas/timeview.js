@@ -1,12 +1,10 @@
 
 function show_contents_by_date(error, stdout, stderr) {
     $("#time-contents").empty();
-    if(error) $("#msg").html(error);
 
     var ul = $("<ul></ul>")
         .attr("class", "no-bullet")
         .attr("id", "timeview-contents-list");
-
     var contents = JSON.parse(stdout);
     $.each(contents, function(i, el) {
         var f = "open_folder('" + el.name + "')";
@@ -119,6 +117,8 @@ function get_contents_by_date(value) {
         init_path = time_path;
     }
     var time_script = path.join(exec_path, 'timeview.py');
+    var datapath = path.join(BAAS_CACHE_DIR, 'timeviews');
+
     if(process.platform == 'win32') {
         time_script = time_script.replace(/\\/g, "\\\\");
         exec(CYGWIN_BASH + " -c \"/usr/bin/cygpath '" + time_script + "' \"",
@@ -126,13 +126,13 @@ function get_contents_by_date(value) {
                 time_script = String(stdout).replace(/(\r\n|\n|\r)/gm, "");
                 if(error) $("#msg").html(error);
                 var cmd = build_win_commands();
-                var time_cmd = "python " + time_script + " timeviews/ swift://" +
+                var time_cmd = "python " + time_script + " " + datapath + " swift://" +
                     container + " get " + value + " '" + time_path + "'"
                 exec(CYGWIN_BASH + " -c '" + cmd + time_cmd + "'",
                     show_contents_by_date);
         });
     } else {
-        var time_cmd = "python " + time_script + " timeviews/ swift://" +
+        var time_cmd = "python " + time_script + " " + datapath + " swift://" +
             container + " get " + value + " '" + time_path + "'"
         exec(time_cmd, show_contents_by_date);
     }
