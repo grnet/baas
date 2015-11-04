@@ -8,8 +8,12 @@ import errno
 path_types = {'reg', 'dir', 'sym', 'fifo', 'sock', 'chr', 'blk'}
 
 
-def path_join(*args):
-    return '/'.join(str(x).strip('/') for x in args)
+def path_join(base, *args):
+    slash = base[0:1]
+    if slash != '/':
+        slash = ''
+    base = slash + base.strip('/') + '/'
+    return base + '/'.join(str(x).strip('/') for x in args)
 
 
 def timestamp_rfc822_to_iso8601(string):
