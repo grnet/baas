@@ -170,29 +170,3 @@ function load_status() {
         exec(dup_cmd, {maxBuffer: 1000*1024} , puts);
     }
 }
-
-function load_contents() {
-    $("#loader").show();
-    $("#contents").html("");
-
-    function puts(error, stdout, stderr) {
-        if(error) {
-            $("#msg").html(error);
-            $("#msg").addClass("panel");
-        } else {
-            $("#msg").html("");
-            $("#msg").removeClass("panel");
-            $("#contents").html(stdout.replace(/(?:\r\n|\r|\n)/g, '<br />'));
-        }
-        $("#loader").hide();
-    }
-    var dup_cmd = "duplicity list-current-files swift://" + container;
-    if(process.platform == 'win32') {
-        var cmd = build_win_commands();
-        exec(CYGWIN_BASH + " -c '" + cmd + dup_cmd + "'", puts);
-    } else {
-        set_envs();
-        exec(dup_cmd , puts);
-    }
-}
-
