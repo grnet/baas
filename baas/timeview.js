@@ -16,7 +16,7 @@ function show_contents_by_date(error, stdout, stderr) {
             el_link.attr("ondblclick", f);
         }
         var locale_date = new Date(el.timestamp).toLocaleString();
-        var li = $("<li>&nbsp;<span>" + el.name + "</span><span class='right'>"
+        var li = $("<li>&nbsp;<span>" + el.name + "&nbsp;</span><span class='right'>"
             + locale_date + "</span></li>")
             .attr("id", el.name);
         var icon_class = (el.type == 'dir')
