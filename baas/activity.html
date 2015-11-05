@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="backup.js"></script>
+        <script type="text/javascript">
+
+            if(typeof clouds === 'undefined') {
+                load_data_from_file(CLOUDS_CONF_FILE, show_cloud_msg);
+            } else {
+                show_cloud_msg(clouds);
+            }
+
+            function show_cloud_msg(data) {
+                if(typeof clouds === 'undefined') {
+                    if(data != "") {
+                        clouds = JSON.parse(data).clouds;
+                    } else {
+                        clouds = [];
+                    }
+                }
+                if(clouds.length == 0) {
+                    $("#cloud-alert").show();
+                }
+            }
+
+            load_data_from_file(BACKUP_CONF_FILE, render_backup_sets);
+
+            function render_backup_sets(data) {
+                $("#backup_list").remove();
+                // backups is undefined the first time, when
+                // reading data from file
+                if(typeof backups === 'undefined') {
+                    if(data != "") {
+                        backups = JSON.parse(data).backups;
+                    } else {
+                        backups = [];
+                    }
+                }
+                var ul = $("<ul></ul>")
+                    .attr("id", "backup_list")
+                    .attr("class", "side-nav");
+                $.each(backups, function(i, backup) {
+                    var li = $("<li></li>")
+                        .attr("class", "clearfix")
+                        .attr("id", "li_" + backup.name);
+                    var a = $("<a>" + backup.name + "</a>")
+                        .attr("href", "#")
+                        .attr("id", backup.name)
+                        .attr("class", "left")
+                        .click(function() {
+                            load_backup(backup);
+                            activate_li("li_" + backup.name);
+                        });
+                    li.append(a);
+
+                    var a_del = $("<a><i class='fa fa-times-circle delete_icon'></i></a>")
+                        .attr("href", "#")
+                        .attr("class", "right")
+                        .click(function() {
+                            if(confirm("Are you sure you want to delete " + backup.name + '?' +
+                                "\nNOTE: To actually remove backup sets from remote container you have to manually purge it.")) {
+                                delete_backup(backup);
+                            }
+                        });
+                    li.append(a_del);
+
+                    ul.append(li);
+                    $("#sidebar").append(ul);
+                });
+            }
+
+        </script>
+    </head>
+
+    <body>
+        <div class="row">
+            <div class="small-12 columns panel hide" id="cloud-alert">
+                <span>
+                    <i class="fa fa-exclamation-circle"></i>
+                    No cloud settings found. To start you must set a
+                    <a onclick="$('#cloud-settings-link').trigger('click');
+                        activate_tab('cloud-settings-link');">cloud configuration</a>
+                </span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-3 columns vertical-border" id="sidebar">
+            </div>
+        </div>
+        <script type="text/javascript">
+            $(document).foundation();
+        </script>
+    </body>
+</html>

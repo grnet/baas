@@ -10,34 +10,53 @@
         <script src="config.js"></script>
         <script type="text/javascript">
 
-            $(document).ready(function() {
-                create_baas_dir();
-            });
+            create_baas_dir();
             var gui = require('nw.gui');
             var win = gui.Window.get();
             win.resizeTo(1000, 700);
 
+            $(document).ready(function() {
+                $("#activity-link").trigger("click").addClass("active");
+            });
+
+            function activate_tab(tab) {
+                $(".item").each(function() {
+                    if(this.id == tab) {
+                        $(this).addClass("active");
+                    } else {
+                        $(this).removeClass("active");
+                    }
+                });
+            }
         </script>
     </head>
 
     <body>
         <div class="blue-bar icon-bar four-up">
-          <a class="item">
-            <i class="fa fa-tasks"></i>
-            <label>Activity</label>
-          </a>
-          <a class="item" onclick="$('#main').load('backup-list.html');">
-            <i class="fa fa-upload"></i>
-            <label>Backup</label>
-          </a>
-          <a class="item">
-            <i class="fa fa-download"></i>
-            <label>Restore</label>
-          </a>
-          <a class="item" onclick="$('#main').load('cloud-list.html');">
-            <i class="fa fa-cloud"></i>
-            <label>Cloud Settings</label>
-          </a>
+            <a class="item" id="activity-link"
+                onclick="$('#main').load('activity.html');
+                activate_tab(this.id);">
+                <i class="fa fa-tasks"></i>
+                <label>Activity</label>
+            </a>
+            <a class="item" id="backup-tab-link"
+                onclick="$('#main').load('backup-list.html');
+                activate_tab(this.id)">
+                <i class="fa fa-upload"></i>
+                <label>Backup</label>
+            </a>
+            <a class="item" id="restore-tab-link"
+                onclick="$('#main').load('restore.html');
+                activate_tab(this.id)">
+                <i class="fa fa-download"></i>
+                <label>Restore</label>
+            </a>
+            <a class="item" id="cloud-settings-link"
+                onclick="$('#main').load('cloud-list.html');
+                activate_tab(this.id);">
+                <i class="fa fa-cloud"></i>
+                <label>Cloud Settings</label>
+            </a>
         </div>
         <div id="main"></div>
 
