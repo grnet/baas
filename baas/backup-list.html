@@ -18,7 +18,8 @@
 
             var errors = {
                 backup_name_empty: 'Provide a Backup Name',
-                backup_name_illegal: 'Invalid Entry. Allowed characters [A-Za-z0-9-_]',
+                backup_name_illegal: 'Invalid Entry. Name must start with '
+                    + '\'Backup_\' and followed by characters [A-Za-z0-9-_]',
                 cloud_empty: 'Select cloud configuration',
                 dir_not_chosen : 'Provide a local directory',
                 res_file_illegal: 'Invalid Entry. Provide a valid file name',
@@ -89,7 +90,7 @@
                     $('#backup-name-error small').show();
                     return false;
                 } else {
-                    var pattern = /^[\w.\-]+$/;
+                    var pattern = /^Backup_[\w.\-]+$/;
                     if(!backup_name.match(pattern)) {
                         $('#backup-name-error small').text(errors.backup_name_illegal);
                         $('#backup-name-error small').show();
@@ -272,7 +273,9 @@
                                     </div>
                                     <div class="small-9 columns error" id="backup-name-error">
                                         <input type="text" id="backup-name"
-                                        placeholder="Backup Name [A-Za-z0-9-_]" onchange="check_backup_name();">
+                                        placeholder="Backup_[A-Za-z0-9-_]"
+                                        value="Backup_"
+                                        onchange="check_backup_name();">
                                         <small class="error"></small>
                                     </div>
                                 </div>

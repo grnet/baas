@@ -42,7 +42,7 @@ function load_backup(backup) {
         $("#include").val(backup.include);
     } else {
         container = "";
-        $("#backup-name").val('');
+        $("#backup-name").val('Backup_');
         $("#directory").html('');
         $("#res-directory").html('');
         $("#cloud").val('');
@@ -85,7 +85,7 @@ function save_backup_set() {
         backup_set.local_dir = directory;
         backup_set.cloud = cloud;
         backup_set.passphrase = passphrase;
-        backup_set.container = "Backup_" + backup_name;
+        backup_set.container = backup_name;
         container = backup_set.container;
         backup_set.exclude = exclude;
         backup_set.include = include;
