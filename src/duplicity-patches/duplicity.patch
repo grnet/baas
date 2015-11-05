@@ -1,11 +1,5 @@
 --- duplicity.orig	2015-10-26 16:28:48.053178600 +0200
 +++ duplicity	2015-10-26 16:25:34.705178600 +0200
-@@ -1,4 +1,4 @@
--#!/usr/bin/env python2
-+#!/w/venv/agkyra/bin/python
- # -*- Mode:Python; indent-tabs-mode:nil; tab-width:4 -*-
- #
- # duplicity -- Encrypted bandwidth efficient backup
 @@ -693,8 +693,9 @@
      path_iter = diffdir.get_combined_path_iter(sig_chain.get_fileobjs(time))
      for path in path_iter:
