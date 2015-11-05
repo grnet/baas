@@ -1,0 +1,16 @@
+=== modified file 'bin/duplicity'
+--- bin/duplicity	2015-10-31 14:52:22 +0000
++++ bin/duplicity	2015-11-05 15:30:01 +0000
+@@ -30,6 +30,11 @@
+ import gzip
+ import os
+ import sys
++
++CURPATH = os.path.dirname(os.path.realpath(__file__))
++LIBPATH = os.path.join(CURPATH, "lib")
++sys.path.insert(0, LIBPATH)
++
+ import time
+ import types
+ import traceback
+
