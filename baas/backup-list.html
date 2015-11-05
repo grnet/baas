@@ -370,7 +370,7 @@
                             <div class="small-3 columns">
                                  <label id="res-file-label" for="res-file" class="right inline">
                                      <span data-tooltip aria-haspopup="true" class="has-tip"
-                                     title="Use relative path as shown in Contents listing">
+                                     title="Use relative path">
                                          File to Restore
                                      </span>
                                  </label>
@@ -383,20 +383,34 @@
                         </div>
                         <div class="clearfix">
                             <div class="small-3 columns">
-                                 <label id="timestamp-label" for="timestamp" class="right inline">
-                                     <span data-tooltip aria-haspopup="true" class="has-tip"
-                                     title="TIME FORMAT<br>s : seconds, m : minutes, h : hours,
-                                        D : days, W : weeks, M : months, Y : years
-                                        <br>i.e., 2D : 2 days ago, 1h78m one hour and 78 minutes ago
-                                        <br>OR YYYY/MM/DD, YYYY-MM-DD, MM/DD/YYYY, MM-DD-YYYY">
-                                         Timestamp
-                                     </span>
-                                 </label>
+                                <label id="timestamp-label" for="timestamp" class="right inline">
+                                    Timestamp&nbsp;<i class="fa fa-info-circle green-info"
+                                        onclick="$('#timestamp-help').slideDown();"></i>
+                                </label>
                             </div>
                             <div class="small-9 columns error" id="timestamp-error">
                                 <input type="text" id="timestamp"
                                 placeholder="Restore from a specific time">
                                 <small class="error"></small>
+                            </div>
+                            <div class="small-3 columns">&nbsp;</div>
+                            <div class="small-9 columns hide info-text panel" id="timestamp-help">
+                                <i class="fa fa-times right" onclick="$('#timestamp-help').slideUp();"></i>
+                                Accepts following formats<br>
+                                1. String "now" refers to current time<br>
+                                2. A sequences of digits, like "123456890"
+                                    (indicating the time in seconds after the epoch)<br>
+                                3. A string like "2002-01-25T07:00:00+02:00" in datetime format<br>
+                                4. A number followed by one of the characters s, m, h, D, W, M, or Y
+                                    (indicating seconds, minutes, hours, days, weeks, months,
+                                    or years respectively), or a series of such pairs.
+                                    In this case the string refers to the time that preceded
+                                    the current time by the length of the interval.
+                                    For instance, "1h78m" indicates the time that was
+                                    one hour and 78 minutes ago.<br>
+                                5. A date format of the form YYYY/MM/DD, YYYY-MM-DD, MM/DD/YYYY,
+                                    or MM-DD-YYYY, which indicates midnight on the day in question,
+                                    relative to the current time zone settings.
                             </div>
                         </div>
                         <div class="clearfix">
