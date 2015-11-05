@@ -38,3 +38,11 @@
 .blue-bar {
     background: #146A84;
 }
+.backup-box {
+    border: 2px dotted #6e6e6e;
+    width: 180px;
+    height: 170px;
+    margin: 5px;
+    padding: 5px;
+    display: inline-block;
+}

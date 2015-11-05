@@ -36,20 +36,23 @@
                         backups = [];
                     }
                 }
+                if(backups.length == 0) {
+                    $("#backup-alert").show();
+                }
                 var ul = $("<ul></ul>")
-                    .attr("id", "backup_list")
-                    .attr("class", "side-nav");
+                    .attr("class", "no-bullet")
+                    .attr("id", "backup_list");
                 $.each(backups, function(i, backup) {
                     var li = $("<li></li>")
-                        .attr("class", "clearfix")
-                        .attr("id", "li_" + backup.name);
+                        .attr("class", "clearfix backup-box")
+                        .attr("id", "box_" + backup.name);
                     var a = $("<a>" + backup.name + "</a>")
                         .attr("href", "#")
-                        .attr("id", backup.name)
+                        .attr("id", "box_a_" + backup.name)
                         .attr("class", "left")
                         .click(function() {
+                            $("#backup-tab-link").trigger("click");
                             load_backup(backup);
-                            activate_li("li_" + backup.name);
                         });
                     li.append(a);
 
@@ -65,7 +68,7 @@
                     li.append(a_del);
 
                     ul.append(li);
-                    $("#sidebar").append(ul);
+                    $("#backup-table").append(ul);
                 });
             }
 
@@ -78,13 +81,23 @@
                 <span>
                     <i class="fa fa-exclamation-circle"></i>
                     No cloud settings found. To start you must set a
-                    <a onclick="$('#cloud-settings-link').trigger('click');
-                        activate_tab('cloud-settings-link');">cloud configuration</a>
+                    <a onclick="$('#cloud-settings-link').trigger('click');">
+                    cloud configuration.</a>
                 </span>
             </div>
         </div>
         <div class="row">
-            <div class="small-3 columns vertical-border" id="sidebar">
+            <div class="small-12 columns panel hide" id="backup-alert">
+                <span>
+                    <i class="fa fa-exclamation-circle"></i>
+                    No backup sets found.
+                    <a onclick="$('#backup-tab-link').trigger('click');">
+                    Create a new one.</a>
+                </span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-12 columns" id="backup-table">
             </div>
         </div>
         <script type="text/javascript">
