@@ -281,7 +281,8 @@
                                 <div class="clearfix">
                                     <div class="small-3 columns">
                                          <label id="exclude-label" for="exclude" class="right inline">
-                                             Exclude
+                                             Exclude&nbsp;<i class="fa fa-info-circle green-info"
+                                             onclick="$('#include-help').slideDown();"></i>
                                          </label>
                                     </div>
                                     <div class="small-9 columns error" id="exclude-error">
@@ -293,13 +294,24 @@
                                 <div class="clearfix">
                                     <div class="small-3 columns">
                                          <label id="include-label" for="include" class="right inline">
-                                             Include
+                                             Include&nbsp;<i class="fa fa-info-circle green-info"
+                                                onclick="$('#include-help').slideDown();"></i>
                                          </label>
                                     </div>
                                     <div class="small-9 columns error" id="include-error">
                                         <input type="text" id="include"
                                         placeholder="Include folders or files">
                                         <small class="error"></small>
+                                    </div>
+                                    <div class="small-3 columns">&nbsp;</div>
+                                    <div class="small-9 columns hide info-text panel" id="include-help">
+                                        <i class="fa fa-times right" onclick="$('#include-help').slideUp();"></i>
+                                        Include and Exclude fields accept some extended shell globbing patterns:
+                                        <br>* Matches any string not containing '/'
+                                        <br>? Matches any character except '/'
+                                        <br>[...] Expands to a single character of those characters specified
+                                            (ranges are acceptable)
+                                        <br>** Matches any string
                                     </div>
                                 </div>
                                 <div class="clearfix">

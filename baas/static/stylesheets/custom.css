@@ -27,3 +27,11 @@
     overflow: auto;
     margin-top: 10px;
 }
+.green-info {
+    color: #8FC067;
+}
+.info-text {
+    padding: 3px;
+    font-size: small;
+    background: #DCEFCE;
+}
