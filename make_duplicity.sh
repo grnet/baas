@@ -50,6 +50,8 @@ rm -r $WHEELHOUSE
 
 cd $SRCPATH
 rm -rf build
+patch -N -p0 < $ROOTPATH/src/duplicity-patches/timeview.patch
+patch -N -p0 < $ROOTPATH/src/duplicity-patches/syspath.patch
 python setup.py build
 cd build/lib.${PLATFORM}-2.7
 cp -pr * $DUPL/lib
