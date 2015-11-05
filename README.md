@@ -32,7 +32,7 @@ I. Building duplicity
    1. You will need python, pip and gnupg.
    2. Make sure you have librsync-dev installed.
    3. pip install wheel.
-   4. Download and unpack the latest duplicity source code from https://launchpad.net/duplicity/0.6-series
+   4. Download and unpack the latest duplicity source code from https://launchpad.net/duplicity/0.7-series
    5. Run make_duplicity.sh <path_to_duplicity_src>. This will build duplicity and collect its dependencies under build/duplicity. In order to run the executable build/duplicity/duplicity, you need to set PYTHONPATH=build/duplicity/lib.
 
 ## Copyright and license
