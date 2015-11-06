@@ -14,6 +14,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+OS_NAME=$(/bin/uname -s)
+OS_NAME=${OS_NAME:0:6}
+
+if [[ "$OS_NAME" = "CYGWIN" ]]
+then
+    export PATH=/usr/bin:$PATH
+fi
 
 if [ -z "$1" ]
   then
@@ -32,11 +39,22 @@ cd baas
 npm install
 cd ..
 
+rm -rf build/baas
 nwbuild -p $PLATFORM -v $NW_VERSION baas
 
 DIST=dist/baas
 rm -rf $DIST; mkdir -p $DIST
 
-mv build/baas/$PLATFORM/* $DIST
-mv build/duplicity/* $DIST
+echo Copying baas
+cp -r build/baas/$PLATFORM/* $DIST
 cp src/timeview.py $DIST
+echo Copying duplicity
+cp -r build/duplicity/* $DIST
+
+if [[ "$OS_NAME" = "CYGWIN" ]]
+then
+  echo Copying cygwin
+  cp -r build/cygwin $DIST
+fi
+
+echo Built under $DIST
