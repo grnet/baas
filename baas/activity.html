@@ -25,6 +25,11 @@
 
             load_data_from_file(BACKUP_CONF_FILE, render_backup_sets);
 
+            function go_to_backup(backup) {
+                selected_backup = backup;
+                $("#backup-tab-link").trigger("click");
+            }
+
             function render_backup_sets(data) {
                 $("#backup_list").remove();
                 // backups is undefined the first time, when
@@ -50,10 +55,8 @@
                         .attr("href", "#")
                         .attr("id", "box_a_" + backup.name)
                         .attr("class", "left")
-                        .click(function() {
-                            $("#backup-tab-link").trigger("click");
-                            load_backup(backup);
-                        });
+                        .attr("onclick", "go_to_backup('" + backup.name + "')");
+
                     li.append(a);
 
                     var a_del = $("<a><i class='fa fa-times-circle delete_icon'></i></a>")
@@ -61,7 +64,8 @@
                         .attr("class", "right")
                         .click(function() {
                             if(confirm("Are you sure you want to delete " + backup.name + '?' +
-                                "\nNOTE: To actually remove backup sets from remote container you have to manually purge it.")) {
+                                "\nNOTE: To actually remove backup sets from remote" +
+                                " container you have to manually purge it.")) {
                                 delete_backup(backup);
                             }
                         });
@@ -70,6 +74,7 @@
                     ul.append(li);
                     $("#backup-table").append(ul);
                 });
+
             }
 
         </script>
