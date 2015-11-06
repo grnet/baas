@@ -71,6 +71,8 @@ function load_backup(backup) {
         $("#include").val(backup.include);
     } else {
         container = "";
+        selected_backup = "";
+        $("#selected-bar").hide();
         $("#backup-name").val('Backup_');
         $("#directory").html('');
         $("#res-directory").html('');
@@ -84,6 +86,16 @@ function load_backup(backup) {
     $("#backup_details").show();
 }
 
+function backup_exists(backup_name) {
+    var found = false;
+    $.each(backups, function(i, backup_set) {
+        if(backup_set.name == backup_name) {
+            found = true;
+        }
+    });
+    return found;
+}
+
 function save_backup_set() {
     var backup_name = $("#backup-name").val().replace(/^\s+|\s+$/gm,'');
     var directory = $("#directory").html();
@@ -93,7 +105,7 @@ function save_backup_set() {
     var exclude = $("#exclude").val();
     var include = $("#include").val();
 
-    if($("#" + backup_name).attr("id")) {
+    if(backup_exists(backup_name)) {
         $.each(backups, function(i, backup_set) {
             if(backup_set.name == backup_name) {
                 backup_set.name = backup_name;
