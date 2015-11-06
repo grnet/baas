@@ -147,6 +147,7 @@ function run_duplicity(restore) {
 }
 
 function load_status() {
+    $('#backup_details').hide();
     $("#loader").show();
     $("#status").html("");
 

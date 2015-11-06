@@ -139,6 +139,7 @@ function get_contents_by_date(value) {
 }
 
 function load_timeview() {
+    $("#backup_details").hide();
     $("#loader").show();
 
     function puts(error, stdout, stderr) {

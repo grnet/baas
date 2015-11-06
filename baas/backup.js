@@ -21,7 +21,6 @@ function load_backup(backup) {
     $("#time-contents").html("");
     $("#time-path").val("/");
 
-
     if(backup) {
         container = backup.container;
         $("#backup-name").val(backup.name);
@@ -51,10 +50,8 @@ function load_backup(backup) {
         $("#include").val('');
         disable_form(false);
         disable_actions(true);
-        // de-activate all tabs
-        activate_li("dummy");
     }
-    $("#backup_details_link").trigger("click");
+    $("#backup_details").show();
 }
 
 function save_backup_set() {
