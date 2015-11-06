@@ -13,11 +13,14 @@
                 if(typeof selected_backup != 'undefined') {
                     $.each(backups, function(i, backup) {
                         if(backup.name == selected_backup) {
+                            $("#selected-bar").html(backup.name);
+                            $("#selected-bar").show();
                             load_backup(backup);
                             return;
                         }
                     });
                 } else {
+                    $("#selected-bar").hide();
                     disable_actions(true);
                 }
             });
@@ -139,6 +142,7 @@
 
     <body>
         <div class="row">
+            <div class="small-12 columns selected-bar" id="selected-bar"></div>
             <div class="small-2 columns" id="sidebar">
                 <a href="#" onclick="load_backup();" class="button radius small">
                     <i class="fa fa-plus-circle">&nbsp;Add</i>
