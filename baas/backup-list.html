@@ -2,18 +2,21 @@
 <html>
     <head>
         <title>Backup List</title>
-        <script src="backup.js"></script>
-        <script src="dup_calls.js"></script>
-        <script src="timeview.js"></script>
         <script type="text/javascript">
 
             $(document).ready(function() {
-                $(".tabs").hide();
                 if(typeof clouds === 'undefined') {
                     load_data_from_file(CLOUDS_CONF_FILE, populate_clouds);
                 } else {
                     populate_clouds("");
                 }
+                console.log("2. selected = " + selected_backup);
+                $.each(backups, function(i, backup) {
+                    if(backup.name == selected_backup) {
+                        load_backup(backup);
+                        return;
+                    }
+                });
             });
 
             var errors = {
@@ -26,52 +29,6 @@
                 path_empty: 'Provide a path',
                 passphrase_empty: 'Provide a Passphrase'
             };
-
-            load_data_from_file(BACKUP_CONF_FILE, render_backup_sets);
-
-            function render_backup_sets(data) {
-                $("#backup_list").remove();
-                // backups is undefined the first time, when
-                // reading data from file
-                if(typeof backups === 'undefined') {
-                    if(data != "") {
-                        backups = JSON.parse(data).backups;
-                    } else {
-                        backups = [];
-                    }
-                }
-                var ul = $("<ul></ul>")
-                    .attr("id", "backup_list")
-                    .attr("class", "side-nav");
-                $.each(backups, function(i, backup) {
-                    var li = $("<li></li>")
-                        .attr("class", "clearfix")
-                        .attr("id", "li_" + backup.name);
-                    var a = $("<a>" + backup.name + "</a>")
-                        .attr("href", "#")
-                        .attr("id", backup.name)
-                        .attr("class", "left")
-                        .click(function() {
-                            load_backup(backup);
-                            activate_li("li_" + backup.name);
-                        });
-                    li.append(a);
-
-                    var a_del = $("<a><i class='fa fa-times-circle delete_icon'></i></a>")
-                        .attr("href", "#")
-                        .attr("class", "right")
-                        .click(function() {
-                            if(confirm("Are you sure you want to delete " + backup.name + '?' +
-                                "\nNOTE: To actually remove backup sets from remote container you have to manually purge it.")) {
-                                delete_backup(backup);
-                            }
-                        });
-                    li.append(a_del);
-
-                    ul.append(li);
-                    $("#sidebar").append(ul);
-                });
-            }
 
             function activate_li(id) {
                 $("li").each(function(i, li) {
@@ -206,23 +163,16 @@
 
     <body>
         <div class="row">
-            <div class="small-12 columns">
-                <p>&nbsp;</p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="small-3 columns vertical-border" id="sidebar">
+            <div class="small-2 columns" id="sidebar">
                 <a href="#" onclick="load_backup();" class="button radius small">
-                    <i class="fa fa-plus-circle">&nbsp;Add Backup</i>
+                    <i class="fa fa-plus-circle">&nbsp;Add</i>
                 </a>
             </div>
-            <div class="small-9 columns">
+            <div class="small-10 columns">
                 <ul class="tabs" data-tab>
                     <li class="tab-title radius" id="backup_details_tab">
-                        <a href="#backup_details" id="backup_details_link">Backup</a>
-                    </li>
-                    <li class="tab-title radius" id="restore_details_tab">
-                        <a href="#restore_details" id="restore_details_link">Restore</a>
+                        <a href="#backup_details" onclick="$('#backup_details').show()"
+                            id="backup_details_link">Settings</a>
                     </li>
                     <li class="tab-title radius">
                         <a href="#timeview" id="timeview_link">Timeview</a>
