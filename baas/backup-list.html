@@ -10,25 +10,17 @@
                 } else {
                     populate_clouds("");
                 }
-                console.log("2. selected = " + selected_backup);
-                $.each(backups, function(i, backup) {
-                    if(backup.name == selected_backup) {
-                        load_backup(backup);
-                        return;
-                    }
-                });
+                if(typeof selected_backup != 'undefined') {
+                    $.each(backups, function(i, backup) {
+                        if(backup.name == selected_backup) {
+                            load_backup(backup);
+                            return;
+                        }
+                    });
+                } else {
+                    disable_actions(true);
+                }
             });
-
-            var errors = {
-                backup_name_empty: 'Provide a Backup Name',
-                backup_name_illegal: 'Invalid Entry. Name must start with '
-                    + '\'Backup_\' and followed by characters [A-Za-z0-9-_]',
-                cloud_empty: 'Select cloud configuration',
-                dir_not_chosen : 'Provide a local directory',
-                res_file_illegal: 'Invalid Entry. Provide a valid file name',
-                path_empty: 'Provide a path',
-                passphrase_empty: 'Provide a Passphrase'
-            };
 
             function activate_li(id) {
                 $("li").each(function(i, li) {
@@ -56,15 +48,6 @@
                         $('#backup-name-error small').hide();
                     }
                 }
-                return true;
-            }
-
-            function check_directory(dir_id) {
-                if(!$('#' + dir_id).html()) {
-                    $('#' + dir_id + '-error small').text(errors.dir_not_chosen);
-                    $('#' + dir_id + '-error small').show();
-                    return false;
-                } else $('#' + dir_id + '-error small').hide();
                 return true;
             }
 
@@ -124,29 +107,21 @@
             }
 
             function disable_actions(disable) {
-                $("#restore_details_link").prop("disabled", disable);
+                $("#backup_details_link").prop("disabled", disable);
                 $("#status_link").prop("disabled", disable);
                 $("#timeview_link").prop("disabled", disable);
                 if(disable) {
-                    $("#restore_details_link").click(function(e) { e.preventDefault(); });
+                    $("#backup_details_link").click(function(e) { e.preventDefault(); });
+                    $("#backup_details_link").unbind("click");
                     $("#status_link").click(function(e) { e.preventDefault(); });
                     $("#status_link").unbind("click");
                     $("#timeview_link").click(function(e) { e.preventDefault(); });
                     $("#timeview_link").unbind("click");
                 } else {
-                    $("#restore_details_link").click(function(e) { return true; });
+                    $("#backup_detais_link").click(function(e) { load_backup(); });
                     $("#status_link").click(function(e) { load_status(); });
                     $("#timeview_link").click(function(e) { load_timeview(); });
                 }
-            }
-
-            function backup(restore) {
-                $("#loader").show();
-                if(!restore) save_backup_set();
-                run_duplicity(restore);
-                disable_form(true);
-                write_first_backup();
-                disable_actions(false);
             }
 
             function check_fields(restore) {
@@ -158,6 +133,7 @@
                 }
                 return check_directory("res-directory");
             }
+
         </script>
     </head>
 
@@ -295,85 +271,6 @@
                                 </div>
                             </div>
                         </form>
-                    </div>
-                    <div class="content" id="restore_details">
-                        <div class="clearfix">
-                            <div class="small-3 columns">
-                                <label id="res_directory_label" for="res-directory" class="right">
-                                    Local directory
-                                </label>
-                            </div>
-                            <div id="res-directory" class="small-6 columns"></div>
-                            <div id="res-dirdialogue_label" onclick="$('#choose-res-dir').trigger('click');"
-                                class="small-3 columns" id="resdirpick">
-                                <i class="fa fa-folder-o blue-folder">&nbsp;</i>
-                            </div>
-                        </div>
-                        <div class="clearfix">
-                            <div class="small-3 columns">&nbsp;</div>
-                            <div id="res-directory-error" class="small-6 columns">
-                                <small class="error"></small>
-                            </div>
-                            <input type="file" id="choose-res-dir" nwdirectory
-                                style="display:none;"
-                                onchange="$('#res-directory').html($(this).val());
-                                    check_directory('res-directory');" />
-                        </div>
-                        <div class="clearfix">
-                            <div class="small-3 columns">
-                                 <label id="res-file-label" for="res-file" class="right inline">
-                                     <span data-tooltip aria-haspopup="true" class="has-tip"
-                                     title="Use relative path">
-                                         File to Restore
-                                     </span>
-                                 </label>
-                            </div>
-                            <div class="small-9 columns error" id="res-file-error">
-                                <input type="text" id="res-file"
-                                placeholder="Only restore this file">
-                                <small class="error"></small>
-                            </div>
-                        </div>
-                        <div class="clearfix">
-                            <div class="small-3 columns">
-                                <label id="timestamp-label" for="timestamp" class="right inline">
-                                    Timestamp&nbsp;<i class="fa fa-info-circle green-info"
-                                        onclick="$('#timestamp-help').slideDown();"></i>
-                                </label>
-                            </div>
-                            <div class="small-9 columns error" id="timestamp-error">
-                                <input type="text" id="timestamp"
-                                placeholder="Restore from a specific time">
-                                <small class="error"></small>
-                            </div>
-                            <div class="small-3 columns">&nbsp;</div>
-                            <div class="small-9 columns hide info-text panel" id="timestamp-help">
-                                <i class="fa fa-times right" onclick="$('#timestamp-help').slideUp();"></i>
-                                Accepts following formats<br>
-                                1. String "now" refers to current time<br>
-                                2. A sequences of digits, like "123456890"
-                                    (indicating the time in seconds after the epoch)<br>
-                                3. A string like "2002-01-25T07:00:00+02:00" in datetime format<br>
-                                4. A number followed by one of the characters s, m, h, D, W, M, or Y
-                                    (indicating seconds, minutes, hours, days, weeks, months,
-                                    or years respectively), or a series of such pairs.
-                                    In this case the string refers to the time that preceded
-                                    the current time by the length of the interval.
-                                    For instance, "1h78m" indicates the time that was
-                                    one hour and 78 minutes ago.<br>
-                                5. A date format of the form YYYY/MM/DD, YYYY-MM-DD, MM/DD/YYYY,
-                                    or MM-DD-YYYY, which indicates midnight on the day in question,
-                                    relative to the current time zone settings.
-                            </div>
-                        </div>
-                        <div class="clearfix">
-                            <div class="small-6 columns">&nbsp;</div>
-                            <div class="small-6 columns">
-                                <a id="restore_button" class="button radius right small"
-                                onclick="if(check_fields(true)) backup(true);">
-                                <i class="fa fa-cloud-download"></i>&nbsp;Restore</a>
-                            </div>
-                        </div>
                     </div>
                     <div class="content" id="status"></div>
                     <div class="content" id="timeview">

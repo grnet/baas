@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script type="text/javascript">
+
+            $(document).ready(function() {
+                if(typeof clouds === 'undefined') {
+                    load_data_from_file(CLOUDS_CONF_FILE, populate_clouds);
+                } else {
+                    populate_clouds("");
+                }
+            });
+            hide_error_divs();
+            
+            function check_res_backup_name() {
+                var backup_name = $('#res-backup-name').val().replace(/^\s+|\s+$/gm,'');
+                if(!backup_name) {
+                    $('#res-backup-name-error small').text(errors.backup_name_empty);
+                    $('#res-backup-name-error small').show();
+                    return false;
+                } else {
+                    $('#res-backup-name-error small').hide();
+                }
+                return true;
+            }
+
+            function check_res_cloud() {
+                var cloud = $("#res-cloud").val();
+                if(!cloud) {
+                    $('#res-cloud-error small').text(errors.cloud_empty);
+                    $('#res-cloud-error small').show();
+                    return false;
+                } else {
+                    $('#res-cloud-error small').hide();
+                }
+                return true;
+            }
+
+            function check_res_passphrase() {
+                var passphrase = $("#passphrase").val();
+                if(!passphrase) {
+                    $('#passphrase-error small').text(errors.passphrase_empty);
+                    $('#passphrase-error small').show();
+                    return false;
+                } else {
+                    $('#passphrase-error small').hide();
+                }
+                return true;
+            }
+
+            function populate_clouds(data) {
+                if(typeof clouds === 'undefined') {
+                    if(data != "") {
+                        clouds = JSON.parse(data).clouds;
+                    } else {
+                        clouds = [];
+                    }
+                }
+                var cloud_sel = $("#res-cloud");
+                $.each(clouds, function(i, cloud) {
+                    cloud_sel.append($("<option></option>")
+                        .attr("value", cloud.name)
+                        .text(cloud.name));
+                });
+            }
+
+            function check_res_fields(restore) {
+                if(!restore) {
+                    return (check_res_backup_name()
+                        && check_directory("directory")
+                        && check_cloud()
+                        && check_res_passphrase());
+                }
+                return (check_directory("res-directory")
+                    && check_res_cloud()
+                    && check_res_backup_name());
+            }
+        </script>
+    </head>
+
+    <body>
+        <div class="row">
+            <div class="small-10 columns">
+                <form>
+                    <div class="clearfix">
+                        <div class="small-3 columns">
+                             <label id="res_cloud_label" for="res-cloud" class="right inline">Cloud</label>
+                        </div>
+                        <div class="small-9 columns error" id="res-cloud-error">
+                            <select id="res-cloud" onchange="check_cloud();">
+                            </select>
+                            <small class="error"></small>
+                        </div>
+                    </div>
+                    <div class="clearfix">
+                        <div class="small-3 columns">
+                             <label id="res_backup_name_label" for="res-backup-name" class="right inline">Name</label>
+                        </div>
+                        <div class="small-9 columns error" id="res-backup-name-error">
+                            <input type="text" id="res-backup-name"
+                            placeholder="Backup_[A-Za-z0-9-_]"
+                            onchange="check_res_backup_name();">
+                            <small class="error"></small>
+                        </div>
+                    </div>
+                    <div class="clearfix">
+                        <div class="small-3 columns">
+                            <label id="res_passphrase_label" for="res_passphrase" class="right inline">Passphrase</label>
+                        </div>
+                        <div class="small-9 columns error" id="res-passphrase-error">
+                            <input type="password" id="res-passphrase" placeholder="Passphrase">
+                            <small class="error"></small>
+                        </div>
+                    </div>
+                    <div class="clearfix">
+                        <div class="small-3 columns">
+                            <label id="res_directory_label" for="res-directory" class="right">
+                                Local directory
+                            </label>
+                        </div>
+                        <div id="res-directory" class="small-6 columns"></div>
+                        <div id="res-dirdialogue_label" onclick="$('#choose-res-dir').trigger('click');"
+                            class="small-3 columns" id="resdirpick">
+                            <i class="fa fa-folder-o blue-folder">&nbsp;</i>
+                        </div>
+                    </div>
+                    <div class="clearfix">
+                        <div class="small-3 columns">&nbsp;</div>
+                        <div id="res-directory-error" class="small-6 columns">
+                            <small class="error"></small>
+                        </div>
+                        <input type="file" id="choose-res-dir" nwdirectory
+                            style="display:none;"
+                            onchange="$('#res-directory').html($(this).val());
+                                check_directory('res-directory');" />
+                    </div>
+                    <div class="clearfix">
+                        <div class="small-3 columns">
+                             <label id="res-file-label" for="res-file" class="right inline">
+                                 <span data-tooltip aria-haspopup="true" class="has-tip"
+                                 title="Use relative path">
+                                     File to Restore
+                                 </span>
+                             </label>
+                        </div>
+                        <div class="small-9 columns error" id="res-file-error">
+                            <input type="text" id="res-file"
+                            placeholder="Only restore this file">
+                            <small class="error"></small>
+                        </div>
+                    </div>
+                    <div class="clearfix">
+                        <div class="small-3 columns">
+                            <label id="timestamp-label" for="timestamp" class="right inline">
+                                Timestamp&nbsp;<i class="fa fa-info-circle green-info"
+                                    onclick="$('#timestamp-help').slideDown();"></i>
+                            </label>
+                        </div>
+                        <div class="small-9 columns error" id="timestamp-error">
+                            <input type="text" id="timestamp"
+                            placeholder="Restore from a specific time">
+                            <small class="error"></small>
+                        </div>
+                        <div class="small-3 columns">&nbsp;</div>
+                        <div class="small-9 columns hide info-text panel" id="timestamp-help">
+                            <i class="fa fa-times right" onclick="$('#timestamp-help').slideUp();"></i>
+                            Accepts following formats<br>
+                            1. String "now" refers to current time<br>
+                            2. A sequences of digits, like "123456890"
+                                (indicating the time in seconds after the epoch)<br>
+                            3. A string like "2002-01-25T07:00:00+02:00" in datetime format<br>
+                            4. A number followed by one of the characters s, m, h, D, W, M, or Y
+                                (indicating seconds, minutes, hours, days, weeks, months,
+                                or years respectively), or a series of such pairs.
+                                In this case the string refers to the time that preceded
+                                the current time by the length of the interval.
+                                For instance, "1h78m" indicates the time that was
+                                one hour and 78 minutes ago.<br>
+                            5. A date format of the form YYYY/MM/DD, YYYY-MM-DD, MM/DD/YYYY,
+                                or MM-DD-YYYY, which indicates midnight on the day in question,
+                                relative to the current time zone settings.
+                        </div>
+                    </div>
+                    <div class="clearfix">
+                        <div class="small-6 columns">&nbsp;</div>
+                        <div class="small-6 columns">
+                            <a id="restore_button" class="button radius right small"
+                            onclick="if(check_res_fields(true)) backup(true);">
+                            <i class="fa fa-cloud-download"></i>&nbsp;Restore</a>
+                        </div>
+                    </div>
+                </div>
+                <div id="loader" class="hide text-center">
+                    <i class="fa fa-spinner fa-pulse fa-2x gray-spin"></i>
+                </div>
+                <div id="msg" class="small-10 columns"></div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            $(document).foundation();
+        </script>
+    </body>
+</html>

@@ -1,12 +1,25 @@
 
 var dup_verbosity = " -v8 ";
 
+function backup(restore) {
+    $("#loader").show();
+    if(!restore) save_backup_set();
+    run_duplicity(restore);
+    if(!restore) {
+        disable_form(true);
+        write_first_backup();
+        disable_actions(false);
+    }
+}
+
 function set_envs() {
-    var passphrase = $('#passphrase').val();
+    var sel_pass = $('#passphrase').val() ? $('#passphrase') : $("#res-passphrase");
+    var passphrase = sel_pass.val();
     if(passphrase) {
         process.env['PASSPHRASE'] = passphrase;
     }
-    var cloud_name = $("#cloud").val().replace(/^\s+|\s+$/gm,'');
+    var sel_cloud = $("#cloud").val() ? $("#cloud") : $("#res-cloud");
+    var cloud_name = sel_cloud.val().replace(/^\s+|\s+$/gm,'');
     $.each(clouds, function(i, cloud) {
         if(cloud.name == cloud_name) {
             process.env['SWIFT_PREAUTHURL'] = cloud.pithos_public + '/' + cloud.uuid;
@@ -37,52 +50,61 @@ function build_win_commands() {
 function run_duplicity(restore) {
 
     var file_arg = "";
-    var file_to_restore = $("#res-file").val();
-    if(restore && file_to_restore) {
-        file_arg = " --file-to-restore '" + file_to_restore + "' ";
+    if(restore) {
+        var file_to_restore = $("#res-file").val();
+        if(file_to_restore) {
+            file_arg = " --file-to-restore '" + file_to_restore + "' ";
+        }
     }
 
     var time_arg = "";
-    var timestamp = $("#timestamp").val();
-    if(restore && timestamp) {
-        time_arg = " --time " + timestamp;
+    if(restore) {
+        var timestamp = $("#timestamp").val();
+        if(timestamp) {
+            time_arg = " --time " + timestamp;
+        }
     }
 
     var exclude_arg = "";
-    var exclude = $("#exclude").val();
-    if(exclude && !restore) {
-        var args = exclude.split(",");
-        $.each(args, function(i, value) {
-            if(process.platform == 'win32') {
-                exec(CYGWIN_BASH + " -c \"/usr/bin/cygpath '" + value + "' \"",
-                    function(error, stdout, stderr) {
-                        if(error) $("#msg").html(error);
-                        var win_value = String(stdout).replace(/(\r\n|\n|\r)/gm, "");
-                        exclude_arg += " --exclude '" + win_value + "' ";
-                    });
-            } else {
-                exclude_arg += " --exclude '" + value + "' ";
-            }
-        });
+    if(!restore) {
+        var exclude = $("#exclude").val();
+        if(exclude) {
+            var args = exclude.split(",");
+            $.each(args, function(i, value) {
+                if(process.platform == 'win32') {
+                    exec(CYGWIN_BASH + " -c \"/usr/bin/cygpath '" + value + "' \"",
+                        function(error, stdout, stderr) {
+                            if(error) $("#msg").html(error);
+                            var win_value = String(stdout).replace(/(\r\n|\n|\r)/gm, "");
+                            exclude_arg += " --exclude '" + win_value + "' ";
+                        });
+                } else {
+                    exclude_arg += " --exclude '" + value + "' ";
+                }
+            });
+        }
     }
 
     var include_arg = "";
-    var include = $("#include").val();
-    if(include && !restore) {
-        var args = include.split(",");
-        $.each(args, function(i, value) {
-            if(process.platform == 'win32') {
-                exec(CYGWIN_BASH + " -c \"/usr/bin/cygpath '" + value + "' \"",
-                    function(error, stdout, stderr) {
-                        if(error) $("#msg").html(error);
-                        var win_value = String(stdout).replace(/(\r\n|\n|\r)/gm, "");
-                        include_arg += " --include '" + win_value + "' ";
-                    });
-            } else {
-                include_arg += " --include '" + value + "' ";
-            }
-        });
+    if(!restore) {
+        var include = $("#include").val();
+        if(include) {
+            var args = include.split(",");
+            $.each(args, function(i, value) {
+                if(process.platform == 'win32') {
+                    exec(CYGWIN_BASH + " -c \"/usr/bin/cygpath '" + value + "' \"",
+                        function(error, stdout, stderr) {
+                            if(error) $("#msg").html(error);
+                            var win_value = String(stdout).replace(/(\r\n|\n|\r)/gm, "");
+                            include_arg += " --include '" + win_value + "' ";
+                        });
+                } else {
+                    include_arg += " --include '" + value + "' ";
+                }
+            });
+        }
     }
+
     var directory = "";
     if(restore) {
         if(file_to_restore) {
@@ -96,6 +118,14 @@ function run_duplicity(restore) {
     } else {
         directory = $("#directory").html();
     }
+
+    var container_name = "";
+    if(restore) {
+        container_name = $("#res-backup-name").val();
+    } else {
+        container_name = $("#backup-name").val();
+    }
+
     var log_file = path.join(BAAS_LOG_DIR, "dup_" + new Date().toISOString() + ".log");
     var log_arg = " --log-file '" + log_file + "' ";
 
@@ -106,12 +136,12 @@ function run_duplicity(restore) {
                 directory = String(stdout).replace(/(\r\n|\n|\r)/gm, "");
                 if(error) $("#msg").html(error);
 
-                var dirs = directory + " swift://" + container;
+                var dirs = directory + " swift://" + container_name;
                 if(restore) {
-                    dirs = " swift://" + container + " " + directory;
+                    dirs = " swift://" + container_name + " " + directory;
                 }
                 var cmd = build_win_commands();
-                var dup_cmd = "duplicity " + dup_verbosity + log_arg + include_arg + exclude_arg + file_arg + time_arg + dirs + ";";
+                var dup_cmd = "duplicity " + include_arg + exclude_arg + file_arg + time_arg + dirs + ";";
 
                 exec(CYGWIN_BASH + " -c '" + cmd + dup_cmd + "'",
                     function(error, stdout, stderr){
@@ -128,15 +158,15 @@ function run_duplicity(restore) {
     } else {
         set_envs();
 
-        var dirs = directory + " swift://" + container;
+        var dirs = directory + " swift://" + container_name;
         if(restore) {
-            dirs = " swift://" + container + " " + directory;
+            dirs = " swift://" + container_name + " " + directory;
         }
         var dup_cmd = "duplicity " + dup_verbosity + log_arg + include_arg + exclude_arg + file_arg + time_arg + dirs + ";";
         exec(dup_cmd , function(error, stdout, stderr) {
             if(error) {
                 $("#msg").addClass("panel");
-                $("#msg").html(error);
+                $("#msg").html(stderr);
             } else {
                 $("#msg").html("");
                 $("#msg").removeClass("panel");
