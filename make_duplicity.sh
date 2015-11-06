@@ -14,29 +14,46 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-PLATFORM=linux-x86_64
+OS_NAME=$(/usr/bin/uname -s)
+OS_NAME=${OS_NAME:0:6}
 
-if [ -z "$1" ]
-  then
-    echo "Usage: $0 <path_to_duplicity_src>"
-    exit
+if [[ "$OS_NAME" = "CYGWIN" ]]
+then
+    export PATH=/usr/bin:$PATH
 fi
 
 cd "$(dirname "$0")"
 ROOTPATH=$(pwd)
-cd $1
-SRCPATH=$(pwd)
+BUILDDIR=$ROOTPATH/build
+mkdir -p $BUILDDIR
+
+if [ -z "$1" ]
+  then
+    echo "Downloading duplicity"
+    cd $BUILDDIR
+    rm -rf duplicity-0.7.05*
+    wget https://launchpad.net/duplicity/0.7-series/0.7.05/+download/duplicity-0.7.05.tar.gz
+    tar xzvf duplicity-0.7.05.tar.gz
+    cd duplicity-0.7.05
+    SRCPATH=$(pwd)
+  else
+    cd $1
+    SRCPATH=$(pwd)
+fi
+
 cd $ROOTPATH
 echo $(pwd)
 echo $SRCPATH
 
-BUILDDIR=$ROOTPATH/build
 DUPL=$BUILDDIR/duplicity
 echo building under $DUPL
 rm -rf $DUPL
-mkdir -p $DUPL
+mkdir -p $DUPL/lib
 WHEELHOUSE=$DUPL/wheelhouse
+mkdir $WHEELHOUSE
 
+easy_install-2.7 pip
+pip install wheel
 pip wheel lockfile -w $WHEELHOUSE
 if [ $? -ne 0 ]; then
     exit 1
@@ -53,7 +70,7 @@ rm -rf build
 patch -N -p0 < $ROOTPATH/src/duplicity-patches/timeview.patch
 patch -N -p0 < $ROOTPATH/src/duplicity-patches/syspath.patch
 python setup.py build
-cd build/lib.${PLATFORM}-2.7
+cd build/lib.*
 cp -pr * $DUPL/lib
 cd ../scripts-2.7
 cp -p duplicity $DUPL
