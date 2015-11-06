@@ -1,5 +1,5 @@
 .delete_icon {
-	color:#E10D0D;
+	color:#146A84;
 }
 .side-nav .left {
     word-break: break-all;
@@ -39,7 +39,7 @@
     background: #146A84;
 }
 .backup-box {
-    border: 2px dotted #6e6e6e;
+    border: 1px dotted #6e6e6e;
     width: 180px;
     height: 170px;
     margin: 5px;
