@@ -126,9 +126,9 @@
 
             function check_fields(restore) {
                 if(!restore) {
-                    return (check_backup_name()
-                        && check_directory("directory")
+                    return(check_directory("directory")
                         && check_cloud()
+                        && check_backup_name()
                         && check_passphrase());
                 }
                 return check_directory("res-directory");
