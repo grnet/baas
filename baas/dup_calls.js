@@ -3,13 +3,12 @@ var dup_verbosity = " -v8 ";
 
 function backup(restore) {
     $("#loader").show();
-    if(!restore) save_backup_set();
-    run_duplicity(restore);
     if(!restore) {
+        save_backup_set();
         disable_form(true);
-        write_first_backup();
         disable_actions(false);
     }
+    run_duplicity(restore);
 }
 
 function set_envs() {
@@ -148,9 +147,14 @@ function run_duplicity(restore) {
                         if(error) {
                             $("#msg").html(error);
                             $("#msg").addClass("panel");
+                            disable_form(false);
+                            disable_actions(true);
                         } else {
                             $("#msg").html("");
                             $("#msg").removeClass("panel");
+                            if(!restore) {
+                                write_first_backup();
+                            }
                         }
                         $("#loader").hide();
                     });
@@ -167,9 +171,14 @@ function run_duplicity(restore) {
             if(error) {
                 $("#msg").addClass("panel");
                 $("#msg").html(stderr);
+                disable_form(false);
+                disable_actions(true);
             } else {
                 $("#msg").html("");
                 $("#msg").removeClass("panel");
+                if(!restore) {
+                    write_first_backup();
+                }
             }
             $("#loader").hide();
         });
