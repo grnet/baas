@@ -210,6 +210,8 @@
                 render_clouds("");
                 activate_li("li_" + cloud.name);
                 write_conf_file(CLOUDS_CONF_FILE, clouds);
+                $("#save-alert").show();
+                setTimeout( function() {$("#save-alert").fadeOut()}, 1000);
             }
 
             function delete_cloud(cloud) {
@@ -243,6 +245,12 @@
             </div>
             <div class="small-9 columns">
                 <div id="cloud_details" class="hide">
+                    <div id="save-alert" class="hide">
+                        <div data-alert class="alert-box success radius">
+                            Successfully saved cloud configuration.
+                            <a href="#" class="close">&times;</a>
+                        </div>
+                    </div>
                     <form>
                         <div class="clearfix">
                             <div class="small-3 columns">
