@@ -108,7 +108,8 @@ function save_backup_set() {
     render_backup_sets("");
 
     write_conf_file(BACKUP_CONF_FILE, backups);
-    activate_li("li_" + backup_name);
+    $("#save-alert").show();
+    setTimeout( function() {$("#save-alert").fadeOut()}, 1000);
 }
 
 function delete_backup(backup) {
