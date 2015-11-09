@@ -37,6 +37,7 @@ function show_contents_by_date(error, stdout, stderr) {
     });
 
     $("#time-contents").append(ul);
+    $("#loader").hide();
 }
 
 function go_to_restore(name) {
@@ -100,6 +101,7 @@ function fill_breadcrumbs(path) {
 
 var selected_date = "";
 function get_contents_by_date(value) {
+    $("#loader").show();
     var time_path = $("#time-path").val();
     if(!time_path) {
         $("#time-head-error small").text(errors.path_empty);
