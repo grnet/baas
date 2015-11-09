@@ -79,9 +79,9 @@
             function populate_clouds(data) {
                 if(typeof clouds === 'undefined') {
                     if(data != "") {
-                        clouds = JSON.parse(data).clouds;
+                        clouds = JSON.parse(data);
                     } else {
-                        clouds = [];
+                        clouds = new Object();
                     }
                 }
                 var cloud_sel = $("#cloud");

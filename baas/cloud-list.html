@@ -13,9 +13,9 @@
                 // reading data from file
                 if(typeof clouds === 'undefined') {
                     if(data != "") {
-                        clouds = JSON.parse(data).clouds;
+                        clouds = JSON.parse(data);
                     } else {
-                        clouds = [];
+                        clouds = new Object();
                     }
                 }
                 var ul = $("<ul></ul>")
@@ -196,45 +196,25 @@
 
             function edit_add_cloud() {
                 var cloud_name = $("#cloud-name").val().replace(/^\s+|\s+$/gm,'');
-                // edit existing
                 var url = $("#cloud-url").val().replace(/^\s+|\s+$/gm,'');
                 var token = $("#token").val().replace(/^\s+|\s+$/gm,'');
 
-                if($("#" + cloud_name).attr("id")) {
-                    $.each(clouds, function(i, cloud) {
-                        if(cloud.name == cloud_name) {
-                            cloud.auth_url = url;
-                            cloud.token = token;
-                            cloud.pithos_public = pithos_public;
-                            cloud.uuid = uuid;
-                        }
-                    });
-                // add new cloud
-                } else {
-                    var cloud = {"name" : "", "auth_url" : "", 
-                        "token" : "", "pithos_public" : "", "uuid" : ""};
-                    cloud.name = cloud_name;
-                    cloud.auth_url = url;
-                    cloud.token = token;
-                    cloud.pithos_public = pithos_public;
-                    cloud.uuid = uuid;
+                var cloud = {};
+                cloud.name = cloud_name;
+                cloud.auth_url = url;
+                cloud.token = token;
+                cloud.pithos_public = pithos_public;
+                cloud.uuid = uuid;
 
-                    clouds.push(cloud);
-                    render_clouds("");
-                }
-                var root_clouds = {"clouds" : "" };
-                root_clouds.clouds = clouds;
-                write_conf_file(CLOUDS_CONF_FILE, root_clouds);
+                clouds[cloud_name] = cloud;
+                render_clouds("");
+                write_conf_file(CLOUDS_CONF_FILE, clouds);
             }
 
             function delete_cloud(cloud) {
-                var i = clouds.indexOf(cloud);
-                clouds.splice(i, 1);
+                delete clouds[cloud.name];
                 render_clouds("");
-
-                var root_clouds = {"clouds" : "" };
-                root_clouds.clouds = clouds;
-                write_conf_file(CLOUDS_CONF_FILE, root_clouds);
+                write_conf_file(CLOUDS_CONF_FILE, clouds);
                 $("#cloud_details").hide();
             }
 

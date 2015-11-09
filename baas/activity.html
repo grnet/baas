@@ -13,12 +13,12 @@
             function show_cloud_msg(data) {
                 if(typeof clouds === 'undefined') {
                     if(data != "") {
-                        clouds = JSON.parse(data).clouds;
+                        clouds = JSON.parse(data);
                     } else {
-                        clouds = [];
+                        clouds = new Object();
                     }
                 }
-                if(clouds.length == 0) {
+                if(Object.keys(clouds).length == 0) {
                     $("#cloud-alert").show();
                 }
             }
@@ -36,12 +36,12 @@
                 // reading data from file
                 if(typeof backups === 'undefined') {
                     if(data != "") {
-                        backups = JSON.parse(data).backups;
+                        backups = JSON.parse(data);
                     } else {
-                        backups = [];
+                        backups = new Object();
                     }
                 }
-                if(backups.length == 0) {
+                if(Object.keys(backups).length == 0) {
                     $("#backup-alert").show();
                 }
                 var ul = $("<ul></ul>")
