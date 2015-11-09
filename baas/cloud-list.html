@@ -208,6 +208,7 @@
 
                 clouds[cloud_name] = cloud;
                 render_clouds("");
+                activate_li("li_" + cloud.name);
                 write_conf_file(CLOUDS_CONF_FILE, clouds);
             }
 
