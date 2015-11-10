@@ -1,6 +1,6 @@
 
 function go_to_restore(name) {
-    g_res_directory = path.join(get_user_home(), "Backups");
+    g_res_directory = RESTORE_DEFAULT_DIR;
     var time_path = $("#time-path").val();
     if(time_path != "/") time_path += "/";
     if(time_path.startsWith("/")) time_path = time_path.replace("/", "");
