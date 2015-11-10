@@ -135,6 +135,26 @@ function run_duplicity(restore) {
     var log_file = path.join(BAAS_LOG_DIR, "dup_" + new Date().toISOString() + ".log");
     var log_arg = " --log-file '" + log_file + "' ";
 
+    function dup_output(error, stdout, stderr) {
+        if(error) {
+            $("#msg").html(error);
+            $("#msg").addClass("panel");
+            disable_form(false);
+            disable_actions(true);
+        } else {
+            $("#msg").html("");
+            $("#msg").removeClass("panel");
+            if(!restore) {
+                backups[cloud + "/" + container_name].last_backup = new Date();
+                if(typeof backups[cloud + "/" + container_name].first_backup == 'undefined') {
+                    backups[cloud + "/" + container_name].first_backup = new Date();
+                }
+            }
+        }
+        write_conf_file(BACKUP_CONF_FILE, backups);
+        $("#loader").hide();
+    }
+
     if(process.platform == 'win32') {
         directory = directory.replace(/\\/g, "\\\\");
         exec(CYGWIN_BASH + " -c \"/usr/bin/cygpath '" + directory + "' \"",
@@ -150,23 +170,7 @@ function run_duplicity(restore) {
                 var dup_cmd = "duplicity " + include_arg +
                     exclude_arg + file_arg + time_arg + dirs + ";";
 
-                exec(CYGWIN_BASH + " -c '" + cmd + dup_cmd + "'",
-                    function(error, stdout, stderr){
-                        if(error) {
-                            $("#msg").html(error);
-                            $("#msg").addClass("panel");
-                            disable_form(false);
-                            disable_actions(true);
-                        } else {
-                            $("#msg").html("");
-                            $("#msg").removeClass("panel");
-                            if(!restore &&
-                                typeof backups[cloud + "/" + selected_backup].first_backup == 'undefined') {
-                                write_first_backup();
-                            }
-                        }
-                        $("#loader").hide();
-                    });
+                exec(CYGWIN_BASH + " -c '" + cmd + dup_cmd + "'", dup_output);
         });
     } else {
         set_envs();
@@ -177,22 +181,7 @@ function run_duplicity(restore) {
         }
         var dup_cmd = "duplicity " + dup_verbosity + log_arg +
             include_arg + exclude_arg + file_arg + time_arg + dirs + ";";
-        exec(dup_cmd , function(error, stdout, stderr) {
-            if(error) {
-                $("#msg").addClass("panel");
-                $("#msg").html(stderr);
-                disable_form(false);
-                disable_actions(true);
-            } else {
-                $("#msg").html("");
-                $("#msg").removeClass("panel");
-                if(!restore &&
-                    typeof backups[cloud + "/" + container_name].first_backup == 'undefined') {
-                    write_first_backup();
-                }
-            }
-            $("#loader").hide();
-        });
+        exec(dup_cmd , dup_output);
     }
 }
 
