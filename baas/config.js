@@ -8,7 +8,7 @@ var CLOUDS_CONF_FILE = 'clouds.rc';
 var BACKUP_CONF_FILE = 'backups.rc';
 var BAAS_LOG_DIR = path.join(get_user_home(), BAAS_HOME_DIR, 'log');
 var BAAS_CACHE_DIR = path.join(get_user_home(), BAAS_HOME_DIR, 'cache');
-var RESTORE_DEFAULT_DIR = path.join(get_user_home(), "Backups");
+var RESTORE_DEFAULT_DIR = path.join(get_user_home(), "Downloads");
 
 var exec_path = path.dirname(process.execPath);
 var CYGWIN_BASH = path.join(exec_path, "cygwin", "bin", "bash.exe");
