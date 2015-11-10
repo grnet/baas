@@ -140,7 +140,8 @@ function run_duplicity(restore) {
                     dirs = " swift://" + container_name + " " + directory;
                 }
                 var cmd = build_win_commands();
-                var dup_cmd = "duplicity " + include_arg + exclude_arg + file_arg + time_arg + dirs + ";";
+                var dup_cmd = "duplicity " + include_arg +
+                    exclude_arg + file_arg + time_arg + dirs + ";";
 
                 exec(CYGWIN_BASH + " -c '" + cmd + dup_cmd + "'",
                     function(error, stdout, stderr){
@@ -152,7 +153,8 @@ function run_duplicity(restore) {
                         } else {
                             $("#msg").html("");
                             $("#msg").removeClass("panel");
-                            if(!restore) {
+                            if(!restore &&
+                                typeof backups[selected_backup].first_backup == 'undefined') {
                                 write_first_backup();
                             }
                         }
@@ -166,7 +168,8 @@ function run_duplicity(restore) {
         if(restore) {
             dirs = " swift://" + container_name + " " + directory;
         }
-        var dup_cmd = "duplicity " + dup_verbosity + log_arg + include_arg + exclude_arg + file_arg + time_arg + dirs + ";";
+        var dup_cmd = "duplicity " + dup_verbosity + log_arg +
+            include_arg + exclude_arg + file_arg + time_arg + dirs + ";";
         exec(dup_cmd , function(error, stdout, stderr) {
             if(error) {
                 $("#msg").addClass("panel");
@@ -176,7 +179,8 @@ function run_duplicity(restore) {
             } else {
                 $("#msg").html("");
                 $("#msg").removeClass("panel");
-                if(!restore) {
+                if(!restore &&
+                    typeof backups[container_name].first_backup == 'undefined') {
                     write_first_backup();
                 }
             }

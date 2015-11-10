@@ -104,6 +104,10 @@ function save_backup_set() {
     container = backup_set.container;
     backup_set.exclude = exclude;
     backup_set.include = include;
+    if(typeof backups[backup_name] != 'undefined' &&
+        typeof backups[backup_name].first_backup != 'undefined') {
+        backup_set.first_backup = backups[backup_name].first_backup;
+    }
     backups[backup_name] =  backup_set;
     render_backup_sets("");
 
@@ -123,11 +127,7 @@ function delete_backup(backup) {
 function write_first_backup() {
     var backup_name = $("#backup-name").val().replace(/^\s+|\s+$/gm,'');
     var first_backup = null;
-    $.each(backups, function(i, backup_set) {
-        if(backup_set.name == backup_name) {
-            backup_set.first_backup = Date.now();
-        }
-    });
+    backups[backup_name].first_backup = new Date();
     write_conf_file(BACKUP_CONF_FILE, backups);
 }
 
