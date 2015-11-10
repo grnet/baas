@@ -11,7 +11,20 @@
                 }
             });
             hide_error_divs();
-            
+
+            function load_field_values() {
+                if(typeof selected_backup != 'undefined') {
+                    $("#res-backup-name").val(selected_backup);
+                    $("#res-cloud").val(backups[selected_backup].cloud);
+                    $("#res-passphrase").val(backups[selected_backup].passphrase);
+                    $("#res-directory").html(g_res_directory);
+                    $("#res-file").val(g_res_file);
+                    $("#timestamp").val(g_timestamp);
+                }
+            }
+
+            load_field_values();
+
             function check_res_backup_name() {
                 var backup_name = $('#res-backup-name').val().replace(/^\s+|\s+$/gm,'');
                 if(!backup_name) {

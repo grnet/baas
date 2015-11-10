@@ -1,4 +1,16 @@
 
+function go_to_restore(name) {
+    g_res_directory = path.join(get_user_home(), "Backups");
+    var time_path = $("#time-path").val();
+    if(time_path != "/") time_path += "/";
+    if(time_path.startsWith("/")) time_path = time_path.replace("/", "");
+
+    g_res_file = time_path + name;
+    g_timestamp = selected_date;
+
+    $("#restore-tab-link").trigger("click");
+}
+
 function show_contents_by_date(error, stdout, stderr) {
     $("#time-contents").empty();
 
@@ -40,20 +52,9 @@ function show_contents_by_date(error, stdout, stderr) {
     $("#loader").hide();
 }
 
-function go_to_restore(name) {
-    $("#res-directory").html(path.join(get_user_home(), "Backups"));
-    var time_path = $("#time-path").val();
-    if(time_path != "/") time_path += "/";
-    if(time_path.startsWith("/")) time_path = time_path.replace("/", "");
-
-    $("#res-file").val(time_path + name);
-    $("#timestamp").val(selected_date);
-    $("#restore_details_link").trigger("click");
-}
-
 function show_rest_icon(name) {
     $("#rest_icon_" + name).removeClass("hide");
-    $("#rest_icon_" + name).addClass("fa fa-cloud-download");
+    $("#rest_icon_" + name).addClass("fa fa-download");
 }
 
 var init_path = "";
