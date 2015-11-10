@@ -102,8 +102,10 @@
                 }
                 if(disable) {
                     $("#save_button").hide();
+                    $("#go_to_restore_button").show();
                 } else {
                     $("#save_button").show();
+                    $("#go_to_restore_button").hide();
                 }
             }
 
@@ -134,6 +136,13 @@
                 return check_directory("res-directory");
             }
 
+            function go_to_restore() {
+                g_res_directory = RESTORE_DEFAULT_DIR;
+                g_passphrase = $("#passphrase").val();
+                g_res_file = "";
+                g_timestamp = "";
+                $("#restore-tab-link").trigger("click");
+            }
         </script>
     </head>
 
@@ -276,9 +285,9 @@
                                     onclick="if(check_fields(false)) save_backup_set();">
                                     <i class="fa fa-floppy-o"></i>&nbsp;Save</a>
                                 </div>
-                                <div class="small-6 columns">
+                                <div class="small-3 columns">
                                     <a id="go_to_restore_button" class="button radius left small"
-                                    onclick="">
+                                    onclick="go_to_restore()">
                                     <i class="fa fa-cloud-download"></i>&nbsp;Restore</a>
                                 </div>
                             </div>

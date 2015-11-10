@@ -1,5 +1,5 @@
 
-function go_to_restore(name) {
+function go_to_restore_single(name) {
     g_res_directory = RESTORE_DEFAULT_DIR;
     var time_path = $("#time-path").val();
     if(time_path != "/") time_path += "/";
@@ -40,7 +40,7 @@ function show_contents_by_date(error, stdout, stderr) {
             .attr("id", "rest_icon_" + i)
             .attr("title", "Restore")
             .attr("class", "hide")
-            .attr("onclick", "go_to_restore('" + el.name + "')");
+            .attr("onclick", "go_to_restore_single('" + el.name + "')");
 
         li.append(icon);
         li.append(rest_icon);

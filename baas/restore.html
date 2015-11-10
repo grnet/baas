@@ -13,17 +13,24 @@
             hide_error_divs();
 
             function load_field_values() {
-                if(typeof selected_backup != 'undefined') {
-                    $("#res-backup-name").val(selected_backup);
-                    $("#res-cloud").val(backups[selected_backup].cloud);
-                    $("#res-passphrase").val(backups[selected_backup].passphrase);
+                $("#res-backup-name").val(selected_backup);
+                $("#res-cloud").val(backups[selected_backup].cloud);
+                $("#res-passphrase").val(backups[selected_backup].passphrase);
+                if(typeof g_res_directory != 'undefined') {
                     $("#res-directory").html(g_res_directory);
+                }
+                if(typeof g_res_file != 'undefined') {
                     $("#res-file").val(g_res_file);
+                }
+                if(typeof g_timestamp != 'undefined') {
                     $("#timestamp").val(g_timestamp);
                 }
             }
 
-            load_field_values();
+            if(typeof selected_backup != 'undefined' &&
+                typeof backups[selected_backup].first_backup != 'undefined') {
+                load_field_values();
+            }
 
             function check_res_backup_name() {
                 var backup_name = $('#res-backup-name').val().replace(/^\s+|\s+$/gm,'');
@@ -77,16 +84,10 @@
                 });
             }
 
-            function check_res_fields(restore) {
-                if(!restore) {
-                    return (check_res_backup_name()
-                        && check_directory("directory")
-                        && check_cloud()
-                        && check_res_passphrase());
-                }
-                return (check_directory("res-directory")
-                    && check_res_cloud()
-                    && check_res_backup_name());
+            function check_res_fields() {
+                return (check_res_backup_name()
+                    && check_directory("res-directory")
+                    && check_res_cloud());
             }
         </script>
     </head>
@@ -198,8 +199,8 @@
                         <div class="small-6 columns">&nbsp;</div>
                         <div class="small-6 columns">
                             <a id="restore_button" class="button radius right small"
-                            onclick="if(check_res_fields(true)) backup(true);">
-                            <i class="fa fa-cloud-download"></i>&nbsp;Restore</a>
+                            onclick="if(check_res_fields()) backup(true);">
+                            <i class="fa fa-cloud-download"></i>&nbsp;Restore Now</a>
                         </div>
                     </div>
                 </div>
