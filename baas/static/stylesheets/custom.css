@@ -1,5 +1,6 @@
 .delete_icon {
-	color:#146A84;
+	color:#97A0AB;
+    font-weight: bold;
 }
 .side-nav .left {
     word-break: break-all;
@@ -49,6 +50,7 @@
     margin: 5px;
     padding: 5px;
     display: inline-block;
+    font-size: 14px;
 }
 .selected-bar {
     background: #2BA6CB;

@@ -56,10 +56,9 @@
                         .attr("id", "box_a_" + backup.name)
                         .attr("class", "left")
                         .attr("onclick", "go_to_backup('" + backup.cloud + "/" + backup.name + "')");
-
                     li.append(a);
 
-                    var a_del = $("<a><i class='fa fa-times-circle delete_icon'></i></a>")
+                    var a_del = $("<a><i class='fa fa-trash-o delete_icon'></i></a>")
                         .attr("href", "#")
                         .attr("class", "right")
                         .click(function() {
