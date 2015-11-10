@@ -13,7 +13,7 @@
             hide_error_divs();
 
             function load_field_values() {
-                $("#res-backup-name").val(selected_backup);
+                $("#res-backup-name").val(backups[selected_backup].name);
                 $("#res-cloud").val(backups[selected_backup].cloud);
                 $("#res-passphrase").val(backups[selected_backup].passphrase);
                 if(typeof g_res_directory != 'undefined') {

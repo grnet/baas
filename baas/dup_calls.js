@@ -125,6 +125,13 @@ function run_duplicity(restore) {
         container_name = $("#backup-name").val();
     }
 
+    var cloud = "";
+    if(restore) {
+        cloud = $("#res-cloud").val();
+    } else {
+        cloud = $("#cloud").val();
+    }
+
     var log_file = path.join(BAAS_LOG_DIR, "dup_" + new Date().toISOString() + ".log");
     var log_arg = " --log-file '" + log_file + "' ";
 
@@ -154,7 +161,7 @@ function run_duplicity(restore) {
                             $("#msg").html("");
                             $("#msg").removeClass("panel");
                             if(!restore &&
-                                typeof backups[selected_backup].first_backup == 'undefined') {
+                                typeof backups[cloud + "/" + selected_backup].first_backup == 'undefined') {
                                 write_first_backup();
                             }
                         }
@@ -180,7 +187,7 @@ function run_duplicity(restore) {
                 $("#msg").html("");
                 $("#msg").removeClass("panel");
                 if(!restore &&
-                    typeof backups[container_name].first_backup == 'undefined') {
+                    typeof backups[cloud + "/" + container_name].first_backup == 'undefined') {
                     write_first_backup();
                 }
             }

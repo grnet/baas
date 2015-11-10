@@ -10,14 +10,9 @@
                 populate_clouds("");
             }
             if(typeof selected_backup != 'undefined') {
-                $.each(backups, function(i, backup) {
-                    if(backup.name == selected_backup) {
-                        $("#selected-bar").html(backup.name);
-                        $("#selected-bar").show();
-                        load_backup(backup);
-                        return;
-                    }
-                });
+                $("#selected-bar").html(selected_backup);
+                $("#selected-bar").show();
+                load_backup(backups[selected_backup]);
             } else {
                 $("#selected-bar").hide();
                 load_backup();

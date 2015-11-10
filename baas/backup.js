@@ -104,11 +104,11 @@ function save_backup_set() {
     container = backup_set.container;
     backup_set.exclude = exclude;
     backup_set.include = include;
-    if(typeof backups[backup_name] != 'undefined' &&
-        typeof backups[backup_name].first_backup != 'undefined') {
-        backup_set.first_backup = backups[backup_name].first_backup;
+    if(typeof backups[cloud + "/" + backup_name] != 'undefined' &&
+        typeof backups[cloud + "/" + backup_name].first_backup != 'undefined') {
+        backup_set.first_backup = backups[cloud + "/" + backup_name].first_backup;
     }
-    backups[backup_name] =  backup_set;
+    backups[cloud + "/" + backup_name] =  backup_set;
     render_backup_sets("");
 
     write_conf_file(BACKUP_CONF_FILE, backups);
@@ -117,7 +117,7 @@ function save_backup_set() {
 }
 
 function delete_backup(backup) {
-    delete backups[backup.name];
+    delete backups[backup.cloud + "/" + backup.name];
     render_backup_sets("");
     write_conf_file(BACKUP_CONF_FILE, backups);
     $(".tabs").hide();
@@ -126,8 +126,10 @@ function delete_backup(backup) {
 
 function write_first_backup() {
     var backup_name = $("#backup-name").val().replace(/^\s+|\s+$/gm,'');
+    var cloud = $("#cloud").val();
     var first_backup = null;
-    backups[backup_name].first_backup = new Date();
+
+    backups[cloud + "/" + backup_name].first_backup = new Date();
     write_conf_file(BACKUP_CONF_FILE, backups);
 }
 
