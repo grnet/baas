@@ -104,9 +104,13 @@ function save_backup_set() {
     container = backup_set.container;
     backup_set.exclude = exclude;
     backup_set.include = include;
-    if(typeof backups[cloud + "/" + backup_name] != 'undefined' &&
-        typeof backups[cloud + "/" + backup_name].first_backup != 'undefined') {
-        backup_set.first_backup = backups[cloud + "/" + backup_name].first_backup;
+    if(typeof backups[cloud + "/" + backup_name] != 'undefined') {
+        if(typeof backups[cloud + "/" + backup_name].first_backup != 'undefined') {
+            backup_set.first_backup = backups[cloud + "/" + backup_name].first_backup;
+        }
+        if(typeof backups[cloud + "/" + backup_name].last_backup != 'undefined') {
+            backup_set.last_backup = backups[cloud + "/" + backup_name].last_backup;
+        }
     }
     backups[cloud + "/" + backup_name] =  backup_set;
     render_backup_sets("");
@@ -123,13 +127,3 @@ function delete_backup(backup) {
     $(".tabs").hide();
     $(".tabs-content").hide();
 }
-
-function write_first_backup() {
-    var backup_name = $("#backup-name").val().replace(/^\s+|\s+$/gm,'');
-    var cloud = $("#cloud").val();
-    var first_backup = null;
-
-    backups[cloud + "/" + backup_name].first_backup = new Date();
-    write_conf_file(BACKUP_CONF_FILE, backups);
-}
-

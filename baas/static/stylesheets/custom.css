@@ -59,3 +59,7 @@
     padding-top: 0;
     color: white;
 }
+.backup-box span {
+    color: gray;
+    font-size: smaller;
+}

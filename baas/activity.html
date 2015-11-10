@@ -70,6 +70,16 @@
                         });
                     li.append(a_del);
 
+                    if(typeof backup.first_backup != 'undefined') {
+                        li.append("<br>");
+                        var first = new Date(backup.first_backup).toLocaleString();
+                        var first_p = $("<span>First : " + first + " </span>");
+                        li.append(first_p);
+                        li.append("<br>");
+                        var last = new Date(backup.last_backup).toLocaleString();
+                        var last_p = $("<span>Last : " + last + " </span>");
+                        li.append(last_p);
+                    }
                     ul.append(li);
                     $("#backup-table").append(ul);
                 });
