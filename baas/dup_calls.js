@@ -48,6 +48,23 @@ function build_win_commands() {
 
 function run_duplicity(restore) {
 
+    var container_name = "";
+    if(restore) {
+        container_name = $("#res-backup-name").val();
+    } else {
+        container_name = $("#backup-name").val();
+    }
+
+    var cloud = "";
+    if(restore) {
+        cloud = $("#res-cloud").val();
+    } else {
+        cloud = $("#cloud").val();
+    }
+
+    backups[cloud + "/" + container_name].last_status = "Running";
+    write_conf_file(BACKUP_CONF_FILE, backups);
+
     var file_arg = "";
     if(restore) {
         var file_to_restore = $("#res-file").val();
@@ -118,20 +135,6 @@ function run_duplicity(restore) {
         directory = $("#directory").html();
     }
 
-    var container_name = "";
-    if(restore) {
-        container_name = $("#res-backup-name").val();
-    } else {
-        container_name = $("#backup-name").val();
-    }
-
-    var cloud = "";
-    if(restore) {
-        cloud = $("#res-cloud").val();
-    } else {
-        cloud = $("#cloud").val();
-    }
-
     var log_file = path.join(BAAS_LOG_DIR, "dup_" + new Date().toISOString() + ".log");
     var log_arg = " --log-file '" + log_file + "' ";
 
@@ -141,9 +144,11 @@ function run_duplicity(restore) {
             $("#msg").addClass("panel");
             disable_form(false);
             disable_actions(true);
+            backups[cloud + "/" + container_name].last_status = "Fail";
         } else {
             $("#msg").html("");
             $("#msg").removeClass("panel");
+            backups[cloud + "/" + container_name].last_status = "Success";
             if(!restore) {
                 backups[cloud + "/" + container_name].last_backup = new Date();
                 if(typeof backups[cloud + "/" + container_name].first_backup == 'undefined') {
