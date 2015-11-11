@@ -1,6 +1,6 @@
 @echo off
 set MIRROR=ftp://ftp.snt.utwente.nl/pub/software/cygwin/
-set PACKAGES=python,gnupg,librsync1,python-setuptools
+set PACKAGES=python,gnupg,librsync2,python-setuptools
 set NAME=cygwin
 
 if "%1" == "build" (
