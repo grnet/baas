@@ -12,6 +12,7 @@ function go_to_restore_single(name) {
 }
 
 function show_contents_by_date(error, stdout, stderr) {
+    if(error) $("#msg").html(stderr);
     $("#time-contents").empty();
 
     var ul = $("<ul></ul>")
