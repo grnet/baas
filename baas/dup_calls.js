@@ -153,20 +153,19 @@ function run_duplicity(restore, force) {
 
     function dup_output(error, stdout, stderr) {
         if(error) {
-            $("#msg").html(error);
+            $("#msg").html(stderr);
             $("#msg").addClass("panel");
-            disable_form(false);
-            disable_actions(true);
-            if(!restore) {
-                backups[cloud + "/" + container_name].last_status = "Failed";
-            }
             $("#loader").hide();
-            if(restore) {
+            if(!restore) {
+                disable_form(false);
+                disable_actions(true);
+                backups[cloud + "/" + container_name].last_status = "Failed";
+            } else {
                 var exist_error =
                     new RegExp("Restore destination directory.* already exists.\nWill not overwrite.")
                     .exec(stderr);
                 if(exist_error) {
-                    var msg = "Destination directory already exists. Overwrite?";
+                    var msg = "Destination already exists. Overwrite?";
                     if(confirm(msg)) {
                         $("#loader").show();
                         run_duplicity(true, true);
@@ -185,8 +184,10 @@ function run_duplicity(restore, force) {
                 }
             }
         }
-        disable_buttons(false);
-        write_conf_file(BACKUP_CONF_FILE, backups);
+        if(!restore) {
+            disable_buttons(false);
+            write_conf_file(BACKUP_CONF_FILE, backups);
+        }
     }
 
     if(process.platform == 'win32') {
