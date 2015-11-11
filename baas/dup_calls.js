@@ -128,8 +128,16 @@ function run_duplicity(restore, force) {
     if(restore) {
         if(file_to_restore) {
             directory = path.join($("#res-directory").html(), file_to_restore);
-            mkdirp(directory, function(err) {
-                if(err) console.error(err);
+            fs.stat(directory, function (err, stats) {
+                if(err) {
+                    mkdirp.sync(directory, function(err) {
+                        if(err) {
+                            console.error(err);
+                            $("#msg").html(err);
+                            $("#msg").addClass("panel");
+                        }
+                    });
+                }
             });
         } else {
             directory = $("#res-directory").html();
