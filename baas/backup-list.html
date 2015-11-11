@@ -178,6 +178,7 @@
                         </div>
                         <form>
                             <fieldset>
+                                <legend>From</legend>
                                 <div class="clearfix">
                                     <div class="small-3 columns">
                                         <label id="directory_label" for="directory" class="right">
@@ -200,6 +201,9 @@
                                         onchange="$('#directory').html($(this).val());
                                             check_directory('directory');" />
                                 </div>
+                            </fieldset>
+                            <fieldset>
+                                <legend>To</legend>
                                 <div class="clearfix">
                                     <div class="small-3 columns">
                                          <label id="cloud_label" for="cloud" class="right inline">Cloud</label>
@@ -212,7 +216,10 @@
                                 </div>
                                 <div class="clearfix">
                                     <div class="small-3 columns">
-                                         <label id="backup_name_label" for="backup-name" class="right inline">Name</label>
+                                         <label id="backup_name_label" for="backup-name" class="right inline">
+                                            Name&nbsp;<i class="fa fa-info-circle green-info"
+                                             onclick="$('#name-info').slideDown();"></i>
+                                         </label>
                                     </div>
                                     <div class="small-9 columns error" id="backup-name-error">
                                         <input type="text" id="backup-name"
@@ -220,6 +227,11 @@
                                         value="Backup_"
                                         onchange="check_backup_name();">
                                         <small class="error"></small>
+                                    </div>
+                                    <div class="small-3 columns">&nbsp;</div>
+                                    <div class="small-9 columns hide info-text panel" id="name-info">
+                                        <i class="fa fa-times right" onclick="$('#name-info').slideUp();"></i>
+                                        Backup name will also appear as a container in your cloud
                                     </div>
                                 </div>
                             </fieldset>
