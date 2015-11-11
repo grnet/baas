@@ -1,5 +1,6 @@
 from os import listdir, makedirs
 from os.path import exists, isdir
+import os
 from subprocess import Popen, PIPE
 import json
 import errno
@@ -64,7 +65,9 @@ def put_timepoint(config, timepoint, data):
 
 
 def fetch_timepoint(config, timepoint):
-    args = ['duplicity', 'list-current-files', '-t', timepoint,
+    curpath = os.path.dirname(os.path.realpath(__file__))
+    duplicity = os.path.join(curpath, 'duplicity')
+    args = [duplicity, 'list-current-files', '-t', timepoint,
             config['target_url']]
     proc = Popen(args, stdout=PIPE, stderr=PIPE)
     procout, procerr = proc.communicate()
