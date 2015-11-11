@@ -4,36 +4,39 @@ Backup as a Service
 
 ## Build instructions
 
-### Build instructions for Windows
+### Cygwin installation and setup
+To build a package on Windows you need cygwin.
 
-I. Cygwin installation and setup
-    1. Download Cygwin setup.exe from https://www.cygwin.com/setup-x86_64.exe in this directory.
-    2. Execute install.bat
-        This will install Cygwin and prerequisite packages under .\build\cygwin.
-        It will also download and install python-lockfile, duplicity and python-swiftclient.
+1. Download Cygwin setup.exe from https://www.cygwin.com/setup-x86_64.exe in
+this directory.
+2. Run `make_cygwin.bat build` to install the environment we need to build
+duplicity under `build\cygwin_build`.
+3. Run `make_cygwin.bat dist` to build a smaller instance needed for
+deployment under `build\cygwin`.
 
-II. Node.js
-    1. Install Node.js from https://nodejs.org/en/
-        Important: npm3 is required. To update:
-        - cd %ProgramFiles%\nodejs
-        - npm -g install npm@latest
+### Install Node.js and npm
 
-    2. Install nw-builder : npm -g install nw-builder
+1. Install Node.js from https://nodejs.org/en/
+2. Make sure that npm is also installed.
+3. Install nw-builder : npm -g install nw-builder
 
-III. Clone repo and build
-    1. Get the code from the baas repo
-    2. cd into baas directory
-    3. nwbuild -p win64 -v 0.12.0 baas
-    4. copy contents of build\baas\win64 folder into build directory
+* Note that on some systems node executable is installed as nodejs, and
+  nw-builder fails to start. You will need to change the first line of
+  /usr/local/bin/nwbuild to look for nodejs.
 
-### Build instructions for Linux
+### Build duplicity
 
-I. Building duplicity
-   1. You will need python, pip and gnupg.
-   2. Make sure you have librsync-dev installed.
-   3. pip install wheel.
-   4. Download and unpack the latest duplicity source code from https://launchpad.net/duplicity/0.7-series
-   5. Run make_duplicity.sh <path_to_duplicity_src>. This will build duplicity and collect its dependencies under build/duplicity. In order to run the executable build/duplicity/duplicity, you need to set PYTHONPATH=build/duplicity/lib.
+1. You will need python and gnupg. Make sure you have librsync-dev
+installed. On Windows, these are provided by cygwin installed previously.
+2. Run make_duplicity.sh; this will build duplicity and collect its
+dependencies under build/duplicity. Note that on Windows you need to run it
+with build\cygwin_build\bin\bash.exe.
+
+### Build the package
+
+1. Run make_package.sh <platform> (again, with
+build\cygwin_build\bin\bash.exe on Windows) to build the nwjs application
+and collect everything under dist/baas.
 
 ## Copyright and license
 
