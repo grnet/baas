@@ -9,7 +9,7 @@ function backup(restore) {
         disable_actions(false);
         disable_buttons(true);
     }
-    run_duplicity(restore);
+    run_duplicity(restore, false);
 }
 
 function set_envs() {
@@ -47,7 +47,7 @@ function build_win_commands() {
         "export SWIFT_PREAUTHTOKEN=" + preauth_token + ";";
 }
 
-function run_duplicity(restore) {
+function run_duplicity(restore, force) {
 
     var container_name = "";
     if(restore) {
@@ -63,8 +63,10 @@ function run_duplicity(restore) {
         cloud = $("#cloud").val();
     }
 
-    backups[cloud + "/" + container_name].last_status = "Running";
-    write_conf_file(BACKUP_CONF_FILE, backups);
+    if(!restore) {
+        backups[cloud + "/" + container_name].last_status = "Running";
+        write_conf_file(BACKUP_CONF_FILE, backups);
+    }
 
     var file_arg = "";
     if(restore) {
@@ -139,18 +141,36 @@ function run_duplicity(restore) {
     var log_file = path.join(BAAS_LOG_DIR, "dup_" + new Date().toISOString() + ".log");
     var log_arg = " --log-file '" + log_file + "' ";
 
+    var force_arg = (force) ? " --force " : "";
+
     function dup_output(error, stdout, stderr) {
         if(error) {
             $("#msg").html(error);
             $("#msg").addClass("panel");
             disable_form(false);
             disable_actions(true);
-            backups[cloud + "/" + container_name].last_status = "Fail";
+            if(!restore) {
+                backups[cloud + "/" + container_name].last_status = "Failed";
+            }
+            $("#loader").hide();
+            if(restore) {
+                var exist_error =
+                    new RegExp("Restore destination directory.* already exists.\nWill not overwrite.")
+                    .exec(stderr);
+                if(exist_error) {
+                    var msg = "Destination directory already exists. Overwrite?";
+                    if(confirm(msg)) {
+                        $("#loader").show();
+                        run_duplicity(true, true);
+                    }
+                }
+            }
         } else {
+            $("#loader").hide();
             $("#msg").html("");
             $("#msg").removeClass("panel");
-            backups[cloud + "/" + container_name].last_status = "Success";
             if(!restore) {
+                backups[cloud + "/" + container_name].last_status = "Completed";
                 backups[cloud + "/" + container_name].last_backup = new Date();
                 if(typeof backups[cloud + "/" + container_name].first_backup == 'undefined') {
                     backups[cloud + "/" + container_name].first_backup = new Date();
@@ -159,7 +179,6 @@ function run_duplicity(restore) {
         }
         disable_buttons(false);
         write_conf_file(BACKUP_CONF_FILE, backups);
-        $("#loader").hide();
     }
 
     if(process.platform == 'win32') {
@@ -174,7 +193,7 @@ function run_duplicity(restore) {
                     dirs = " swift://" + container_name + " " + directory;
                 }
                 var cmd = build_win_commands();
-                var dup_cmd = "duplicity " + include_arg +
+                var dup_cmd = "duplicity " + force_arg + include_arg +
                     exclude_arg + file_arg + time_arg + dirs + ";";
 
                 exec(CYGWIN_BASH + " -c '" + cmd + dup_cmd + "'", dup_output);
@@ -186,7 +205,7 @@ function run_duplicity(restore) {
         if(restore) {
             dirs = " swift://" + container_name + " " + directory;
         }
-        var dup_cmd = "duplicity " + dup_verbosity + log_arg +
+        var dup_cmd = "duplicity " + force_arg + dup_verbosity + log_arg +
             include_arg + exclude_arg + file_arg + time_arg + dirs + ";";
         exec(dup_cmd , dup_output);
     }
