@@ -51,7 +51,7 @@
 }
 .selected-bar {
     background: #2BA6CB;
-    margin-top: 0;
+    margin-top: -10px;
     margin-bottom: 10px;
     padding-top: 0;
     color: white;
@@ -59,4 +59,10 @@
 .backup-box span {
     color: gray;
     font-size: smaller;
+}
+body .tabs {
+    line-height: 0.4;
+}
+body legend {
+    color: gray;
 }
