@@ -111,6 +111,9 @@ function save_backup_set() {
         if(typeof backups[cloud + "/" + backup_name].last_backup != 'undefined') {
             backup_set.last_backup = backups[cloud + "/" + backup_name].last_backup;
         }
+        if(typeof backups[cloud + "/" + backup_name].last_status != 'undefined') {
+            backup_set.last_status = backups[cloud + "/" + backup_name].last_status;
+        }
     }
     backups[cloud + "/" + backup_name] =  backup_set;
     render_backup_sets("");
