@@ -121,14 +121,20 @@
                 }
             }
 
-            function check_fields(restore) {
-                if(!restore) {
-                    return(check_directory("directory")
-                        && check_cloud()
-                        && check_backup_name()
-                        && check_passphrase());
+            function disable_buttons(disable) {
+                $("#backup_button").attr("disabled", disable);
+                if(disable) {
+                    $("#backup_button").attr("onclick", "");
+                } else {
+                    $("#backup_button").attr("onclick", "if(check_fields()) backup(false);");
                 }
-                return check_directory("res-directory");
+            }
+
+            function check_fields() {
+                return(check_directory("directory")
+                    && check_cloud()
+                    && check_backup_name()
+                    && check_passphrase());
             }
 
             function go_to_restore() {
@@ -272,12 +278,12 @@
                             <div class="clearfix">
                                 <div class="small-6 columns">
                                     <a id="backup_button" class="button radius left small"
-                                    onclick="if(check_fields(false)) backup(false);">
+                                    onclick="if(check_fields()) backup(false);">
                                     <i class="fa fa-cloud-upload"></i>&nbsp;Backup Now</a>
                                 </div>
                                 <div class="small-6 columns">
                                     <a id="save_button" class="button radius right small success"
-                                    onclick="if(check_fields(false)) save_backup_set();">
+                                    onclick="if(check_fields()) save_backup_set();">
                                     <i class="fa fa-floppy-o"></i>&nbsp;Save</a>
                                 </div>
                                 <div class="small-3 columns">

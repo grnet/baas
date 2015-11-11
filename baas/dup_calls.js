@@ -7,6 +7,7 @@ function backup(restore) {
         save_backup_set();
         disable_form(true);
         disable_actions(false);
+        disable_buttons(true);
     }
     run_duplicity(restore);
 }
@@ -156,6 +157,7 @@ function run_duplicity(restore) {
                 }
             }
         }
+        disable_buttons(false);
         write_conf_file(BACKUP_CONF_FILE, backups);
         $("#loader").hide();
     }
