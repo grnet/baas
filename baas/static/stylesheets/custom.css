@@ -51,10 +51,11 @@
 }
 .selected-bar {
     background: #2BA6CB;
-    margin-top: -10px;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     padding-top: 0;
     color: white;
+    font-weight: bold;
+    font-size: large;
 }
 .backup-box span {
     color: gray;
