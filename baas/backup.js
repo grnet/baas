@@ -9,7 +9,8 @@ var errors = {
     dir_not_chosen : 'Provide a local directory',
     res_file_illegal: 'Invalid Entry. Provide a valid file name',
     path_empty: 'Provide a path',
-    passphrase_empty: 'Provide a Passphrase'
+    passphrase_empty: 'Provide a Passphrase',
+    passphrase_wrong: 'Wrong Passphrase'
 };
 
 

@@ -172,6 +172,15 @@ function run_duplicity(restore, force) {
                         run_duplicity(true, true);
                     }
                 }
+                var gpg_error = new RegExp("GPGError: GPG Failed").exec(stderr);
+                if(gpg_error) {
+                    $("#msg").html("");
+                    $("#msg").removeClass("panel");
+                    $('#res-passphrase-error small').text(errors.passphrase_wrong);
+                    $('#res-passphrase-error small').show();
+                } else {
+                    $('#res-passphrase-error small').hide();
+                }
             }
         } else {
             $("#loader").hide();
