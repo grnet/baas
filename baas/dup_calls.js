@@ -164,6 +164,8 @@ function run_duplicity(restore, force) {
                     new RegExp("Restore destination directory.* already exists.\nWill not overwrite.")
                     .exec(stderr);
                 if(exist_error) {
+                    $("#msg").html("");
+                    $("#msg").removeClass("panel");
                     var msg = "Destination already exists. Overwrite?";
                     if(confirm(msg)) {
                         $("#loader").show();
