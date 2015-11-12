@@ -241,7 +241,7 @@ function run_duplicity(restore, force) {
 function load_status() {
     $('#backup_details').hide();
     $("#loader").show();
-    $("#status").html("");
+    $("#status_contents").html("");
 
     function puts(error, stdout, stderr) {
         if(error) {
@@ -250,7 +250,7 @@ function load_status() {
         } else {
             $("#msg").html("");
             $("#msg").removeClass("panel");
-            $("#status").html(stdout.replace(/(?:\r\n|\r|\n)/g, '<br />'));
+            $("#status_contents").html(stdout);
         }
         $("#loader").hide();
     }

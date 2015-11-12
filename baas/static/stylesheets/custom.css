@@ -67,3 +67,7 @@ body .tabs {
 body legend {
     color: gray;
 }
+#msg {
+    word-break: break-word;
+    margin-right: 15px;
+}
