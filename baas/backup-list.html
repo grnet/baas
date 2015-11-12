@@ -4,6 +4,15 @@
         <title>Backup List</title>
         <script type="text/javascript">
 
+            function disable_buttons(disable) {
+                $("#backup_button").attr("disabled", disable);
+                if(disable) {
+                    $("#backup_button").attr("onclick", "");
+                } else {
+                    $("#backup_button").attr("onclick", "if(check_fields()) backup(false);");
+                }
+            }
+
             if(typeof clouds === 'undefined') {
                 load_data_from_file(CLOUDS_CONF_FILE, populate_clouds);
             } else {
@@ -13,6 +22,11 @@
                 $("#selected-bar").html(selected_backup);
                 $("#selected-bar").show();
                 load_backup(backups[selected_backup]);
+                if(typeof backups[selected_backup].last_status != 'undefined' &&
+                    backups[selected_backup].last_status == "Running") {
+                    disable_buttons(true);
+                    $("#loader").show();
+                }
             } else {
                 $("#selected-bar").hide();
                 load_backup();
@@ -118,15 +132,6 @@
                     $("#backup_detais_link").click(function(e) { load_backup(); });
                     $("#status_link").click(function(e) { load_status(); });
                     $("#timeview_link").click(function(e) { load_timeview(); });
-                }
-            }
-
-            function disable_buttons(disable) {
-                $("#backup_button").attr("disabled", disable);
-                if(disable) {
-                    $("#backup_button").attr("onclick", "");
-                } else {
-                    $("#backup_button").attr("onclick", "if(check_fields()) backup(false);");
                 }
             }
 
