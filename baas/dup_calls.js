@@ -166,11 +166,19 @@ function run_duplicity(restore, force) {
                 if(exist_error) {
                     $("#msg").html("");
                     $("#msg").removeClass("panel");
-                    var msg = "Destination already exists. Overwrite?";
-                    if(confirm(msg)) {
-                        $("#loader").show();
-                        run_duplicity(true, true);
-                    }
+                    $("#modal-confirm").foundation("reveal", "open");
+                    var i = 0;
+                    $("#modal-confirm").on('close.fndtn.reveal', function(e) {
+                        if(e.namespace !== "fndtn.reveal") return;
+                        i++;
+                        $(this).click(function(event) {
+                            // event is fired more than once so have to check
+                            if(event.target.id == "modal-accept" && i == 1) {
+                                $("#loader").show();
+                                run_duplicity(true, true);
+                            }
+                        });
+                    });
                 }
                 var gpg_error = new RegExp("GPGError: GPG Failed").exec(stderr);
                 if(gpg_error) {
