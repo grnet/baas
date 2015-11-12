@@ -56,18 +56,6 @@
                 return true;
             }
 
-            function check_res_passphrase() {
-                var passphrase = $("#passphrase").val();
-                if(!passphrase) {
-                    $('#passphrase-error small').text(errors.passphrase_empty);
-                    $('#passphrase-error small').show();
-                    return false;
-                } else {
-                    $('#passphrase-error small').hide();
-                }
-                return true;
-            }
-
             function populate_clouds(data) {
                 if(typeof clouds === 'undefined') {
                     if(data != "") {
