@@ -65,7 +65,6 @@ function run_duplicity(restore, force) {
 
     if(!restore) {
         backups[cloud + "/" + container_name].last_status = "Running";
-        write_conf_file(BACKUP_CONF_FILE, backups);
     }
 
     var file_arg = "";
