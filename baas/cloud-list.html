@@ -7,6 +7,23 @@
 
             load_data_from_file(CLOUDS_CONF_FILE, render_clouds);
 
+            function show_delete_cloud_modal(cloud) {
+                $("#del-cloud-modal-p").html("Are you sure you want to delete "
+                    + cloud.name + '?');
+                $("#delete-cloud-modal").foundation("reveal", "open");
+                var i = 0;
+                $("#delete-cloud-modal").on('close.fndtn.reveal', function(e) {
+                    if(e.namespace !== "fndtn.reveal") return;
+                    i++;
+                    $(this).click(function(event) {
+                        // event is fired more than once so have to check
+                        if(event.target.id == "del-cloud-modal-accept" && i == 1) {
+                            delete_cloud(cloud);
+                        }
+                    });
+                });
+            }
+
             function render_clouds(data) {
                 $("#clouds_list").remove();
                 // clouds is undefined the first time, when
@@ -39,9 +56,7 @@
                         .attr("href", "#")
                         .attr("class", "right")
                         .click(function() {
-                            if(confirm("Are you sure you want to delete " + cloud.name + '?')) {
-                                delete_cloud(cloud);
-                            }
+                            show_delete_cloud_modal(cloud);
                         });
                     li.append(a_del);
 
@@ -290,5 +305,19 @@
                 </form>
             </div>
         </div>
+        <div id="delete-cloud-modal" class="reveal-modal medium"
+            data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+            <p id="del-cloud-modal-p"></p>
+            <a id="del-cloud-modal-cancel" class="button radius small"
+                onclick="$('#delete-cloud-modal').foundation('reveal', 'close');">
+                Cancel
+            </a>
+            <a id="del-cloud-modal-accept" class="button radius small alert right"
+                onclick="$('#delete-cloud-modal').foundation('reveal', 'close');">
+                Delete
+            </a>
+            <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+        </div>
+
     </body>
 </html>
