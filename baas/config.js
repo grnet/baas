@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var mkdirp = require("mkdirp");
 var exec = require('child_process').exec;
+var execSync = require('child_process').execSync;
 
 var BAAS_HOME_DIR = '.baas';
 var CLOUDS_CONF_FILE = 'clouds.rc';
@@ -16,6 +17,19 @@ var CYGWIN_BASH = path.join(exec_path, "cygwin", "bin", "bash.exe");
 function get_user_home() {
     return process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
 }
+
+function get_unix_path(target) {
+    if(process.platform == 'win32') {
+        var out = execSync(CYGWIN_BASH +
+            " -c \"/usr/bin/cygpath '" + exec_path + "' \"");
+        var win_value = String(out).replace(/(\r\n|\n|\r)/gm, "");
+        return win_value + "/" + target;
+    }
+    return path.join(exec_path, target);
+}
+
+var DUPLICITY_PATH = get_unix_path("duplicity");
+var TIMEVIEW_PATH = get_unix_path("timeview.py");
 
 function create_baas_dir() {
     var dir = path.join(get_user_home(), BAAS_HOME_DIR);

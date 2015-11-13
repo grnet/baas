@@ -120,24 +120,15 @@ function get_contents_by_date(value) {
     } else {
         init_path = time_path;
     }
-    var time_script = path.join(exec_path, 'timeview.py');
     var datapath = path.join(BAAS_CACHE_DIR, 'timeviews');
 
+    var time_cmd = "python " + TIMEVIEW_PATH + " " + datapath + " swift://" +
+        container + " get " + value + " '" + time_path + "'"
     if(process.platform == 'win32') {
-        time_script = time_script.replace(/\\/g, "\\\\");
-        exec(CYGWIN_BASH + " -c \"/usr/bin/cygpath '" + time_script + "' \"",
-            function(error, stdout, stderr) {
-                time_script = String(stdout).replace(/(\r\n|\n|\r)/gm, "");
-                if(error) $("#msg").html(error);
-                var cmd = build_win_commands();
-                var time_cmd = "python " + time_script + " " + datapath + " swift://" +
-                    container + " get " + value + " '" + time_path + "'"
-                exec(CYGWIN_BASH + " -c '" + cmd + time_cmd + "'",
-                    show_contents_by_date);
-        });
+        var cmd = build_win_commands();
+        exec(CYGWIN_BASH + " -c '" + cmd + time_cmd + "'",
+            show_contents_by_date);
     } else {
-        var time_cmd = "python " + time_script + " " + datapath + " swift://" +
-            container + " get " + value + " '" + time_path + "'"
         exec(time_cmd, show_contents_by_date);
     }
 }
@@ -171,7 +162,7 @@ function load_timeview() {
         }
         $("#loader").hide();
     }
-    var dup_cmd = "duplicity collection-status swift://" + container;
+    var dup_cmd = DUPLICITY_PATH + " collection-status swift://" + container;
     if(process.platform == 'win32') {
         var cmd = build_win_commands();
         exec(CYGWIN_BASH + " -c '" + cmd + dup_cmd + "'", puts);
