@@ -20,12 +20,9 @@ function set_envs() {
     }
     var sel_cloud = $("#cloud").val() ? $("#cloud") : $("#res-cloud");
     var cloud_name = sel_cloud.val().replace(/^\s+|\s+$/gm,'');
-    $.each(clouds, function(i, cloud) {
-        if(cloud.name == cloud_name) {
-            process.env['SWIFT_PREAUTHURL'] = cloud.pithos_public + '/' + cloud.uuid;
-            process.env['SWIFT_PREAUTHTOKEN'] = cloud.token;
-        }
-    });
+    var cloud = clouds[cloud_name];
+    process.env['SWIFT_PREAUTHURL'] = cloud.pithos_public + '/' + cloud.uuid;
+    process.env['SWIFT_PREAUTHTOKEN'] = cloud.token;
 }
 
 function build_win_commands() {
@@ -34,12 +31,10 @@ function build_win_commands() {
     var preauth_url = null;
     var preauth_token = null;
 
-    $.each(clouds, function(i, cloud) {
-        if(cloud.name == cloud_name) {
-            preauth_url = cloud.pithos_public + '/' + cloud.uuid;
-            preauth_token = cloud.token;
-        }
-    });
+    var cloud = clouds[cloud_name];
+    preauth_url = cloud.pithos_public + '/' + cloud.uuid;
+    preauth_token = cloud.token;
+
     return "export PATH=/usr/bin/:$PATH;" +
         "ulimit -n 1024;" +
         "export PASSPHRASE=" + passphrase + ";" +
