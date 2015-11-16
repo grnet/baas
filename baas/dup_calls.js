@@ -12,34 +12,32 @@ function backup(restore) {
     run_duplicity(restore, false);
 }
 
-function set_envs() {
+function get_env_values() {
     var sel_pass = $('#passphrase').val() ? $('#passphrase') : $("#res-passphrase");
     var passphrase = sel_pass.val();
-    if(passphrase) {
-        process.env['PASSPHRASE'] = passphrase;
-    }
+
     var sel_cloud = $("#cloud").val() ? $("#cloud") : $("#res-cloud");
     var cloud_name = sel_cloud.val().replace(/^\s+|\s+$/gm,'');
     var cloud = clouds[cloud_name];
-    process.env['SWIFT_PREAUTHURL'] = cloud.pithos_public + '/' + cloud.uuid;
-    process.env['SWIFT_PREAUTHTOKEN'] = cloud.token;
+
+    return [passphrase, cloud.pithos_public + '/' + cloud.uuid, cloud.token];
+}
+
+function set_envs() {
+    var env_values = get_env_values();
+    process.env['PASSPHRASE'] = env_values[0];
+    process.env['SWIFT_PREAUTHURL'] = env_values[1];
+    process.env['SWIFT_PREAUTHTOKEN'] = env_values[2];
 }
 
 function build_win_commands() {
-    var passphrase = $('#passphrase').val();
-    var cloud_name = $("#cloud").val().replace(/^\s+|\s+$/gm,'');
-    var preauth_url = null;
-    var preauth_token = null;
-
-    var cloud = clouds[cloud_name];
-    preauth_url = cloud.pithos_public + '/' + cloud.uuid;
-    preauth_token = cloud.token;
+    var env_values = get_env_values();
 
     return "export PATH=/usr/bin/:$PATH;" +
         "ulimit -n 1024;" +
-        "export PASSPHRASE=" + passphrase + ";" +
-        "export SWIFT_PREAUTHURL=" + preauth_url + ";" +
-        "export SWIFT_PREAUTHTOKEN=" + preauth_token + ";";
+        "export PASSPHRASE=" + env_values[0] + ";" +
+        "export SWIFT_PREAUTHURL=" + env_values[1] + ";" +
+        "export SWIFT_PREAUTHTOKEN=" + env_values[2] + ";";
 }
 
 function run_duplicity(restore, force) {
