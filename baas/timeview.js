@@ -104,6 +104,12 @@ function fill_breadcrumbs(path) {
 var selected_date = "";
 function get_contents_by_date(value) {
     $("#loader").show();
+    if(selected_date) {
+        $("#" + selected_date.replace( /(:|\.|\[|\]|,)/g, "\\$1" )).
+            removeClass("active-li");
+    }
+    $("#" + value.replace( /(:|\.|\[|\]|,)/g, "\\$1" )).
+        addClass("active-li");
     var time_path = $("#time-path").val();
     if(!time_path) {
         $("#time-head-error small").text(errors.path_empty);
