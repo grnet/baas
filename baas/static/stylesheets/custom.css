@@ -71,3 +71,6 @@ body legend {
     word-break: break-word;
     margin-right: 15px;
 }
+.dir-field {
+    overflow-x: auto;
+}
