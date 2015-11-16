@@ -76,6 +76,12 @@ function run_duplicity(restore, force) {
         }
     }
 
+    var type_arg = "";
+    if(!restore) {
+        var backup_type = $("input[name=backup-type]:checked").val();
+        type_arg = " " + backup_type + " ";
+    }
+
     var exclude_arg = "";
     if(!restore) {
         var exclude = $("#exclude").val();
@@ -213,7 +219,7 @@ function run_duplicity(restore, force) {
                     dirs = " swift://" + container_name + " " + directory;
                 }
                 var cmd = build_win_commands();
-                var dup_cmd = DUPLICITY_PATH + " " + force_arg + include_arg +
+                var dup_cmd = DUPLICITY_PATH + " " + type_arg + force_arg + include_arg +
                     exclude_arg + file_arg + time_arg + dirs + ";";
 
                 exec(CYGWIN_BASH + " -c '" + cmd + dup_cmd + "'", dup_output);
@@ -225,7 +231,7 @@ function run_duplicity(restore, force) {
         if(restore) {
             dirs = " swift://" + container_name + " " + directory;
         }
-        var dup_cmd = DUPLICITY_PATH + " " + force_arg + dup_verbosity + log_arg +
+        var dup_cmd = DUPLICITY_PATH + " " + type_arg + force_arg + dup_verbosity + log_arg +
             include_arg + exclude_arg + file_arg + time_arg + dirs + ";";
         exec(dup_cmd , dup_output);
     }

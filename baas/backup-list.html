@@ -18,7 +18,8 @@
             } else {
                 populate_clouds("");
             }
-            if(typeof selected_backup != 'undefined' && selected_backup) {
+            if(typeof selected_backup != 'undefined' && selected_backup &&
+                typeof backups[selected_backup] != 'undefined') {
                 $("#selected-bar").html(selected_backup);
                 $("#selected-bar").show();
                 load_backup(backups[selected_backup]);
@@ -27,8 +28,16 @@
                     disable_buttons(true);
                     $("#loader").show();
                 }
+                if(typeof backups[selected_backup].first_backup != 'undefined') {
+                    $("#inc").prop("checked", true);
+                } else {
+                    $("#full").prop("checked", true);
+                    $("#inc").prop("disabled", true);
+
+                }
             } else {
                 $("#selected-bar").hide();
+                $("#inc").prop("disabled", true);
                 load_backup();
             }
 
@@ -245,6 +254,19 @@
                                 </div>
                             </fieldset>
                             <fieldset>
+                                <div class="clearfix">
+                                    <div class="small-3 columns">
+                                         <label id="backup-type-label" for="backup-type" class="right inline">
+                                            Backup Type
+                                         </label>
+                                    </div>
+                                    <div class="small-9 columns">
+                                        <input type="radio" name="backup-type" value="full" id="full" checked="checked">
+                                            <label for="full">Full</label>
+                                        <input type="radio" name="backup-type" value="incremental" id="inc">
+                                            <label for="inc">Incremental</label>
+                                    </div>
+                                </div>
                                 <div class="clearfix">
                                     <div class="small-3 columns">
                                          <label id="exclude-label" for="exclude" class="right inline">

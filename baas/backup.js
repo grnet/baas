@@ -81,6 +81,8 @@ function load_backup(backup) {
         $("#passphrase").val('');
         $("#exclude").val('');
         $("#include").val('');
+        $("#full").prop("checked", true);
+        $("#inc").prop("disabled", true);
         disable_form(false);
         disable_actions(true);
     }
