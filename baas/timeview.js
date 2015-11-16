@@ -144,21 +144,17 @@ function load_timeview() {
         } else {
             $("#msg").html("");
             $("#msg").removeClass("panel");
-            var reg = "Num volumes:";
-            var i = stdout.indexOf(reg);
-            if(i > 0) {
-                var sets = stdout.substring(i + reg.length);
-                var datetime_reg = /(\d{4})(-)(\d{2})(-)(\d{2})(.)(\d{2})(:)(\d{2})(:)(\d{2})/g;
-                var dates = sets.match(datetime_reg);
-                dates = dates.sort();
-                var dates_list = "";
-                $.each(dates, function(i, value) {
-                    var iso_time = value.replace('.', 'T');
-                    dates_list += "<a href='#' onclick='get_contents_by_date(\""
-                        + iso_time + "\")' id='" + iso_time + "'>" + value.replace('.', ' ') + "</a><br>";
-                });
-                $("#time-dates").html(dates_list);
-            }
+            var datetime_reg = /\d{4}-\d{2}-\d{2}.\d{2}:\d{2}:\d{2}\s+\d+/g;
+            var dates = stdout.match(datetime_reg);
+            if(dates) dates = dates.sort();
+            var dates_list = "";
+            $.each(dates, function(i, value) {
+                value = value.substring(0, 19);
+                var iso_time = value.replace('.', 'T');
+                dates_list += "<a href='#' onclick='get_contents_by_date(\""
+                    + iso_time + "\")' id='" + iso_time + "'>" + value.replace('.', ' ') + "</a><br>";
+            });
+            $("#time-dates").html(dates_list);
         }
         $("#loader").hide();
     }
