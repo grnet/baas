@@ -64,7 +64,7 @@
                     $('#backup-name-error small').show();
                     return false;
                 } else {
-                    var pattern = /^Backup_[\w.\-]+$/;
+                    var pattern = /^Backup[\w.\-]+$/;
                     if(!backup_name.match(pattern)) {
                         $('#backup-name-error small').text(errors.backup_name_illegal);
                         $('#backup-name-error small').show();
@@ -126,7 +126,7 @@
                 }
                 var ul = $("<ul></ul>")
                     .attr("class", "no-bullet template-list");
-                var li = $("<li>Load Template</li>")
+                var li = $("<li>Load Template :</li>")
                     .attr("class", "template-list-title");
                 ul.append(li);
 
@@ -276,8 +276,8 @@
                                     </div>
                                     <div class="small-9 columns error" id="backup-name-error">
                                         <input type="text" id="backup-name"
-                                        placeholder="Backup_[A-Za-z0-9-_]"
-                                        value="Backup_"
+                                        placeholder="Backup[A-Za-z0-9-_]"
+                                        value="Backup"
                                         onchange="check_backup_name();">
                                         <small class="error"></small>
                                     </div>

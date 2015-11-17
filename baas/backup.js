@@ -4,7 +4,7 @@ var container = "";
 var errors = {
     backup_name_empty: 'Provide a Backup Name',
     backup_name_illegal: 'Invalid Entry. Name must start with '
-        + '\'Backup_\' and followed by characters [A-Za-z0-9-_]',
+        + '\'Backup\' and followed by characters [A-Za-z0-9-_]',
     cloud_empty: 'Select cloud configuration',
     dir_not_chosen : 'Provide a local directory',
     res_file_illegal: 'Invalid Entry. Provide a valid file name',
@@ -74,7 +74,7 @@ function load_backup(backup) {
         container = "";
         selected_backup = "";
         $("#selected-bar").hide();
-        $("#backup-name").val('Backup_');
+        $("#backup-name").val('Backup');
         $("#directory").html('');
         $("#res-directory").html('');
         $("#cloud").val('');

@@ -20,21 +20,21 @@ function get_user_home() {
 }
 
 var templates_data = {
-  "Backup_Home": {
-    "name": "Backup_Home",
+  "BackupHome": {
+    "name": "BackupHome",
     "local_dir": get_user_home(),
     "cloud": "",
     "passphrase": "",
-    "container": "Backup_Home",
+    "container": "BackupHome",
     "exclude": "",
     "include": ""
   },
-  "Backup_etc": {
-    "name": "Backup_etc",
+  "BackupEtc": {
+    "name": "BackupEtc",
     "local_dir": "/etc",
     "cloud": "",
     "passphrase": "",
-    "container": "Backup_etc",
+    "container": "BackupEtc",
     "exclude": "",
     "include": ""
   }
