@@ -13,6 +13,12 @@
                 }
             }
 
+            if(typeof templates === 'undefined') {
+                load_data_from_file(TEMPLATES_FILE, populate_template_list);
+            } else {
+                populate_template_list("");
+            }
+
             if(typeof clouds === 'undefined') {
                 load_data_from_file(CLOUDS_CONF_FILE, populate_clouds);
             } else {
@@ -110,6 +116,34 @@
                 });
             }
 
+            function populate_template_list(data) {
+                if(typeof templates === 'undefined') {
+                    if(data != "") {
+                        templates = JSON.parse(data);
+                    } else {
+                        templates = new Object();
+                    }
+                }
+                var ul = $("<ul></ul>")
+                    .attr("class", "no-bullet template-list");
+                var li = $("<li>Load Template</li>")
+                    .attr("class", "template-list-title");
+                ul.append(li);
+
+                $.each(templates, function(i, template) {
+                    var li = $("<li></li>");
+                    var a = $("<a>" + template.name + "&nbsp;<i class='fa fa-arrow-circle-right'></a>")
+                        .attr("href", "#")
+                        .click(function() {
+                            load_backup(template);
+                            $("#template_list").hide();
+                        });
+                    li.append(a);
+                    ul.append(li);
+                });
+                $("#template_list").append(ul);
+            }
+
             function disable_form(disable) {
                 $("#backup-name").prop("disabled", disable);
                 $("#choose-dir").prop("disabled", disable);
@@ -164,7 +198,7 @@
     <body>
         <div class="row">
             <div class="small-2 columns" id="sidebar">
-                <a href="#" onclick="load_backup();" class="button radius small">
+                <a href="#" onclick="$('#template_list').show();load_backup();" class="button radius small">
                     <i class="fa fa-plus-circle">&nbsp;Add</i>
                 </a>
             </div>
@@ -172,7 +206,8 @@
             <div class="small-1 columns"></div>
         </div>
         <div class="row">
-            <div class="small-2 columns"></div>
+            <div class="small-2 columns hide" id="template_list">
+            </div>
             <div class="small-10 columns">
                 <ul class="tabs" data-tab>
                     <li class="tab-title radius" id="backup_details_tab">

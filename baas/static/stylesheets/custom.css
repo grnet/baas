@@ -64,7 +64,7 @@
 body .tabs {
     line-height: 0.4;
 }
-body legend {
+body legend, .template-list-title {
     color: gray;
 }
 #msg {
@@ -73,4 +73,10 @@ body legend {
 }
 .dir-field {
     overflow-x: auto;
+}
+.template-list li a i {
+    visibility: hidden;
+}
+.template-list li a:hover i {
+    visibility: visible;
 }
