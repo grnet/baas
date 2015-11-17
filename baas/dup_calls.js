@@ -148,6 +148,7 @@ function run_duplicity(restore, force) {
     var log_arg = " --log-file '" + log_file + "' ";
 
     var force_arg = (force) ? " --force " : "";
+    var exclude_device_files_arg = (restore) ? " " : " --exclude-device-files ";
 
     function dup_output(error, stdout, stderr) {
         if(error) {
@@ -219,8 +220,8 @@ function run_duplicity(restore, force) {
                     dirs = " swift://" + container_name + " " + directory;
                 }
                 var cmd = build_win_commands();
-                var dup_cmd = DUPLICITY_PATH + " " + type_arg + force_arg + include_arg +
-                    exclude_arg + file_arg + time_arg + dirs + ";";
+                var dup_cmd = DUPLICITY_PATH + " " + type_arg + force_arg + exclude_device_files_arg
+                    + include_arg + exclude_arg + file_arg + time_arg + dirs + ";";
 
                 exec(CYGWIN_BASH + " -c '" + cmd + dup_cmd + "'", dup_output);
         });
@@ -231,8 +232,8 @@ function run_duplicity(restore, force) {
         if(restore) {
             dirs = " swift://" + container_name + " " + directory;
         }
-        var dup_cmd = DUPLICITY_PATH + " " + type_arg + force_arg + dup_verbosity + log_arg +
-            include_arg + exclude_arg + file_arg + time_arg + dirs + ";";
+        var dup_cmd = DUPLICITY_PATH + " " + type_arg + force_arg + exclude_device_files_arg +
+            dup_verbosity + log_arg + include_arg + exclude_arg + file_arg + time_arg + dirs + ";";
         exec(dup_cmd , dup_output);
     }
 }
