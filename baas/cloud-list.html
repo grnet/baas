@@ -106,18 +106,21 @@
 
             var url_error = null;
             var pithos_public = null;
+            var account_ui = null;
 
             function check_cloud_url() {
                 var url = $('#cloud-url').val().replace(/^\s+|\s+$/gm,'');
                 if(!url) {
                     $('#cloud-error small').text(errors.cloud_url_empty);
                     $('#cloud-error small').show();
+                    $("#login").hide();
                 } else {
                     $.ajax({
                         type : 'POST',
                         url : url + '/tokens',
                     })
                     .done(function(data) {
+                        $("#login").show();
                         var endpoints = data.access.serviceCatalog
                         $.each(endpoints, function(i, endpoint) {
                             switch(endpoint.type) {
@@ -126,6 +129,10 @@
                                     $('#cloud-error small').hide();
                                     url_error = null;
                                 } catch(err) { console.log('Failed to get pithos_public ' + err); }
+                                break;
+                                case 'account': try {
+                                    account_ui = endpoint['endpoints'][0]['SNF:uiURL'];
+                                } catch(err) { console.log('Failed to get account_ui ' + err); }
                                 break;
                             }
                         });
@@ -136,6 +143,7 @@
                         console.log(xhr.status + ' ' + xhr.responseText);
                         $('#cloud-error small').text(errors.cloud_inaccessible + ' [' + url_error  + ']');
                         $('#cloud-error small').show();
+                        $("#login").hide();
                     });
                 }
             }
@@ -204,6 +212,7 @@
                     $("#cloud-name").val('');
                     $("#cloud-url").val('');
                     $("#token").val('');
+                    $("#login").hide();
                 }
 
                 $("#cloud_details").show();
@@ -234,6 +243,58 @@
                 render_clouds("");
                 write_conf_file(CLOUDS_CONF_FILE, clouds);
                 $("#cloud_details").hide();
+            }
+
+            function remove_cookies(win, url) {
+                var removed_at_least_one = false
+                win.cookies.getAll({url: url}, function(cookies) {
+                    $.each(cookies, function(i, cookie) {
+                        win.cookies.remove({url: url, name: cookie.name} );
+                        removed_at_least_one = true;
+                    });
+                });
+                return removed_at_least_one;
+            }
+
+            var cred_win = null;
+            var logout_win = null;
+            var got_cookie = false;
+
+            function extract_credentials(cookie) {
+                var credentials = cookie.value.split('%7C');
+                var uuid = credentials[0];
+                var token = credentials[1];
+                $('#token').val(token);
+                $('#token').trigger('change');
+            }
+
+            function get_credentials() {
+                var cookie_name = '_pithos2_a';
+                var lurl = account_ui + '/logout?next=' + pithos_public
+                got_cookie = false;
+                cred_win = gui.Window.open(lurl, {
+                    focus: true, width: 820, height: 580, toolbar: false
+                });
+                cred_win.cookies.onChanged.addListener(function(info) {
+                    if (info.cookie.name === cookie_name) {
+                        console.log('Succesfully logged in');
+                        extract_credentials(info.cookie);
+                        got_cookie = true;
+                    }
+                });
+                cred_win.on('loaded', function() {
+                    if (got_cookie) cred_win.close();
+                });
+                cred_win.on('closed', function() {
+                    logout_win = gui.Window.open(
+                        account_ui + '/logout',
+                        {focus: true, width:20, height: 20 });
+                    logout_win.hide();
+                    logout_win.on('loaded', function() {
+                        while(remove_cookies(logout_win, pithos_public)) {}
+                        logout_win.close();
+                    });
+                });
             }
 
             window.setInterval(function() {
@@ -295,6 +356,12 @@
                                 <input type="text" id="token" placeholder="User token"
                                 onchange="check_token();">
                                 <small class="error"></small>
+                            </div>
+                            <div class="clearfix hide" id="login">
+                                <div class="small-8 columns"></div>
+                                <a id="get_creds"
+                                    class="small-4 columns button right tiny login-button"
+                                    onclick="get_credentials();">Login to retrieve token</a>
                             </div>
                         </div>
                         <div class="clearfix">

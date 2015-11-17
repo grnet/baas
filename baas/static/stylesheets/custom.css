@@ -80,3 +80,7 @@ body legend, .template-list-title {
 .template-list li a:hover i {
     visibility: visible;
 }
+.login-button {
+    width: inherit;
+    margin-right: 15px;
+}
