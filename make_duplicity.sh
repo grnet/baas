@@ -14,7 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-OS_NAME=$(/usr/bin/uname -s)
+OS_NAME=$(uname -s)
+if [ $? -ne 0 ]; then
+    OS_NAME=$(/bin/uname -s)
+fi
 OS_NAME=${OS_NAME:0:6}
 
 if [[ "$OS_NAME" = "CYGWIN" ]]
