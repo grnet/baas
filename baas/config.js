@@ -32,6 +32,7 @@ if(process.platform == 'darwin') {
     exec_path = path.join(
 	path.dirname(path.dirname(path.dirname(path.dirname(exec_path)))),
 	"Resources");
+    process.env['PATH'] = process.env['PATH'] + ':/usr/local/bin';
 }
 
 var CYGWIN_BASH = path.join(exec_path, "cygwin", "bin", "bash.exe");
