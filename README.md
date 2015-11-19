@@ -32,6 +32,9 @@ installed. On Windows, these are provided by cygwin installed previously.
 dependencies under build/duplicity. Note that on Windows you need to run it
 with build\cygwin_build\bin\bash.exe.
 
+* If it fails to find librsync, specify its location by setting variable
+  LIBRSYNC_DIR before running the script.
+
 ### Build the package
 
 1. Run make_package.sh <platform> (again, with
