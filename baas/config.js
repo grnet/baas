@@ -28,6 +28,12 @@ var BAAS_CACHE_DIR = path.join(get_user_home(), BAAS_HOME_DIR, 'cache');
 var RESTORE_DEFAULT_DIR = path.join(get_user_home(), "Downloads");
 
 var exec_path = path.dirname(process.execPath);
+if(process.platform == 'darwin') {
+    exec_path = path.join(
+	path.dirname(path.dirname(path.dirname(path.dirname(exec_path)))),
+	"Resources");
+}
+
 var CYGWIN_BASH = path.join(exec_path, "cygwin", "bin", "bash.exe");
 
 function get_user_home() {

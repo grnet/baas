@@ -50,14 +50,19 @@ rm -rf $DIST; mkdir -p $DIST
 
 echo Copying baas
 cp -r build/baas/$PLATFORM/* $DIST
-cp src/timeview.py $DIST
+
+if [[ "$OS_NAME" = "Darwin" ]]
+then RESOURCES=$DIST/baas.app/Contents/Resources
+else RESOURCES=$DIST
+fi
+cp src/timeview.py $RESOURCES
 echo Copying duplicity
-cp -r build/duplicity/* $DIST
+cp -r build/duplicity/* $RESOURCES
 
 if [[ "$OS_NAME" = "CYGWIN" ]]
 then
   echo Copying cygwin
-  cp -r build/cygwin $DIST
+  cp -r build/cygwin $RESOURCES
 fi
 
 echo Built under $DIST
