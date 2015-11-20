@@ -172,7 +172,7 @@ def main():
             help()
 
         timepoint = argv[4]
-        path = argv[5]
+        path = unicode(argv[5], encoding='UTF-8')
         r = get_timepoint(config, timepoint, path)
         print json.dumps(r, indent=2)
 
