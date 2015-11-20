@@ -23,6 +23,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 } else {
                     $("#backup_button").attr("onclick", "if(check_fields()) backup(false);");
                 }
+                var save_button = $("#save_button");
+                if(save_button) {
+                    $("#save_button").attr("disabled", disable);
+                    if(disable) {
+                        $("#save_button").attr("onclick", "");
+                    } else {
+                        $("#save_button").attr("onclick", "if(check_fields()) save_backup_set();");
+                    }
+                }
             }
 
             if(typeof templates === 'undefined') {
