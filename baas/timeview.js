@@ -36,14 +36,19 @@ function show_contents_by_date(error, stdout, stderr) {
     $.each(contents, function(i, el) {
         var f = "open_folder('" + el.name + "')";
         var restore_f = "show_rest_icon('" + i + "')";
+        var title = (el.name.length > 30) ? el.name : "";
         var el_link = $("<a></a>")
             .attr("href", "#")
+            .attr("title", title)
             .attr("onclick", restore_f);
         if(el.type == 'dir') {
             el_link.attr("ondblclick", f);
         }
         var locale_date = new Date(el.timestamp).toLocaleString();
-        var li = $("<li>&nbsp;<span>" + el.name + "&nbsp;</span><span class='right'>"
+        var filename = (el.name.length > 30) ?
+            el.name.substring(0,7) + "..." + el.name.substring(el.name.length-7, el.name.length):
+                el.name;
+        var li = $("<li>&nbsp;<span>" + filename + "&nbsp;</span><span class='right'>"
             + locale_date + "</span></li>")
             .attr("id", el.name);
         var icon_class = (el.type == 'dir')
