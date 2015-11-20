@@ -20,7 +20,7 @@ function backup(restore) {
     if(!restore) {
         save_backup_set();
         disable_form(true);
-        disable_actions(false);
+        disable_actions(true);
         disable_buttons(true);
     }
     run_duplicity(restore, false);
@@ -214,6 +214,9 @@ function run_duplicity(restore, force) {
                 if(typeof backups[cloud + "/" + container_name].first_backup == 'undefined') {
                     backups[cloud + "/" + container_name].first_backup = new Date();
                 }
+                disable_actions(false);
+                $("#inc").prop("disabled", false);
+                $("#inc").prop("checked", true);
             }
         }
         if(!restore) {

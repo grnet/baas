@@ -53,6 +53,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 if(typeof backups[selected_backup].last_status != 'undefined' &&
                     backups[selected_backup].last_status == "Running") {
                     disable_buttons(true);
+                    disable_actions(true);
+                    disable_form(true);
                     $("#loader").show();
                 }
                 if(typeof backups[selected_backup].first_backup != 'undefined') {
