@@ -244,12 +244,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 </ul>
                 <div class="tabs-content">
                     <div class="content" id="backup_details">
-                        <div id="save-alert" class="hide">
-                            <div data-alert class="alert-box success radius">
-                                Successfully saved backup set.
-                                <a href="#" class="close">&times;</a>
-                            </div>
-                        </div>
                         <form>
                             <fieldset>
                                 <legend>From</legend>
@@ -375,6 +369,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </div>
                             </fieldset>
                             <div class="clearfix">
+                                <div id="success-alert" class="hide">
+                                    <div data-alert class="alert-box success radius"
+                                        id="success-msg">
+                                    </div>
+                                </div>
+                                <div id="error-alert" class="hide">
+                                    <div data-alert class="alert-box alert radius"
+                                        id="error-msg">
+                                    </div>
+                                </div>
                                 <div class="small-6 columns">
                                     <a id="backup_button" class="button radius left small"
                                     onclick="if(check_fields()) backup(false);">

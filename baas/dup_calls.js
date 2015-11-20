@@ -18,6 +18,7 @@ var dup_verbosity = " -v8 ";
 function backup(restore) {
     $("#loader").show();
     if(!restore) {
+        if($("#error-alert")) $("#error-alert").hide();
         save_backup_set();
         disable_form(true);
         disable_actions(true);
@@ -170,6 +171,7 @@ function run_duplicity(restore, force) {
             $("#msg").addClass("panel");
             $("#loader").hide();
             if(!restore) {
+                show_alert_box("There was a problem uploading backup set", "error", false);
                 disable_form(false);
                 disable_actions(true);
                 backups[cloud + "/" + container_name].last_status = "Failed";
@@ -209,6 +211,7 @@ function run_duplicity(restore, force) {
             $("#msg").html("");
             $("#msg").removeClass("panel");
             if(!restore) {
+                show_alert_box("Successfully completed", "success", true);
                 backups[cloud + "/" + container_name].last_status = "Completed";
                 backups[cloud + "/" + container_name].last_backup = new Date();
                 if(typeof backups[cloud + "/" + container_name].first_backup == 'undefined') {

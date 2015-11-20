@@ -103,6 +103,20 @@ function load_backup(backup) {
     $("#backup_details").show();
 }
 
+function show_alert_box(msg, alert_type, hide) {
+    $("#" + alert_type + "-alert").show();
+    $("#" + alert_type + "-msg").html(msg + "<a href='#' class='close'>&times;</a>");
+    if(hide) {
+        $("#" + alert_type + "-alert").delay(800).fadeOut(400);
+    }
+    if(alert_type == "error") {
+        $("html,body").animate({
+            scrollTop: $("#msg").offset().top},
+            "slow"
+        );
+    }
+}
+
 function save_backup_set() {
     var backup_name = $("#backup-name").val().replace(/^\s+|\s+$/gm,'');
     var directory = $("#directory").html();
@@ -135,9 +149,8 @@ function save_backup_set() {
     backups[cloud + "/" + backup_name] =  backup_set;
     render_backup_sets("");
 
+    show_alert_box("Successfully saved backup set", "success", true);
     write_conf_file(BACKUP_CONF_FILE, backups);
-    $("#save-alert").show();
-    setTimeout( function() {$("#save-alert").fadeOut()}, 1000);
 }
 
 function delete_backup(backup) {
