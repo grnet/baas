@@ -147,6 +147,7 @@ function save_backup_set() {
         }
     }
     backups[cloud + "/" + backup_name] =  backup_set;
+    selected_backup = cloud + "/" + backup_name;
     render_backup_sets("");
 
     show_alert_box("Successfully saved backup set", "success", true);
