@@ -17,8 +17,8 @@ var dup_verbosity = " -v8 ";
 
 function backup(restore) {
     $("#loader").show();
+    if($("#error-alert")) $("#error-alert").hide();
     if(!restore) {
-        if($("#error-alert")) $("#error-alert").hide();
         save_backup_set();
         disable_form(true);
         disable_actions(true);
@@ -179,6 +179,7 @@ function run_duplicity(restore, force) {
                 var exist_error =
                     new RegExp("Restore destination directory.* already exists.\nWill not overwrite.")
                     .exec(stderr);
+                var gpg_error = new RegExp("GPGError: GPG Failed").exec(stderr);
                 if(exist_error) {
                     $("#msg").html("");
                     $("#msg").removeClass("panel");
@@ -195,23 +196,22 @@ function run_duplicity(restore, force) {
                             }
                         });
                     });
-                }
-                var gpg_error = new RegExp("GPGError: GPG Failed").exec(stderr);
-                if(gpg_error) {
+                } else if(gpg_error) {
                     $("#msg").html("");
                     $("#msg").removeClass("panel");
                     $('#res-passphrase-error small').text(errors.passphrase_wrong);
                     $('#res-passphrase-error small').show();
                 } else {
                     $('#res-passphrase-error small').hide();
+                    show_alert_box("A problem occured during restoring", "error", false);
                 }
             }
         } else {
             $("#loader").hide();
             $("#msg").html("");
             $("#msg").removeClass("panel");
+            show_alert_box("Successfully completed", "success", true);
             if(!restore) {
-                show_alert_box("Successfully completed", "success", true);
                 backups[cloud + "/" + container_name].last_status = "Completed";
                 backups[cloud + "/" + container_name].last_backup = new Date();
                 if(typeof backups[cloud + "/" + container_name].first_backup == 'undefined') {
