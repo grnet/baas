@@ -6,12 +6,16 @@
 BaaS User Guide
 ===============
 
-BaaS general description, shown in the first page. Edit index.rst to change it.
+BaaS (Backup as a Service) is a service provided to Synnefo users in order to
+backup their data to `Pithos`_ Storage. It supports encrypted, incremental backups
+in a space and bandwidth-efficient way through a Graphical User Interface (GUI)
+as well as a Command Line Interface (CLI).
 
-Leave an empty line to change paragraph. Use `this notation`_ if you like.
+BaaS uses `Duplicity`_ as the backend.
 
-What to write here? By convention, provide a general description then briefly
-refer to the licence and the development team and provide some contact details.
+BaaS GUI is implemented and supported by the `Synnefo Development Team`_ of the
+`Greek Research and Technology Network`_ and is an open source project, licensed
+under GPL v3.
 
 Contents:
 
@@ -38,3 +42,4 @@ Indices and tables
 .. _Pithos: https://www.synnefo.org/docs/synnefo/latest/pithos.html
 .. _Synnefo Development Team: https://www.synnefo.org
 .. _Greek Research and Technology Network: http://www.grnet.gr
+.. _Duplicity: http://duplicity.nongnu.org
