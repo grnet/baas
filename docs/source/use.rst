@@ -3,48 +3,60 @@
 How to use BaaS
 ===============
 
-This can be edited in use.rst
-This short description can be ommited if you don't need it.
-Use stars for bullets, see how to create references to other files bellow:
+In this section it is assumed BaaS is installed and properly setup.
 
 * For installation instructions, go to :ref:`installation`.
 * For setup instructions, go to :ref:`setup`.
 
-Start up
---------
 
-Describe how to launch the application, e.g. in various systems.
-
-Here is a picture of a cat. The location of the image is conventional, if you
-need to use more than, let's say, 10 images, create dir structures etc.
-
-.. image:: images/cat.png
-
-Hope this suffices for now.
-
-Take a Back Up
+Take a Back up
 --------------
 
-Explain how you get back ups. You can use ``this`` or *this*.
+To create a new Backup set go to ``Backup`` section and click *Add*.
+You can provide your own settings or start from an existing template.
 
-.. note:: You can also have boxes with notes
+You can also provide *Exclude* and *Include* options.
 
-.. warning:: or boxes with warnings
+.. image:: images/new-backup.png
+
+Click on *Save* button to save current settings or *Backup Now* to save settings
+and start backup process.
+
+.. note:: Backup name will also appear as a container in your cloud.
+
+When finished you can check *Status* section for detailed information.
+
+``Activity`` section is now updated to display the latest actions:
+
+.. image:: images/activity.png
 
 Restore a Back Up
 -----------------
 
-How to restore a back up
+To restore a previously uploaded backup set select it from ``Activity`` section and click
+on *Restore* button. You are now in ``Restore`` section:
 
-Other functionalities
----------------------
+.. image:: images/restore.png
 
-Whatever needed to be done...
+Click *Restore Now* button to download the whole set.
+Fill in *File to Restore* field if you want to restore a single file.
+Fill in *Timestamp* field to retrieve an older version of your backup.
 
-.. _somereference:
+.. note:: You can also restore backup sets that weren't uploaded from your current
+    workstation as long as you provide cloud and container name (From: Name field) and the
+    Passphrase used to encrypt it.
 
-This can be refered by other sections
--------------------------------------
+Timeview
+--------
 
-Check the source file to see how to make subsections that can be refered by
-other sections
+You can review backup folders and files under *Timeview* section:
+
+.. image:: images/timeview.png
+
+Double-click on folders to review their contents:
+
+.. image:: images/timeview-contents.png
+
+By clicking on a file or folder the *Restore* icon appears. Select it to automatically
+fill in the corresponding fields in the ``Restore`` section.
+
