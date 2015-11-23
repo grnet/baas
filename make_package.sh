@@ -65,4 +65,9 @@ then
   cp -r build/cygwin $RESOURCES
 fi
 
+if [[ ${PLATFORM:0:3} = "osx" ]]
+then
+    cp src/images/logo.icns $DIST/baas.app/Contents/Resources/nw.icns
+fi
+
 echo Built under $DIST
