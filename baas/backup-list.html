@@ -189,16 +189,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 $("#backup_details_link").prop("disabled", disable);
                 $("#status_link").prop("disabled", disable);
                 $("#timeview_link").prop("disabled", disable);
+                $("#cleanup_link").prop("disabled", disable);
                 if(disable) {
                     $("#backup_details_link").attr("click", "");
                     $("#status_link").click(function(e) { e.preventDefault(); });
                     $("#status_link").unbind("click");
                     $("#timeview_link").click(function(e) { e.preventDefault(); });
                     $("#timeview_link").unbind("click");
+                    $("#cleanup_link").click(function(e) { e.preventDefault(); });
+                    $("#cleanup_link").unbind("click");
                 } else {
                     $("#backup_detais_link").click(function(e) { load_backup(); });
                     $("#status_link").click(function(e) { load_status(); });
                     $("#timeview_link").click(function(e) { load_timeview(); });
+                    $("#cleanup_link").click(function(e) { $("#backup_details").hide() });
                 }
             }
 
@@ -218,222 +222,264 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             }
         </script>
 
-        <div class="row">
-            <div class="small-2 columns" id="sidebar">
-                <a href="#" onclick="$('#template_list').show();load_backup();" class="button radius small">
-                    <i class="fa fa-plus-circle">&nbsp;Add</i>
-                </a>
-            </div>
-            <div class="small-9 columns selected-bar text-center" id="selected-bar"></div>
-            <div class="small-1 columns"></div>
-        </div>
-        <div class="row">
-            <div class="small-2 columns hide" id="template_list">
-            </div>
-            <div class="small-10 columns">
-                <ul class="tabs" data-tab>
-                    <li class="tab-title radius" id="backup_details_tab">
-                        <a href="#backup_details" onclick="$('#backup_details').show()"
-                            id="backup_details_link">Settings</a>
-                    </li>
-                    <li class="tab-title radius">
-                        <a href="#timeview" id="timeview_link">Timeview</a>
-                    </li>
-                    <li class="tab-title radius">
-                        <a href="#status" id="status_link">Status</a>
-                    </li>
-                </ul>
-                <div class="tabs-content">
-                    <div class="content" id="backup_details">
-                        <form>
-                            <fieldset>
-                                <legend>From</legend>
-                                <div class="clearfix">
-                                    <div class="small-3 columns">
-                                        <label id="directory_label" for="directory" class="right">
-                                            Local directory
-                                        </label>
-                                    </div>
-                                    <div id="directory" class="small-6 columns dir-field"></div>
-                                    <div id="dirdialogue_label" onclick="$('#choose-dir').trigger('click');"
-                                        class="small-3 columns" id="dirpick">
-                                        <i class="fa fa-folder-o blue-folder">&nbsp;</i>
-                                    </div>
-                                </div>
-                                <div class="clearfix">
-                                    <div class="small-3 columns">&nbsp;</div>
-                                    <div id="directory-error" class="small-6 columns">
-                                        <small class="error"></small>
-                                    </div>
-                                    <input type="file" id="choose-dir" nwdirectory
-                                        style="display:none;"
-                                        onchange="$('#directory').html($(this).val());
-                                            check_directory('directory');" />
-                                </div>
-                            </fieldset>
-                            <fieldset>
-                                <legend>To</legend>
-                                <div class="clearfix">
-                                    <div class="small-3 columns">
-                                         <label id="cloud_label" for="cloud" class="right inline">Cloud</label>
-                                    </div>
-                                    <div class="small-9 columns error" id="cloud-error">
-                                        <select id="cloud" onchange="check_cloud();">
-                                        </select>
-                                        <small class="error"></small>
-                                    </div>
-                                </div>
-                                <div class="clearfix">
-                                    <div class="small-3 columns">
-                                         <label id="backup_name_label" for="backup-name" class="right inline">
-                                            Name&nbsp;<i class="fa fa-info-circle green-info"
-                                             onclick="$('#name-info').slideDown();"></i>
-                                         </label>
-                                    </div>
-                                    <div class="small-9 columns error" id="backup-name-error">
-                                        <input type="text" id="backup-name"
-                                        placeholder="Backup[A-Za-z0-9-_]"
-                                        value="Backup"
-                                        onchange="check_backup_name();">
-                                        <small class="error"></small>
-                                    </div>
-                                    <div class="small-3 columns">&nbsp;</div>
-                                    <div class="small-9 columns hide info-text panel" id="name-info">
-                                        <i class="fa fa-times right" onclick="$('#name-info').slideUp();"></i>
-                                        Backup name will also appear as a container in your cloud
-                                    </div>
-                                </div>
-                            </fieldset>
-                            <fieldset>
-                                <div class="clearfix">
-                                    <div class="small-3 columns">
-                                         <label id="backup-type-label" for="backup-type" class="right inline">
-                                            Backup Type
-                                         </label>
-                                    </div>
-                                    <div class="small-9 columns">
-                                        <input type="radio" name="backup-type" value="full" id="full" checked="checked">
-                                            <label for="full">Full</label>
-                                        <input type="radio" name="backup-type" value="incremental" id="inc">
-                                            <label for="inc">Incremental</label>
-                                    </div>
-                                </div>
-                                <div class="clearfix">
-                                    <div class="small-3 columns">
-                                         <label id="exclude-label" for="exclude" class="right inline">
-                                             Exclude&nbsp;<i class="fa fa-info-circle green-info"
-                                             onclick="$('#include-help').slideDown();"></i>
-                                         </label>
-                                    </div>
-                                    <div class="small-9 columns error" id="exclude-error">
-                                        <input type="text" id="exclude"
-                                        placeholder="Exclude folders or files">
-                                        <small class="error"></small>
-                                    </div>
-                                </div>
-                                <div class="clearfix">
-                                    <div class="small-3 columns">
-                                         <label id="include-label" for="include" class="right inline">
-                                             Include&nbsp;<i class="fa fa-info-circle green-info"
-                                                onclick="$('#include-help').slideDown();"></i>
-                                         </label>
-                                    </div>
-                                    <div class="small-9 columns error" id="include-error">
-                                        <input type="text" id="include"
-                                        placeholder="Include folders or files">
-                                        <small class="error"></small>
-                                    </div>
-                                    <div class="small-3 columns">&nbsp;</div>
-                                    <div class="small-9 columns hide info-text panel" id="include-help">
-                                        <i class="fa fa-times right" onclick="$('#include-help').slideUp();"></i>
-                                        Include and Exclude fields accept some extended shell globbing patterns:
-                                        <br>* Matches any string not containing '/'
-                                        <br>? Matches any character except '/'
-                                        <br>[...] Expands to a single character of those characters specified
-                                            (ranges are acceptable)
-                                        <br>** Matches any string
-                                    </div>
-                                </div>
-                                <div class="clearfix">
-                                    <div class="small-3 columns">
-                                        <label id="passphrase_label" for="passphrase" class="right inline">Passphrase</label>
-                                    </div>
-                                    <div class="small-6 columns error" id="passphrase-error">
-                                        <input type="password" id="passphrase" placeholder="Passphrase">
-                                        <small class="error"></small>
-                                    </div>
-                                    <div class="small-3 columns">
-                                        <label for="save_passphrase" class="left">Save&nbsp;
-                                        <input id="save_passphrase" type="checkbox" class="right">
-                                        </label>
-                                    </div>
-                                </div>
-                            </fieldset>
-                            <div class="clearfix">
-                                <div id="success-alert" class="hide">
-                                    <div data-alert class="alert-box success radius"
-                                        id="success-msg">
-                                    </div>
-                                </div>
-                                <div id="error-alert" class="hide">
-                                    <div data-alert class="alert-box alert radius"
-                                        id="error-msg">
-                                    </div>
-                                </div>
-                                <div class="small-6 columns">
-                                    <a id="backup_button" class="button radius left small"
-                                    onclick="if(check_fields()) backup(false);">
-                                    <i class="fa fa-cloud-upload"></i>&nbsp;Backup Now</a>
-                                </div>
-                                <div class="small-6 columns">
-                                    <a id="save_button" class="button radius right small success"
-                                    onclick="if(check_fields()) save_backup_set(false);">
-                                    <i class="fa fa-floppy-o"></i>&nbsp;Save</a>
-                                </div>
-                                <div class="small-3 columns">
-                                    <a id="go_to_restore_button" class="button radius left small"
-                                    onclick="go_to_restore()">
-                                    <i class="fa fa-cloud-download"></i>&nbsp;Restore</a>
-                                </div>
-                            </div>
-                            <div class="clearfix">
-                                <div class="small-8 columns">
-                                </div>
-                                <div class="small-4 columns">
-                                    <a id="save_template_button" class="button radius right small success"
-                                        onclick="if(check_backup_name() && check_cloud()) save_backup_set(true);">
-                                    <i class="fa fa-floppy-o"></i>&nbsp;Save as Template</a>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="content" id="status"><pre id="status_contents"></pre></div>
-                    <div class="content" id="timeview">
+<div class="row">
+    <div class="small-2 columns" id="sidebar">
+        <a href="#" onclick="$('#template_list').show();load_backup();" class="button radius small">
+            <i class="fa fa-plus-circle">&nbsp;Add</i>
+        </a>
+    </div>
+    <div class="small-9 columns selected-bar text-center" id="selected-bar"></div>
+    <div class="small-1 columns"></div>
+</div>
+<div class="row">
+    <div class="small-2 columns">&nbsp;
+        <div class="hide" id="template_list"></div>
+    </div>
+    <div class="small-10 columns">
+        <ul class="tabs" data-tab>
+            <li class="tab-title radius" id="backup_details_tab">
+                <a href="#backup_details" onclick="$('#backup_details').show()"
+                    id="backup_details_link">Settings</a>
+            </li>
+            <li class="tab-title radius">
+                <a href="#timeview" id="timeview_link">Timeview</a>
+            </li>
+            <li class="tab-title radius">
+                <a href="#status" id="status_link">Status</a>
+            </li>
+            <li class="tab-title radius">
+                <a href="#cleanup" id="cleanup_link">Cleanup</a>
+            </li>
+        </ul>
+        <div class="tabs-content">
+            <div class="content" id="backup_details">
+                <form>
+                   <fieldset>
+                        <legend>From</legend>
                         <div class="clearfix">
-                            <div class="small-9 columns error" id="time-head-error">
-                                <input type="hidden" id="time-path" placeholder="Select path"
-                                    value="/">
+                            <div class="small-3 columns">
+                                <label id="directory_label" for="directory" class="right">
+                                    Local directory
+                                </label>
+                            </div>
+                            <div id="directory" class="small-6 columns dir-field"></div>
+                            <div id="dirdialogue_label" onclick="$('#choose-dir').trigger('click');"
+                                class="small-3 columns" id="dirpick">
+                                <i class="fa fa-folder-o blue-folder">&nbsp;</i>
+                            </div>
+                        </div>
+                        <div class="clearfix">
+                            <div class="small-3 columns">&nbsp;</div>
+                            <div id="directory-error" class="small-6 columns">
+                                <small class="error"></small>
+                            </div>
+                            <input type="file" id="choose-dir" nwdirectory
+                                style="display:none;"
+                                onchange="$('#directory').html($(this).val());
+                                    check_directory('directory');" />
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>To</legend>
+                        <div class="clearfix">
+                            <div class="small-3 columns">
+                                 <label id="cloud_label" for="cloud" class="right inline">Cloud</label>
+                            </div>
+                            <div class="small-9 columns error" id="cloud-error">
+                                <select id="cloud" onchange="check_cloud();">
+                                </select>
                                 <small class="error"></small>
                             </div>
                         </div>
                         <div class="clearfix">
-                            <ul class="breadcrumbs" id="breadcrumbs"></ul>
+                            <div class="small-3 columns">
+                                 <label id="backup_name_label" for="backup-name" class="right inline">
+                                    Name&nbsp;<i class="fa fa-info-circle green-info"
+                                     onclick="$('#name-info').slideDown();"></i>
+                                 </label>
+                            </div>
+                            <div class="small-9 columns error" id="backup-name-error">
+                                <input type="text" id="backup-name"
+                                placeholder="Backup[A-Za-z0-9-_]"
+                                value="Backup"
+                                onchange="check_backup_name();">
+                                <small class="error"></small>
+                            </div>
+                            <div class="small-3 columns">&nbsp;</div>
+                            <div class="small-9 columns hide info-text panel" id="name-info">
+                                <i class="fa fa-times right" onclick="$('#name-info').slideUp();"></i>
+                                Backup name will also appear as a container in your cloud
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="clearfix">
+                            <div class="small-3 columns">
+                                 <label id="backup-type-label" for="backup-type" class="right inline">
+                                    Backup Type
+                                 </label>
+                            </div>
+                            <div class="small-9 columns">
+                                <input type="radio" name="backup-type" value="full" id="full" checked="checked">
+                                    <label for="full">Full</label>
+                                <input type="radio" name="backup-type" value="incremental" id="inc">
+                                    <label for="inc">Incremental</label>
+                            </div>
                         </div>
                         <div class="clearfix">
-                            <div class="small-4 columns left scroll-list" id="time-dates"></div>
-                            <div class="small-8 columns scroll-list" id="time-contents"></div>
+                            <div class="small-3 columns">
+                                 <label id="exclude-label" for="exclude" class="right inline">
+                                     Exclude&nbsp;<i class="fa fa-info-circle green-info"
+                                     onclick="$('#include-help').slideDown();"></i>
+                                 </label>
+                            </div>
+                            <div class="small-9 columns error" id="exclude-error">
+                                <input type="text" id="exclude"
+                                placeholder="Exclude folders or files">
+                                <small class="error"></small>
+                            </div>
+                        </div>
+                        <div class="clearfix">
+                            <div class="small-3 columns">
+                                 <label id="include-label" for="include" class="right inline">
+                                     Include&nbsp;<i class="fa fa-info-circle green-info"
+                                        onclick="$('#include-help').slideDown();"></i>
+                                 </label>
+                            </div>
+                            <div class="small-9 columns error" id="include-error">
+                                <input type="text" id="include"
+                                placeholder="Include folders or files">
+                                <small class="error"></small>
+                            </div>
+                            <div class="small-3 columns">&nbsp;</div>
+                            <div class="small-9 columns hide info-text panel" id="include-help">
+                                <i class="fa fa-times right" onclick="$('#include-help').slideUp();"></i>
+                                Include and Exclude fields accept some extended shell globbing patterns:
+                                <br>* Matches any string not containing '/'
+                                <br>? Matches any character except '/'
+                                <br>[...] Expands to a single character of those characters specified
+                                    (ranges are acceptable)
+                                <br>** Matches any string
+                            </div>
+                        </div>
+                        <div class="clearfix">
+                            <div class="small-3 columns">
+                                <label id="passphrase_label" for="passphrase" class="right inline">Passphrase</label>
+                            </div>
+                            <div class="small-6 columns error" id="passphrase-error">
+                                <input type="password" id="passphrase" placeholder="Passphrase">
+                                <small class="error"></small>
+                            </div>
+                            <div class="small-3 columns">
+                                <label for="save_passphrase" class="left">Save&nbsp;
+                                <input id="save_passphrase" type="checkbox" class="right">
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <div class="clearfix">
+                        <div id="success-alert" class="hide">
+                            <div data-alert class="alert-box success radius"
+                                id="success-msg">
+                            </div>
+                        </div>
+                        <div id="error-alert" class="hide">
+                            <div data-alert class="alert-box alert radius"
+                                id="error-msg">
+                            </div>
+                        </div>
+                        <div class="small-6 columns">
+                            <a id="backup_button" class="button radius left small"
+                            onclick="if(check_fields()) backup(false);">
+                            <i class="fa fa-cloud-upload"></i>&nbsp;Backup Now</a>
+                        </div>
+                        <div class="small-6 columns">
+                            <a id="save_button" class="button radius right small success"
+                            onclick="if(check_fields()) save_backup_set(false);">
+                            <i class="fa fa-floppy-o"></i>&nbsp;Save</a>
+                        </div>
+                        <div class="small-3 columns">
+                            <a id="go_to_restore_button" class="button radius left small"
+                            onclick="go_to_restore()">
+                            <i class="fa fa-cloud-download"></i>&nbsp;Restore</a>
                         </div>
                     </div>
+                    <div class="clearfix">
+                        <div class="small-8 columns">
+                        </div>
+                        <div class="small-4 columns">
+                            <a id="save_template_button" class="button radius right small success"
+                                onclick="if(check_backup_name() && check_cloud()) save_backup_set(true);">
+                            <i class="fa fa-floppy-o"></i>&nbsp;Save as Template</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="content" id="status"><pre id="status_contents"></pre></div>
+            <div class="content" id="timeview">
+                <div class="clearfix">
+                    <div class="small-9 columns error" id="time-head-error">
+                        <input type="hidden" id="time-path" placeholder="Select path"
+                            value="/">
+                        <small class="error"></small>
+                    </div>
                 </div>
-                <div id="loader" class="hide text-center">
-                    <i class="fa fa-spinner fa-pulse fa-2x gray-spin"></i>
+                <div class="clearfix">
+                    <ul class="breadcrumbs" id="breadcrumbs"></ul>
+                </div>
+                <div class="clearfix">
+                    <div class="small-4 columns left scroll-list" id="time-dates"></div>
+                    <div class="small-8 columns scroll-list" id="time-contents"></div>
+                </div>
+            </div>
+            <div class="content" id="cleanup">
+                <div class="clearfix">
+                    <div class="small-3 columns">
+                         <label id="remove-all-label" for="remove-all" class="right inline">
+                             Remove older than&nbsp;<i class="fa fa-info-circle green-info"
+                                onclick="$('#remove-all-help').slideDown();"></i>
+                         </label>
+                    </div>
+                    <div class="small-9 columns error" id="remove-all-error">
+                        <input type="text" id="remove-all">
+                        <small class="error"></small>
+                    </div>
+                    <div class="small-3 columns">&nbsp;</div>
+                    <div class="small-9 columns hide info-text panel" id="remove-all-help">
+                        <i class="fa fa-times right" onclick="$('#remove-all-help').slideUp();"></i>
+                        Delete all backup sets older than the given time.
+                        Accepts following formats<br>
+                        1. String "now" refers to current time<br>
+                        2. A sequences of digits, like "123456890" (indicating the time in seconds after the epoch)<br>
+                        3. A string like "2002-01-25T07:00:00+02:00" in datetime format<br>
+                        4. A number followed by one of the characters s, m, h, D, W, M, or Y
+                        (indicating seconds, minutes, hours, days, weeks, months, or years respectively),
+                        or a series of such pairs. In this case the string refers to the time that preceded
+                        the current time by the length of the interval.
+                        For instance, "1h78m" indicates the time that was one hour and 78 minutes ago.<br>
+                        5. A date format of the form YYYY/MM/DD, YYYY-MM-DD, MM/DD/YYYY, or MM-DD-YYYY,
+                        which indicates midnight on the day in question, relative to the current time zone settings.
+                    </div>
+                </div>
+                <div class="clearfix">
+                    <div class="small-8 columns">&nbsp;</div>
+                    <div class="small-4 columns">
+                        <a id="remove-all-button" class="button radius right small"
+                           onclick="remove_all()">
+                           <i class="fa fa-cloud-download"></i>&nbsp;Remove All</a>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="small-1 columns"></div>
-            <pre id="msg" class="small-11 columns"></pre>
-        </div>
-        <script type="text/javascript">
-            $(document).foundation();
-        </script>
+    </div>
+    <div id="loader" class="hide text-center">
+        <i class="fa fa-spinner fa-pulse fa-2x gray-spin"></i>
+    </div>
+</div>
+<div class="row">
+    <div class="small-1 columns"></div>
+    <pre id="msg" class="small-11 columns"></pre>
+</div>
+<script type="text/javascript">
+    $(document).foundation();
+</script>

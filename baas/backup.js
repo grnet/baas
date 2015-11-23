@@ -52,6 +52,7 @@ function hide_error_divs() {
     $('#res-file-error small').hide();
     $('#timestamp-error small').hide();
     $('#time-head-error small').hide();
+    $('#remove-all-error small').hide();
 }
 
 function load_backup(backup) {
