@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     if(disable) {
                         $("#save_button").attr("onclick", "");
                     } else {
-                        $("#save_button").attr("onclick", "if(check_fields()) save_backup_set();");
+                        $("#save_button").attr("onclick", "if(check_fields()) save_backup_set(false);");
                     }
                 }
             }
@@ -147,9 +147,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         templates = new Object();
                     }
                 }
+                $("#template_list").empty();
                 var ul = $("<ul></ul>")
                     .attr("class", "no-bullet template-list");
-                var li = $("<li>Load Template :</li>")
+                var li = $("<li>Load Template:</li>")
                     .attr("class", "template-list-title");
                 ul.append(li);
 
@@ -386,13 +387,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </div>
                                 <div class="small-6 columns">
                                     <a id="save_button" class="button radius right small success"
-                                    onclick="if(check_fields()) save_backup_set();">
+                                    onclick="if(check_fields()) save_backup_set(false);">
                                     <i class="fa fa-floppy-o"></i>&nbsp;Save</a>
                                 </div>
                                 <div class="small-3 columns">
                                     <a id="go_to_restore_button" class="button radius left small"
                                     onclick="go_to_restore()">
                                     <i class="fa fa-cloud-download"></i>&nbsp;Restore</a>
+                                </div>
+                            </div>
+                            <div class="clearfix">
+                                <div class="small-8 columns">
+                                </div>
+                                <div class="small-4 columns">
+                                    <a id="save_template_button" class="button radius right small success"
+                                        onclick="if(check_backup_name() && check_cloud()) save_backup_set(true);">
+                                    <i class="fa fa-floppy-o"></i>&nbsp;Save as Template</a>
                                 </div>
                             </div>
                         </form>

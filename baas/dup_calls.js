@@ -19,7 +19,7 @@ function backup(restore) {
     $("#loader").show();
     if($("#error-alert")) $("#error-alert").hide();
     if(!restore) {
-        save_backup_set();
+        save_backup_set(false);
         disable_form(true);
         disable_actions(true);
         disable_buttons(true);
