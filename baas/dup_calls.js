@@ -283,3 +283,45 @@ function load_status() {
         exec(dup_cmd, {maxBuffer: 1000*1024} , puts);
     }
 }
+
+function remove_all(time, force) {
+    $("#loader").show();
+
+    function puts(error, stdout, stderr) {
+        $("#msg").html("");
+        $("#msg").removeClass("panel");
+        if(error) {
+            $("#cleanup-msg").html(stderr);
+            $("#cleanup-msg").addClass("panel");
+            $("#force-delete").hide();
+        } else {
+            $("#cleanup-msg").addClass("panel");
+            $("#cleanup-msg").html(stdout);
+            if(!force) {
+                $("#force-delete").show();
+            } else {
+                $("#force-delete").hide();
+            }
+            var nothing_to_del = new RegExp("No old backup sets found, nothing deleted").exec(stdout);
+            if(nothing_to_del) {
+                $("#force-delete").hide();
+            }
+        }
+        $("#loader").hide();
+    }
+
+    var force_arg = "";
+    if(force) {
+        force_arg = " --force ";
+    }
+
+    var dup_cmd = DUPLICITY_PATH + " remove-older-than " +
+        time + force_arg + " swift://" + container;
+    if(process.platform == 'win32') {
+        var cmd = build_win_commands();
+        exec(CYGWIN_BASH + " -c '" + cmd + dup_cmd + "'", puts);
+    } else {
+        set_envs();
+        exec(dup_cmd, {maxBuffer: 1000*1024} , puts);
+    }
+}

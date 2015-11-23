@@ -202,7 +202,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     $("#backup_detais_link").click(function(e) { load_backup(); });
                     $("#status_link").click(function(e) { load_status(); });
                     $("#timeview_link").click(function(e) { load_timeview(); });
-                    $("#cleanup_link").click(function(e) { $("#backup_details").hide() });
+                    $("#cleanup_link").click(function(e) { load_cleanup(); });
                 }
             }
 
@@ -219,6 +219,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 g_res_file = "";
                 g_timestamp = "";
                 $("#restore-tab-link").trigger("click");
+            }
+
+            function load_cleanup() {
+                $("#backup_details").hide();
+                $("#cleanup-msg").html("");
+                $("#cleanup-msg").removeClass("panel");
+                $("#remove-all-button").show();
+                $("#force-delete").hide();
+            }
+
+            function check_remove_all() {
+                var remove_all_time = $("#remove-all").val();
+                if(!remove_all_time) {
+                    $('#remove-all-error small').text(errors.remove_all_time_empty);
+                    $('#remove-all-error small').show();
+                    return false;
+                } else {
+                    $('#remove-all-error small').hide();
+                }
+                return true;
             }
         </script>
 
@@ -435,8 +455,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <div class="content" id="cleanup">
                 <div class="clearfix">
                     <div class="small-3 columns">
-                         <label id="remove-all-label" for="remove-all" class="right inline">
-                             Remove older than&nbsp;<i class="fa fa-info-circle green-info"
+                         <label id="remove-all-label" for="remove-all" class="right">
+                             Remove backup sets<br>older than&nbsp;<i class="fa fa-info-circle green-info"
                                 onclick="$('#remove-all-help').slideDown();"></i>
                          </label>
                     </div>
@@ -461,12 +481,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         which indicates midnight on the day in question, relative to the current time zone settings.
                     </div>
                 </div>
+                <div class="row">
+                    <div class="small-1 columns"></div>
+                    <pre id="cleanup-msg" class="small-11 columns"></pre>
+                </div>
                 <div class="clearfix">
                     <div class="small-8 columns">&nbsp;</div>
                     <div class="small-4 columns">
                         <a id="remove-all-button" class="button radius right small"
-                           onclick="remove_all()">
-                           <i class="fa fa-cloud-download"></i>&nbsp;Remove All</a>
+                            onclick="if(check_remove_all()) {
+                           remove_all($('#remove-all').val(), false);
+                           $(this).hide()}">
+                           <i class="fa fa-trash-o"></i>&nbsp;Remove All</a>
+                    </div>
+                    <div class="small-4 columns hide" id="force-delete">
+                       <a id="remove-all-button-force" class="button radius right small alert"
+                           onclick="if(check_remove_all()) remove_all($('#remove-all').val(), true)">
+                           <i class="fa fa-trash-o"></i>&nbsp;Force Delete</a>
                     </div>
                 </div>
             </div>

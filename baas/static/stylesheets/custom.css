@@ -84,7 +84,7 @@ body .tabs {
 body legend, .template-list-title {
     color: gray;
 }
-#msg {
+#msg, #cleanup-msg {
     word-break: break-word;
     margin-right: 15px;
 }

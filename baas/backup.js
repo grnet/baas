@@ -24,7 +24,8 @@ var errors = {
     res_file_illegal: 'Invalid Entry. Provide a valid file name',
     path_empty: 'Provide a path',
     passphrase_empty: 'Provide a Passphrase',
-    passphrase_wrong: 'Wrong Passphrase'
+    passphrase_wrong: 'Wrong Passphrase',
+    remove_all_time_empty: 'Provide a valid timestamp'
 };
 
 
@@ -53,6 +54,7 @@ function hide_error_divs() {
     $('#timestamp-error small').hide();
     $('#time-head-error small').hide();
     $('#remove-all-error small').hide();
+    $('#remove-inc-error small').hide();
 }
 
 function load_backup(backup) {
