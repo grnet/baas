@@ -39,7 +39,10 @@ with build\cygwin_build\bin\bash.exe.
 
 1. Run make_package.sh <platform> (again, with
 build\cygwin_build\bin\bash.exe on Windows) to build the nwjs application
-and collect everything under dist/baas.
+and collect everything under dist/baas (or dist/baas.app on OSX)
+
+2. Run python bundle.py <platform> to make a tar.gz (for Linux) or zip
+archive (for Windows and OSX).
 
 ## Copyright and license
 

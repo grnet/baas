@@ -45,7 +45,10 @@ cd ..
 rm -rf build/baas
 nwbuild -p $PLATFORM -v $NW_VERSION baas
 
-DIST=dist/baas
+if [[ "$OS_NAME" = "Darwin" ]]
+then DIST=dist/baas.app
+else DIST=dist/baas
+fi
 rm -rf $DIST; mkdir -p $DIST
 
 echo Copying baas
