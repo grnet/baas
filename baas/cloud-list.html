@@ -285,7 +285,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 var lurl = account_ui + '/logout?next=' + pithos_public
                 got_cookie = false;
                 cred_win = gui.Window.open(lurl, {
-                    focus: true, width: 820, height: 580, toolbar: false
+                    focus: true, width: 820, height: 780, toolbar: false
                 });
                 cred_win.cookies.onChanged.addListener(function(info) {
                     if (info.cookie.name === cookie_name) {
@@ -371,7 +371,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <div class="small-8 columns"></div>
                                 <a id="get_creds"
                                     class="small-4 columns button right tiny login-button"
-                                    onclick="get_credentials();">Login to retrieve token</a>
+                                    onclick="get_credentials();">Auto-fill token with login</a>
                             </div>
                         </div>
                         <div class="clearfix">
