@@ -60,3 +60,15 @@ Double-click on folders to review their contents:
 By clicking on a file or folder the *Restore* icon appears. Select it to automatically
 fill in the corresponding fields in the ``Restore`` section.
 
+Cleanup
+-------
+
+You can cleanup older backup sets under *Cleanup* section:
+
+.. image:: images/cleanup-list.png
+
+By clicking *Remove All* button a list with old backup sets that will be deleted will appear:
+
+.. image:: images/cleanup-force-delete.png
+
+By clicking *Force Delete* button, files will actually get deleted.
