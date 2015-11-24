@@ -46,7 +46,7 @@ rm -rf build/baas
 nwbuild -p $PLATFORM -v $NW_VERSION baas
 
 if [[ "$OS_NAME" = "Darwin" ]]
-then DIST=dist/baas.app
+then DIST=dist
 else DIST=dist/baas
 fi
 rm -rf $DIST; mkdir -p $DIST
