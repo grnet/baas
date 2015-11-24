@@ -30,23 +30,24 @@ Setup
 In order to create your first backup set or to restore
 an existing one you will need:
 
-* A synnefo cloud URL
-* A user authentication token
+* the cloud authentication URL
+* your user authentication token
 
-If any of the above is missing or is outdated, BaaS will not be able to
-function properly.
+If any of the above is missing or the token has expired, BaaS will not be
+able to function properly.
 
 
 GUI
 ---
 
-Start BaaS in GUI mode. If a cloud configuration is missing you will be prompted
-to add one in `Cloud Settings` section:
+Start BaaS. If a cloud configuration is missing, you will be prompted to add
+one in `Cloud Settings` section. To get your cloud credentials, browse to
+your cloud website, log in and click on `API access`.
 
 * The **Cloud URL** must be provided manually.
-* To get the **User token** click "Login to retrieve token" to authenticate
-  with a user name and password. It has to be re-retrieved every time it
-  expires or is invalidated in any other way.
+* The **User token** can be automatically retrieved, by clicking on
+  "Auto-fill token with login". You will just need to authenticate to your
+  cloud system.
 
 Config file
 -----------
@@ -67,22 +68,6 @@ Here is a typical example:
         "uuid": "example-user-id"
         }
     }
-
-CLI
----
-
-BaaS uses `Duplicity`_ as the backend.
-
-Before using it with Synnefo, two environment variables must be set:
-
-.. code-block:: console
-
-    $ export SWIFT_PREAUTHURL = "https://pithos.okeanos.grnet.gr/object-store/v1/<uuid>"
-    $ export SWIFT_PREAUTHTOKEN = <user token>
-
-Where uuid is your ~Okeanos user ID.
-
-.. note:: In Windows duplicity runs with Cygwin which is provided with the current installation.
 
 .. External links
 
