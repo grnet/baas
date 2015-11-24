@@ -305,6 +305,7 @@ function remove_all(time, force) {
             var nothing_to_del = new RegExp("No old backup sets found, nothing deleted").exec(stdout);
             if(nothing_to_del) {
                 $("#force-delete").hide();
+                $("#remove-all-button").show();
             }
         }
         $("#loader").hide();
