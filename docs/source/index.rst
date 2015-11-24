@@ -27,9 +27,7 @@ Contents:
 
    install
    use
-   settings
    design
-   troubleshooting
 
 Indices and tables
 ==================
