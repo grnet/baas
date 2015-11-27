@@ -68,11 +68,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 }
 .selected-bar {
     background: #2BA6CB;
-    margin-bottom: 8px;
-    padding-top: 0;
     color: white;
     font-weight: bold;
     font-size: large;
+    line-height: 1.3;
 }
 .backup-box span {
     color: gray;
@@ -80,6 +79,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 }
 body .tabs {
     line-height: 0.4;
+    margin-left: 100px;
 }
 body legend, .template-list-title {
     color: gray;
@@ -108,4 +108,7 @@ body legend, .template-list-title {
     left: 0;
     right: 0%;
     z-index: 99;
+}
+.add-button {
+    margin-bottom: 10px;
 }
