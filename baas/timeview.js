@@ -26,7 +26,7 @@ function go_to_restore_single(name) {
 }
 
 function show_contents_by_date(error, stdout, stderr) {
-    if(error) $("#msg").html(stderr);
+    toggle_error(error, stderr);
     $("#time-contents").empty();
 
     var ul = $("<ul></ul>")
@@ -163,12 +163,8 @@ function load_timeview() {
     $("#loader").show();
 
     function puts(error, stdout, stderr) {
-        if(error) {
-            $("#msg").html(error);
-            $("#msg").addClass("panel");
-        } else {
-            $("#msg").html("");
-            $("#msg").removeClass("panel");
+        toggle_error(error, stderr);
+        if(!error) {
             var datetime_reg = /\d{4}-\d{2}-\d{2}.\d{2}:\d{2}:\d{2}\s+\d+/g;
             var dates = stdout.match(datetime_reg);
             var dates_list = "";

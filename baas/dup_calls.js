@@ -106,7 +106,7 @@ function run_duplicity(restore, force) {
                 if(process.platform == 'win32') {
                     exec(CYGWIN_BASH + " -c \"/usr/bin/cygpath '" + value + "' \"",
                         function(error, stdout, stderr) {
-                            if(error) $("#msg").html(error);
+                            toggle_error(error, stderr);
                             var win_value = String(stdout).replace(/(\r\n|\n|\r)/gm, "");
                             exclude_arg += " --exclude '" + win_value + "' ";
                         });
@@ -126,7 +126,7 @@ function run_duplicity(restore, force) {
                 if(process.platform == 'win32') {
                     exec(CYGWIN_BASH + " -c \"/usr/bin/cygpath '" + value + "' \"",
                         function(error, stdout, stderr) {
-                            if(error) $("#msg").html(error);
+                            toggle_error(error, stderr);
                             var win_value = String(stdout).replace(/(\r\n|\n|\r)/gm, "");
                             include_arg += " --include '" + win_value + "' ";
                         });
@@ -144,11 +144,7 @@ function run_duplicity(restore, force) {
             fs.stat(directory, function (err, stats) {
                 if(err) {
                     mkdirp.sync(directory, function(err) {
-                        if(err) {
-                            console.error(err);
-                            $("#msg").html(err);
-                            $("#msg").addClass("panel");
-                        }
+                        toggle_error(err, err);
                     });
                 }
             });
@@ -166,9 +162,8 @@ function run_duplicity(restore, force) {
     var exclude_device_files_arg = (restore) ? " " : " --exclude-device-files ";
 
     function dup_output(error, stdout, stderr) {
+        toggle_error(error, stderr);
         if(error) {
-            $("#msg").html(stderr);
-            $("#msg").addClass("panel");
             $("#loader").hide();
             if(!restore) {
                 show_alert_box("There was a problem uploading backup set", "error", false);
@@ -181,8 +176,7 @@ function run_duplicity(restore, force) {
                     .exec(stderr);
                 var gpg_error = new RegExp("GPGError: GPG Failed").exec(stderr);
                 if(exist_error) {
-                    $("#msg").html("");
-                    $("#msg").removeClass("panel");
+                    toggle_error(false, "");
                     $("#modal-confirm").foundation("reveal", "open");
                     var i = 0;
                     $("#modal-confirm").on('close.fndtn.reveal', function(e) {
@@ -197,19 +191,17 @@ function run_duplicity(restore, force) {
                         });
                     });
                 } else if(gpg_error) {
-                    $("#msg").html("");
-                    $("#msg").removeClass("panel");
+                    toggle_error(false, "");
                     $('#res-passphrase-error small').text(errors.passphrase_wrong);
                     $('#res-passphrase-error small').show();
                 } else {
                     $('#res-passphrase-error small').hide();
                     show_alert_box("A problem occured during restoring", "error", false);
+                    toggle_error(true, stderr);
                 }
             }
         } else {
             $("#loader").hide();
-            $("#msg").html("");
-            $("#msg").removeClass("panel");
             show_alert_box("Successfully completed", "success", true);
             if(!restore) {
                 backups[cloud + "/" + container_name].last_status = "Completed";
@@ -233,7 +225,7 @@ function run_duplicity(restore, force) {
         exec(CYGWIN_BASH + " -c \"/usr/bin/cygpath '" + directory + "' \"",
             function(error, stdout, stderr) {
                 directory = String(stdout).replace(/(\r\n|\n|\r)/gm, "");
-                if(error) $("#msg").html(error);
+                toggle_error(error, stderr);
 
                 var dirs = "'" + directory + "' swift://" + container_name;
                 if(restore) {
@@ -264,12 +256,8 @@ function load_status() {
     $("#status_contents").html("");
 
     function puts(error, stdout, stderr) {
-        if(error) {
-            $("#msg").html(error);
-            $("#msg").addClass("panel");
-        } else {
-            $("#msg").html("");
-            $("#msg").removeClass("panel");
+        toggle_error(error, stderr);
+        if(!error) {
             $("#status_contents").html(stdout);
         }
         $("#loader").hide();
@@ -288,8 +276,7 @@ function remove_all(time, force) {
     $("#loader").show();
 
     function puts(error, stdout, stderr) {
-        $("#msg").html("");
-        $("#msg").removeClass("panel");
+        toggle_error(false, "");
         if(error) {
             $("#cleanup-msg").html(stderr);
             $("#cleanup-msg").addClass("panel");
