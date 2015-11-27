@@ -17,13 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <script type="text/javascript">
 
-    $(document).ready(function() {
-        if(typeof clouds === 'undefined') {
-            load_data_from_file(CLOUDS_CONF_FILE, populate_clouds);
-        } else {
-            populate_clouds("");
-        }
-    });
+    populate_clouds("res-cloud", "");
     hide_error_divs();
 
     function load_field_values() {
@@ -68,22 +62,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             $('#res-cloud-error small').hide();
         }
         return true;
-    }
-
-    function populate_clouds(data) {
-        if(typeof clouds === 'undefined') {
-            if(data != "") {
-                clouds = JSON.parse(data).clouds;
-            } else {
-                clouds = [];
-            }
-        }
-        var cloud_sel = $("#res-cloud");
-        $.each(clouds, function(i, cloud) {
-            cloud_sel.append($("<option></option>")
-                .attr("value", cloud.name)
-                .text(cloud.name));
-        });
     }
 
     function check_res_fields() {

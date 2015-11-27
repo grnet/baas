@@ -34,17 +34,43 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 }
             }
 
+            function populate_template_list(data) {
+                if(typeof templates === 'undefined') {
+                    if(data != "") {
+                        templates = JSON.parse(data);
+                    } else {
+                        templates = new Object();
+                    }
+                }
+                $("#template_list").empty();
+                var ul = $("<ul></ul>")
+                    .attr("class", "no-bullet template-list");
+                var li = $("<li>Load Template:</li>")
+                    .attr("class", "template-list-title");
+                ul.append(li);
+
+                $.each(templates, function(i, template) {
+                    var li = $("<li></li>");
+                    var a = $("<a>" + template.name + "&nbsp;<i class='fa fa-arrow-circle-right'></a>")
+                        .attr("href", "#")
+                        .click(function() {
+                            load_backup(template);
+                            $("#template_list").hide();
+                        });
+                    li.append(a);
+                    ul.append(li);
+                });
+                $("#template_list").append(ul);
+            }
+
             if(typeof templates === 'undefined') {
                 load_data_from_file(TEMPLATES_FILE, populate_template_list);
             } else {
                 populate_template_list("");
             }
 
-            if(typeof clouds === 'undefined') {
-                load_data_from_file(CLOUDS_CONF_FILE, populate_clouds);
-            } else {
-                populate_clouds("");
-            }
+            populate_clouds("cloud", "");
+
             if(typeof selected_backup != 'undefined' && selected_backup &&
                 typeof backups[selected_backup] != 'undefined') {
                 $("#selected-bar").html(selected_backup);
@@ -68,16 +94,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 $("#selected-bar").hide();
                 $("#inc").prop("disabled", true);
                 load_backup();
-            }
-
-            function activate_li(id) {
-                $("li").each(function(i, li) {
-                    if($(this).is("#" + id)) {
-                        $(this).addClass("active-li");
-                    } else {
-                        $(this).removeClass("active-li");
-                    }
-                });
             }
 
             function check_backup_name() {
@@ -121,51 +137,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     $('#passphrase-error small').hide();
                 }
                 return true;
-            }
-
-            function populate_clouds(data) {
-                if(typeof clouds === 'undefined') {
-                    if(data != "") {
-                        clouds = JSON.parse(data);
-                    } else {
-                        clouds = new Object();
-                    }
-                }
-                var cloud_sel = $("#cloud");
-                $.each(clouds, function(i, cloud) {
-                    cloud_sel.append($("<option></option>")
-                        .attr("value", cloud.name)
-                        .text(cloud.name));
-                });
-            }
-
-            function populate_template_list(data) {
-                if(typeof templates === 'undefined') {
-                    if(data != "") {
-                        templates = JSON.parse(data);
-                    } else {
-                        templates = new Object();
-                    }
-                }
-                $("#template_list").empty();
-                var ul = $("<ul></ul>")
-                    .attr("class", "no-bullet template-list");
-                var li = $("<li>Load Template:</li>")
-                    .attr("class", "template-list-title");
-                ul.append(li);
-
-                $.each(templates, function(i, template) {
-                    var li = $("<li></li>");
-                    var a = $("<a>" + template.name + "&nbsp;<i class='fa fa-arrow-circle-right'></a>")
-                        .attr("href", "#")
-                        .click(function() {
-                            load_backup(template);
-                            $("#template_list").hide();
-                        });
-                    li.append(a);
-                    ul.append(li);
-                });
-                $("#template_list").append(ul);
             }
 
             function disable_form(disable) {

@@ -39,6 +39,22 @@ function toggle_error(error, msg) {
     }
 }
 
+function populate_clouds(cloud_field, data) {
+    if(typeof clouds === 'undefined') {
+        if(data != "") {
+            clouds = JSON.parse(data);
+        } else {
+            clouds = new Object();
+        }
+    }
+    var cloud_sel = $("#" + cloud_field);
+    $.each(clouds, function(i, cloud) {
+        cloud_sel.append($("<option></option>")
+            .attr("value", cloud.name)
+            .text(cloud.name));
+    });
+}
+
 function check_directory(dir_id) {
     if(!$('#' + dir_id).html()) {
         $('#' + dir_id + '-error small').text(errors.dir_not_chosen);
