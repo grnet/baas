@@ -211,6 +211,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 }
                 return true;
             }
+
+            function toggle_settings() {
+                var l_html = $("#more_icon").html();
+                if(l_html == "&nbsp;More") {
+                    $("#more_settings").show();
+                    $("#more_icon").html("&nbsp;Less");
+                    $("#more_icon").removeClass("fa fa-plus-square-o");
+                    $("#more_icon").addClass("fa fa-minus-square-o");
+                } else {
+                    $("#more_settings").hide();
+                    $("#more_icon").html("&nbsp;More");
+                    $("#more_icon").removeClass("fa fa-minus-square-o");
+                    $("#more_icon").addClass("fa fa-plus-square-o");
+                }
+            }
         </script>
 
 <div class="row">
@@ -302,8 +317,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 Backup name will also appear as a container in your cloud
                             </div>
                         </div>
+                        <div class="clearfix">
+                            <div class="small-3 columns">
+                                <label id="passphrase_label" for="passphrase" class="right inline">Passphrase</label>
+                            </div>
+                            <div class="small-6 columns error" id="passphrase-error">
+                                <input type="password" id="passphrase" placeholder="Passphrase">
+                                <small class="error"></small>
+                            </div>
+                            <div class="small-3 columns">
+                                <label for="save_passphrase" class="left">Save&nbsp;
+                                <input id="save_passphrase" type="checkbox" class="right">
+                                </label>
+                            </div>
+                        </div>
                     </fieldset>
-                    <fieldset>
+                    <div class="clearfix pad-bottom">
+                        <div class="small-3 columns">
+                            <a onclick="toggle_settings()">
+                                <i class="fa fa-plus-square-o" id="more_icon">&nbsp;More</i>
+                            <a/>
+                        </div>
+                    </div>
+                    <fieldset id="more_settings" class="hide">
                         <div class="clearfix">
                             <div class="small-3 columns">
                                  <label id="backup-type-label" for="backup-type" class="right inline">
@@ -351,20 +387,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <br>[...] Expands to a single character of those characters specified
                                     (ranges are acceptable)
                                 <br>** Matches any string
-                            </div>
-                        </div>
-                        <div class="clearfix">
-                            <div class="small-3 columns">
-                                <label id="passphrase_label" for="passphrase" class="right inline">Passphrase</label>
-                            </div>
-                            <div class="small-6 columns error" id="passphrase-error">
-                                <input type="password" id="passphrase" placeholder="Passphrase">
-                                <small class="error"></small>
-                            </div>
-                            <div class="small-3 columns">
-                                <label for="save_passphrase" class="left">Save&nbsp;
-                                <input id="save_passphrase" type="checkbox" class="right">
-                                </label>
                             </div>
                         </div>
                     </fieldset>
