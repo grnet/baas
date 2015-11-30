@@ -163,6 +163,7 @@ function load_timeview() {
     $("#loader").show();
 
     function puts(error, stdout, stderr) {
+        $("#loader").hide();
         toggle_error(error, stderr);
         if(!error) {
             var datetime_reg = /\d{4}-\d{2}-\d{2}.\d{2}:\d{2}:\d{2}\s+\d+/g;
@@ -178,8 +179,9 @@ function load_timeview() {
                 });
             }
             $("#time-dates").html(dates_list);
+        } else {
+            parse_cloud_error(false, stderr, false);
         }
-        $("#loader").hide();
     }
     var dup_cmd = DUPLICITY_PATH + " collection-status swift://" + container;
     if(process.platform == 'win32') {

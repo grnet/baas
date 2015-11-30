@@ -391,16 +391,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </div>
                     </fieldset>
                     <div class="clearfix">
-                        <div id="success-alert" class="hide">
-                            <div data-alert class="alert-box success radius"
-                                id="success-msg">
-                            </div>
-                        </div>
-                        <div id="error-alert" class="hide">
-                            <div data-alert class="alert-box alert radius"
-                                id="error-msg">
-                            </div>
-                        </div>
                         <div class="small-6 columns">
                             <a id="backup_button" class="button radius left small"
                             onclick="if(check_fields()) backup(false);">
@@ -492,6 +482,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                            onclick="if(check_remove_all()) remove_all($('#remove-all').val(), true)">
                            <i class="fa fa-trash-o"></i>&nbsp;Force Delete</a>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="clearfix">
+        <div class="small-2 columns"></div>
+        <div class="small-10 columns">
+            <div id="success-alert" class="hide">
+                <div data-alert class="alert-box success radius"
+                    id="success-msg">
+                </div>
+            </div>
+            <div id="error-alert" class="hide">
+                <div data-alert class="alert-box alert radius"
+                    id="error-msg">
                 </div>
             </div>
         </div>

@@ -54,6 +54,25 @@ function build_win_commands() {
         "export SWIFT_PREAUTHURL=" + env_values[1] + ";" +
         "export SWIFT_PREAUTHTOKEN=" + env_values[2] + ";";
 }
+function parse_cloud_error(restore, stderr, backup) {
+    var cloud_error =
+        new RegExp("AttributeError 'NoneType' object has no attribute 'find'")
+        .exec(stderr);
+    if(cloud_error) {
+        toggle_error(false, "");
+        show_alert_box("A problem occured.<br>" +
+                       "Please check your <a href='#'" +
+                       " onclick=$('#cloud-settings-link').trigger('click')>cloud settings</a>",
+                       "error", false);
+        if(!restore && backup) {
+            backups[backup].last_status = "Failed";
+            write_conf_file(BACKUP_CONF_FILE, backups);
+            disable_buttons(false);
+        }
+        return true;
+    }
+    return false;
+}
 
 function run_duplicity(restore, force) {
 
@@ -165,39 +184,43 @@ function run_duplicity(restore, force) {
         toggle_error(error, stderr);
         if(error) {
             $("#loader").hide();
-            if(!restore) {
-                show_alert_box("There was a problem uploading backup set", "error", false);
-                disable_form(false);
-                disable_actions(true);
-                backups[cloud + "/" + container_name].last_status = "Failed";
+            if(parse_cloud_error(restore, stderr, cloud + "/" + container_name)) {
+                return;
             } else {
-                var exist_error =
-                    new RegExp("Restore destination directory.* already exists.\nWill not overwrite.")
-                    .exec(stderr);
-                var gpg_error = new RegExp("GPGError: GPG Failed").exec(stderr);
-                if(exist_error) {
-                    toggle_error(false, "");
-                    $("#modal-confirm").foundation("reveal", "open");
-                    var i = 0;
-                    $("#modal-confirm").on('close.fndtn.reveal', function(e) {
-                        if(e.namespace !== "fndtn.reveal") return;
-                        i++;
-                        $(this).click(function(event) {
-                            // event is fired more than once so have to check
-                            if(event.target.id == "modal-accept" && i == 1) {
-                                $("#loader").show();
-                                run_duplicity(true, true);
-                            }
-                        });
-                    });
-                } else if(gpg_error) {
-                    toggle_error(false, "");
-                    $('#res-passphrase-error small').text(errors.passphrase_wrong);
-                    $('#res-passphrase-error small').show();
+                if(!restore) {
+                    show_alert_box("There was a problem uploading backup set", "error", false);
+                    disable_form(false);
+                    disable_actions(true);
+                    backups[cloud + "/" + container_name].last_status = "Failed";
                 } else {
-                    $('#res-passphrase-error small').hide();
-                    show_alert_box("A problem occured during restoring", "error", false);
-                    toggle_error(true, stderr);
+                    var exist_error =
+                        new RegExp("Restore destination directory.* already exists.\nWill not overwrite.")
+                        .exec(stderr);
+                    var gpg_error = new RegExp("GPGError: GPG Failed").exec(stderr);
+                    if(exist_error) {
+                        toggle_error(false, "");
+                        $("#modal-confirm").foundation("reveal", "open");
+                        var i = 0;
+                        $("#modal-confirm").on('close.fndtn.reveal', function(e) {
+                            if(e.namespace !== "fndtn.reveal") return;
+                            i++;
+                            $(this).click(function(event) {
+                                // event is fired more than once so have to check
+                                if(event.target.id == "modal-accept" && i == 1) {
+                                    $("#loader").show();
+                                    run_duplicity(true, true);
+                                }
+                            });
+                        });
+                    } else if(gpg_error) {
+                        toggle_error(false, "");
+                        $('#res-passphrase-error small').text(errors.passphrase_wrong);
+                        $('#res-passphrase-error small').show();
+                    } else {
+                        $('#res-passphrase-error small').hide();
+                        show_alert_box("A problem occured during restoring", "error", false);
+                        toggle_error(true, stderr);
+                    }
                 }
             }
         } else {
@@ -259,6 +282,8 @@ function load_status() {
         toggle_error(error, stderr);
         if(!error) {
             $("#status_contents").html(stdout);
+        } else {
+             parse_cloud_error(false, stderr, false);
         }
         $("#loader").hide();
     }
@@ -278,9 +303,11 @@ function remove_all(time, force) {
     function puts(error, stdout, stderr) {
         toggle_error(false, "");
         if(error) {
-            $("#cleanup-msg").html(stderr);
-            $("#cleanup-msg").addClass("panel");
-            $("#force-delete").hide();
+            if(!parse_cloud_error(false, stderr, false)) {
+                $("#cleanup-msg").html(stderr);
+                $("#cleanup-msg").addClass("panel");
+                $("#force-delete").hide();
+            }
         } else {
             $("#cleanup-msg").addClass("panel");
             $("#cleanup-msg").html(stdout);
