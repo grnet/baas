@@ -21,4 +21,6 @@ set CACHE=%BUILD%\cygwin_packages
 if not exist %CYGWIN% mkdir %CYGWIN%
 if not exist %CACHE% mkdir %CACHE%
 .\setup-x86_64.exe -q -Y -N -n -d -R %CYGWIN% -l %CACHE% -s %MIRROR% -P %PACKAGES%
+set TMPDIR=%CYGWIN%\tmp
+if not exist %TMPDIR% mkdir %TMPDIR%
 :end
