@@ -1,0 +1,20 @@
+=== modified file 'duplicity/backends/swiftbackend.py'
+--- duplicity/backends/swiftbackend.py	2015-08-01 01:05:40 +0000
++++ duplicity/backends/swiftbackend.py	2015-12-18 11:34:41 +0000
+@@ -24,6 +24,7 @@
+ from duplicity import log
+ from duplicity import util
+ from duplicity.errors import BackendException
++from duplicity import globals
+ 
+ 
+ class SwiftBackend(duplicity.backend.Backend):
+@@ -87,6 +88,7 @@
+             os_options.update({'region_name': os.environ['SWIFT_REGIONNAME']})
+ 
+         conn_kwargs['os_options'] = os_options
++        conn_kwargs['cacert'] = globals.ssl_cacert_file
+ 
+         self.container = parsed_url.path.lstrip('/')
+ 
+
