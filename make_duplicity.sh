@@ -72,7 +72,7 @@ cd $SRCPATH
 rm -rf build
 patch -N -p0 < $ROOTPATH/src/duplicity-patches/timeview.patch
 patch -N -p0 < $ROOTPATH/src/duplicity-patches/syspath.patch
-python setup.py build
+python setup.py build --executable="/usr/bin/env python"
 cd build/lib.*
 cp -pr * $DUPL/lib
 cd ../scripts-2.7
