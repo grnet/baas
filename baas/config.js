@@ -36,6 +36,8 @@ if(process.platform == 'darwin') {
     process.env['PATH'] = process.env['PATH'] + ':/usr/local/bin';
 }
 
+var DEFAULT_CERT = path.join(exec_path, 'cacert.pem');
+
 var CYGWIN_BASH = path.join(exec_path, "cygwin", "bin", "bash.exe");
 
 function get_user_home() {
@@ -163,4 +165,21 @@ function escape_quote_str(str) {
     if(!str) return "";
     var escaped_quoted = str.replace(/'/g, "'\\''");
     return "'" + escaped_quoted + "'";
+}
+
+var clients = { };
+var kamaki = require('./static/js/kamaki.js');
+
+/**
+ * Return a client
+ * Create or update a Client object if it's missing or is outdated
+ */
+function getClient(name, URL, token, CAPath) {
+    if (clients[name] && clients[name].equalsURL(URL))
+        clients[name].setToken(token);
+    else if (clients[name])
+        clients[name].setURL(URL);
+    else clients[name] = new kamaki.Client(URL, token, CAPath);
+    if (clients[name].getCA() !== CAPath) clients[name].setCA(CAPath);
+    return clients[name];
 }

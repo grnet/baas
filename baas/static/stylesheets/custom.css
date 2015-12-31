@@ -90,6 +90,7 @@ body legend, .template-list-title {
 }
 .dir-field {
     overflow-x: auto;
+    word-break: break-word;
 }
 .template-list li a i {
     visibility: hidden;

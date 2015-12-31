@@ -38,6 +38,7 @@ NW_VERSION=0.12.3
 cd "$(dirname "$0")"
 ROOTPATH=$(pwd)
 
+python copy_cacert.py
 cd baas
 npm install
 cd ..
@@ -59,6 +60,7 @@ then RESOURCES=$DIST/baas.app/Contents/Resources
 else RESOURCES=$DIST
 fi
 cp src/timeview.py $RESOURCES
+cp cacert.pem $RESOURCES
 echo Copying duplicity
 cp -r build/duplicity/* $RESOURCES
 
