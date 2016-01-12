@@ -29,10 +29,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <script src="timeview.js"></script>
 
         <script type="text/javascript">
-
             create_baas_dir();
             var gui = require('nw.gui');
             var win = gui.Window.get();
+
+            // check operating system for the menu
+            if (process.platform === "darwin") {
+                var nativeMenuBar = new gui.Menu({
+                                type: "menubar"
+                                    });
+                nativeMenuBar.createMacBuiltin("BaaS");
+                win.menu = nativeMenuBar;
+            }
+
+            // actually assign menu to window
             win.resizeTo(1000, 700);
 
             $(document).ready(function() {
