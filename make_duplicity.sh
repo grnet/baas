@@ -72,11 +72,21 @@ cd $SRCPATH
 rm -rf build
 patch -N -p0 < $ROOTPATH/src/duplicity-patches/timeview.patch
 patch -N -p0 < $ROOTPATH/src/duplicity-patches/syspath.patch
-python setup.py build --executable="/usr/bin/env python"
+LIBRSYNC_DIR=/usr/local python setup.py build --executable="/usr/bin/env python"
 cd build/lib.*
 cp -pr * $DUPL/lib
 cd ../scripts-2.7
 cp -p duplicity $DUPL
+
+if [[ "$OS_NAME" = "Darwin" ]]
+then
+    cd $DUPL/lib/duplicity
+    LIBRSYNC=librsync.2.dylib
+    LIBRSYNC_PATH=/usr/local/opt/librsync/lib/$LIBRSYNC
+    cp $LIBRSYNC_PATH .
+    chmod +w $LIBRSYNC
+    install_name_tool -change $LIBRSYNC_PATH @loader_path/$LIBRSYNC _librsync.so
+fi
 
 echo built in $DUPL
 echo must be used with PYTHONPATH=$DUPL/lib
