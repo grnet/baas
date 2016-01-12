@@ -17,6 +17,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <script src="backup.js"></script>
         <script type="text/javascript">
 
+            function check_gpg() {
+                exec("which gpg", function(error, stdout, stderr) {
+                    if(error) {
+                        $("#gpg-alert").show();
+                    } else {
+                        $("#gpg-alert").hide();
+                    }
+                });
+            }
+            if(process.platform != "win32") {
+                check_gpg();
+            }
+
             if(typeof clouds === 'undefined') {
                 load_data_from_file(CLOUDS_CONF_FILE, show_cloud_msg);
             } else {
@@ -131,6 +144,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         </script>
 
+        <div class="row">
+            <div class="small-12 columns panel alert hide" id="gpg-alert">
+                <span>
+                    <i class="fa fa-exclamation-circle"></i>
+                    BaaS uses <a href="#"
+                        onclick="gui.Shell.openExternal('https://www.gnupg.org/download/index.html');">
+                        GnuPG</a>
+                    in order to encrypt your backups, though
+                    no gpg installation was found on your system.
+                    You must install gpg separately.
+                </span>
+            </div>
+        </div>
         <div class="row">
             <div class="small-12 columns panel hide" id="cloud-alert">
                 <span>
