@@ -5,7 +5,7 @@ set NAME=cygwin
 
 if "%1" == "build" (
 set NAME=%NAME%_build
-set PACKAGES=%PACKAGES%,librsync-devel,wget,gcc-core,gcc,patch,unzip
+set PACKAGES=%PACKAGES%,librsync-devel,wget,gcc-core,gcc,patch,zip,unzip
 ) else (
 if not "%1" == "dist" (
 @echo Must give option build or dist

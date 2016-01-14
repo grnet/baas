@@ -42,7 +42,8 @@ build\cygwin_build\bin\bash.exe on Windows) to build the nwjs application
 and collect everything under dist/baas (or dist/baas.app on OSX)
 
 2. Run python bundle.py <platform> to make a tar.gz (for Linux) or zip
-archive (for Windows and OSX).
+archive (for Windows and OSX). On Windows it must be run as
+build\cygwin_build\bin\bash.exe -c "/usr/bin/python bundle.py <platform>"
 
 ## Copyright and license
 

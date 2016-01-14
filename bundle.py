@@ -53,18 +53,13 @@ def main():
 
     os.chdir(DISTPATH)
     filename = '%s-%s-%s' % (APP, version, descr)
-    if osarg.startswith('osx'):
-        base_dir = '%s.app' % APP
+    if not osarg.startswith('linux'):
+        base_dir = '%s.app' % APP if osarg.startswith("osx") else APP
         arch_name = "%s.zip" % filename
-        os.system("zip -ry %s %s" % (arch_name, base_dir))
+        os.system("/usr/bin/zip -ry %s %s" % (arch_name, base_dir))
     else:
-        if osarg.startswith("linux"):
-            arch_type = 'gztar'
-            base_dir = APP
-        elif osarg.startswith('win'):
-            arch_type = 'zip'
-            base_dir = APP
-
+        arch_type = 'gztar'
+        base_dir = APP
         arch_name = shutil.make_archive(
             filename, arch_type, root_dir='.', base_dir=base_dir)
     print "Wrote %s" % os.path.join(DISTPATH, arch_name)
