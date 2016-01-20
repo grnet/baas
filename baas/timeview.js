@@ -51,9 +51,11 @@ function show_contents_by_date(error, stdout, stderr) {
         }
         var locale_date = new Date(el.timestamp).toLocaleString();
         var filename = (el.name.length > 30) ?
-            el.name.substring(0,7) + "..." + el.name.substring(el.name.length-7, el.name.length):
-                el.name;
-        var li = $("<li>&nbsp;<span>" + filename + "&nbsp;</span><span class='right'>"
+            el.name.substring(0,7) + "..." +
+            el.name.substring(el.name.length-7, el.name.length) :
+            el.name;
+        var li = $("<li>&nbsp;<span>" + filename +
+            "&nbsp;</span><span class='right'>"
             + locale_date + "</span></li>")
             .attr("id", el.name);
         var icon_class = (el.type == 'dir')
@@ -65,7 +67,8 @@ function show_contents_by_date(error, stdout, stderr) {
             .attr("id", "rest_icon_" + i)
             .attr("title", "Restore")
             .attr("class", "hide")
-            .attr("onclick", "go_to_restore_single('" + escape_illegal_chars(el.name) + "')");
+            .attr("onclick", "go_to_restore_single('" +
+                    escape_illegal_chars(el.name) + "')");
 
         li.append(icon);
         li.append(rest_icon);
@@ -119,7 +122,8 @@ function fill_breadcrumbs(path) {
         }
         var a_crumb = $("<a>" + value + "</a>")
             .attr("href", "#")
-            .attr("onclick", "go_to_path('" + escape_illegal_chars(cur_path) + "')");
+            .attr("onclick", "go_to_path('" +
+                escape_illegal_chars(cur_path) + "')");
         li_crumb.append(a_crumb);
         $(".breadcrumbs").append(li_crumb);
     });
@@ -151,9 +155,12 @@ function get_contents_by_date(value) {
         init_path = time_path;
     }
     var datapath = path.join(BAAS_CACHE_DIR, 'timeviews');
+    var cacert_file = " " + clouds[$("#cloud").val()].cert + " ";
 
     var time_cmd = "python " + TIMEVIEW_PATH + " " + datapath + " swift://" +
-        container + " get " + value + " " + escape_quote_str(time_path);
+        container + cacert_file + " get " + value + " " +
+        escape_quote_str(time_path);
+
     if(process.platform == 'win32') {
         var cmd = build_win_commands();
         var args = ["-c", cmd + time_cmd];
@@ -180,7 +187,8 @@ function load_timeview() {
                     value = value.substring(0, 19);
                     var iso_time = value.replace('.', 'T');
                     dates_list += "<a href='#' onclick='get_contents_by_date(\""
-                        + iso_time + "\")' id='" + iso_time + "'>" + value.replace('.', ' ') + "</a><br>";
+                        + iso_time + "\")' id='" + iso_time + "'>" +
+                        value.replace('.', ' ') + "</a><br>";
                 });
             }
             $("#time-dates").html(dates_list);
@@ -188,7 +196,10 @@ function load_timeview() {
             parse_cloud_error(false, stderr, false);
         }
     }
-    var dup_cmd = DUPLICITY_PATH + " collection-status swift://" + container;
+    var cacert_arg = " --ssl-cacert-file " +
+        clouds[$("#cloud").val()].cert;
+    var dup_cmd = DUPLICITY_PATH + cacert_arg +
+        " collection-status swift://" + container;
     if(process.platform == 'win32') {
         var cmd = build_win_commands();
         var args = ["-c", cmd + dup_cmd];

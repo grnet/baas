@@ -159,6 +159,8 @@ function run_duplicity(restore, force) {
     var exclude_device_files_arg = (restore) ? " " :
         " --exclude-device-files ";
 
+    cacert_arg = " --ssl-cacert-file " + clouds[cloud].cert + " ";
+
     function dup_output(error, stdout, stderr) {
         toggle_error(error, stderr);
         if(error) {
@@ -252,9 +254,9 @@ function run_duplicity(restore, force) {
                         escape_quote_str(directory);
                 }
                 var cmd = build_win_commands();
-                var dup_cmd = DUPLICITY_PATH + " " + type_arg + force_arg +
-                    exclude_device_files_arg + include_arg + exclude_arg +
-                    file_arg + time_arg + dirs + ";";
+                var dup_cmd = DUPLICITY_PATH + " " + type_arg + cacert_arg +
+                    force_arg + exclude_device_files_arg + include_arg +
+                    exclude_arg + file_arg + time_arg + dirs + ";";
 
                 var args = ["-c", cmd + dup_cmd];
                 execFile(CYGWIN_BASH, args, dup_output);
@@ -268,8 +270,8 @@ function run_duplicity(restore, force) {
             dirs = " swift://" + container_name + " " +
                 escape_quote_str(directory);
         }
-        var dup_cmd = DUPLICITY_PATH + " " + type_arg + force_arg +
-            exclude_device_files_arg + dup_verbosity + log_arg +
+        var dup_cmd = DUPLICITY_PATH + " " + type_arg + cacert_arg +
+            force_arg + exclude_device_files_arg + dup_verbosity + log_arg +
             include_arg + exclude_arg + file_arg + time_arg + dirs + ";";
         exec(dup_cmd , dup_output);
     }
@@ -289,7 +291,10 @@ function load_status() {
         }
         $("#loader").hide();
     }
-    var dup_cmd = DUPLICITY_PATH + " collection-status swift://" + container;
+    var cacert_arg = " --ssl-cacert-file " +
+        clouds[$("#cloud").val()].cert;
+    var dup_cmd = DUPLICITY_PATH + cacert_arg +
+        " collection-status swift://" + container;
     if(process.platform == 'win32') {
         var cmd = build_win_commands();
         var args = ["-c", cmd + dup_cmd];
@@ -334,8 +339,10 @@ function remove_all(time, force) {
         force_arg = " --force ";
     }
 
+    var cacert_arg = " --ssl-cacert-file " +
+        clouds[$("#cloud").val()].cert;
     var dup_cmd = DUPLICITY_PATH + " remove-older-than " +
-        time + force_arg + " swift://" + container;
+        time + force_arg + cacert_arg + " swift://" + container;
     if(process.platform == 'win32') {
         var cmd = build_win_commands();
         var args = ["-c", cmd + dup_cmd];
