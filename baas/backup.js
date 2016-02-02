@@ -135,7 +135,7 @@ function show_alert_box(msg, alert_type, hide) {
     $("#" + alert_type + "-alert").show();
     $("#" + alert_type + "-msg").html(msg + "<a href='#' class='close'>&times;</a>");
     if(hide) {
-        $("#" + alert_type + "-alert").delay(800).fadeOut(400);
+        $("#" + alert_type + "-alert").delay(1200).fadeOut(400);
     }
     $("html,body").animate({
         scrollTop: $("#msg").offset().top},
@@ -161,16 +161,24 @@ function save_backup_set(is_template) {
     container = backup_set.container;
     backup_set.exclude = exclude;
     backup_set.include = include;
+    backup_set.backup_type = $("input[name=backup-type]:checked").val();
+
     if(!is_template) {
         if(typeof backups[cloud + "/" + backup_name] != 'undefined') {
-            if(typeof backups[cloud + "/" + backup_name].first_backup != 'undefined') {
-                backup_set.first_backup = backups[cloud + "/" + backup_name].first_backup;
+            if(typeof backups[cloud + "/" + backup_name].first_backup
+                    != 'undefined') {
+                backup_set.first_backup =
+                    backups[cloud + "/" + backup_name].first_backup;
             }
-            if(typeof backups[cloud + "/" + backup_name].last_backup != 'undefined') {
-                backup_set.last_backup = backups[cloud + "/" + backup_name].last_backup;
+            if(typeof backups[cloud + "/" + backup_name].last_backup
+                    != 'undefined') {
+                backup_set.last_backup =
+                    backups[cloud + "/" + backup_name].last_backup;
             }
-            if(typeof backups[cloud + "/" + backup_name].last_status != 'undefined') {
-                backup_set.last_status = backups[cloud + "/" + backup_name].last_status;
+            if(typeof backups[cloud + "/" + backup_name].last_status
+                    != 'undefined') {
+                backup_set.last_status =
+                    backups[cloud + "/" + backup_name].last_status;
             }
         }
         backups[cloud + "/" + backup_name] =  backup_set;
