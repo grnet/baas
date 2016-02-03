@@ -14,187 +14,193 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-        <script src="backup.js"></script>
-        <script type="text/javascript">
+<script src="backup.js"></script>
+<script type="text/javascript">
 
-            function check_gpg() {
-                exec("which gpg", function(error, stdout, stderr) {
-                    if(error) {
-                        $("#gpg-alert").show();
-                    } else {
-                        $("#gpg-alert").hide();
-                    }
-                });
-            }
-            if(process.platform != "win32") {
-                check_gpg();
-            }
-
-            if(typeof clouds === 'undefined') {
-                load_data_from_file(CLOUDS_CONF_FILE, show_cloud_msg);
+    function check_gpg() {
+        exec("which gpg", function(error, stdout, stderr) {
+            if(error) {
+                $("#gpg-alert").show();
             } else {
-                show_cloud_msg(clouds);
+                $("#gpg-alert").hide();
             }
+        });
+    }
+    if(process.platform != "win32") {
+        check_gpg();
+    }
 
-            function show_cloud_msg(data) {
-                if(typeof clouds === 'undefined') {
-                    if(data != "") {
-                        clouds = JSON.parse(data);
-                    } else {
-                        clouds = new Object();
-                    }
+    if(typeof clouds === 'undefined') {
+        load_data_from_file(CLOUDS_CONF_FILE, show_cloud_msg);
+    } else {
+        show_cloud_msg(clouds);
+    }
+
+    function show_cloud_msg(data) {
+        if(typeof clouds === 'undefined') {
+            if(data != "") {
+                clouds = JSON.parse(data);
+            } else {
+                clouds = new Object();
+            }
+        }
+        if(Object.keys(clouds).length == 0) {
+            $("#cloud-alert").show();
+        }
+    }
+
+    load_data_from_file(BACKUP_CONF_FILE, render_backup_sets);
+
+    function go_to_backup(backup) {
+        selected_backup = backup;
+        $("#backup-tab-link").trigger("click");
+    }
+
+    function show_delete_modal(backup) {
+        $("#del-modal-p").html("<p>Are you sure you want to delete "
+            + backup.cloud + "/" +  backup.name + '?</p>' +
+            "<p>NOTE: To actually remove backup sets from remote" +
+            " container you have to manually purge it.</p>");
+        $("#delete-modal").foundation("reveal", "open");
+        var i = 0;
+        $("#delete-modal").on('close.fndtn.reveal', function(e) {
+            if(e.namespace !== "fndtn.reveal") return;
+            i++;
+            $(this).click(function(event) {
+                // event is fired more than once so have to check
+                if(event.target.id == "del-modal-accept" && i == 1) {
+                    delete_backup(backup);
                 }
-                if(Object.keys(clouds).length == 0) {
-                    $("#cloud-alert").show();
-                }
+            });
+        });
+    }
+
+    function render_backup_sets(data) {
+        $("#backup_list").remove();
+        // backups is undefined the first time, when
+        // reading data from file
+        if(typeof backups === 'undefined') {
+            if(data != "") {
+                backups = JSON.parse(data);
+            } else {
+                backups = new Object();
             }
+        }
+        if(Object.keys(backups).length == 0) {
+            $("#backup-alert").show();
+        }
+        var ul = $("<ul></ul>")
+            .attr("class", "small-block-grid-4")
+            .attr("id", "backup_list");
+        $.each(backups, function(i, backup) {
+            var li = $("<li></li>")
+                .attr("class", "clearfix backup-box")
+                .attr("id", "box_" + backup.name);
+            var a = $("<a>" + backup.cloud + "/" + backup.name + "</a>")
+                .attr("href", "#")
+                .attr("id", "box_a_" + backup.name)
+                .attr("class", "left")
+                .attr("onclick", "go_to_backup('" +
+                    backup.cloud + "/" + backup.name + "')");
+            li.append(a);
 
-            load_data_from_file(BACKUP_CONF_FILE, render_backup_sets);
-
-            function go_to_backup(backup) {
-                selected_backup = backup;
-                $("#backup-tab-link").trigger("click");
-            }
-
-            function show_delete_modal(backup) {
-                $("#del-modal-p").html("<p>Are you sure you want to delete "
-                    + backup.cloud + "/" +  backup.name + '?</p>' +
-                    "<p>NOTE: To actually remove backup sets from remote" +
-                    " container you have to manually purge it.</p>");
-                $("#delete-modal").foundation("reveal", "open");
-                var i = 0;
-                $("#delete-modal").on('close.fndtn.reveal', function(e) {
-                    if(e.namespace !== "fndtn.reveal") return;
-                    i++;
-                    $(this).click(function(event) {
-                        // event is fired more than once so have to check
-                        if(event.target.id == "del-modal-accept" && i == 1) {
-                            delete_backup(backup);
-                        }
-                    });
+            var a_del = $("<a><i class='fa fa-trash-o delete_icon'></i></a>")
+                .attr("href", "#")
+                .attr("class", "right")
+                .click(function() {
+                    show_delete_modal(backup);
                 });
+            li.append(a_del);
+
+            li.append("<br>");
+            var local_dir = $("<span>" + backup.local_dir + "</span>");
+            li.append(local_dir);
+
+            if(typeof backup.first_backup != 'undefined') {
+                li.append("<br>");
+                var first = new Date(backup.first_backup).toLocaleString();
+                var first_p = $("<span>First : " + first + " </span>");
+                li.append(first_p);
+                li.append("<br>");
+                var last = new Date(backup.last_backup).toLocaleString();
+                var last_p = $("<span>Last : " + last + " </span>");
+                li.append(last_p);
             }
-
-            function render_backup_sets(data) {
-                $("#backup_list").remove();
-                // backups is undefined the first time, when
-                // reading data from file
-                if(typeof backups === 'undefined') {
-                    if(data != "") {
-                        backups = JSON.parse(data);
-                    } else {
-                        backups = new Object();
-                    }
+            if(typeof backup.last_status != 'undefined') {
+                li.append("<br>");
+                li.append("<br>");
+                var status_p = $("<span>Status : " +
+                        backup.last_status + "&nbsp;&nbsp;</span>");
+                li.append(status_p);
+                var loader = $("<i></i>")
+                    .attr("class", "fa fa-spinner fa-pulse");
+                li.append(loader);
+                if(backup.last_status != "Running") {
+                    loader.hide();
                 }
-                if(Object.keys(backups).length == 0) {
-                    $("#backup-alert").show();
-                }
-                var ul = $("<ul></ul>")
-                    .attr("class", "small-block-grid-4")
-                    .attr("id", "backup_list");
-                $.each(backups, function(i, backup) {
-                    var li = $("<li></li>")
-                        .attr("class", "clearfix backup-box")
-                        .attr("id", "box_" + backup.name);
-                    var a = $("<a>" + backup.cloud + "/" + backup.name + "</a>")
-                        .attr("href", "#")
-                        .attr("id", "box_a_" + backup.name)
-                        .attr("class", "left")
-                        .attr("onclick", "go_to_backup('" + backup.cloud + "/" + backup.name + "')");
-                    li.append(a);
-
-                    var a_del = $("<a><i class='fa fa-trash-o delete_icon'></i></a>")
-                        .attr("href", "#")
-                        .attr("class", "right")
-                        .click(function() {
-                            show_delete_modal(backup);
-                        });
-                    li.append(a_del);
-
-                    if(typeof backup.first_backup != 'undefined') {
-                        li.append("<br>");
-                        var first = new Date(backup.first_backup).toLocaleString();
-                        var first_p = $("<span>First : " + first + " </span>");
-                        li.append(first_p);
-                        li.append("<br>");
-                        var last = new Date(backup.last_backup).toLocaleString();
-                        var last_p = $("<span>Last : " + last + " </span>");
-                        li.append(last_p);
-                    }
-                    if(typeof backup.last_status != 'undefined') {
-                        li.append("<br>");
-                        li.append("<br>");
-                        var status_p = $("<span>Status : " + backup.last_status + "&nbsp;&nbsp;</span>");
-                        li.append(status_p);
-                        var loader = $("<i></i>")
-                            .attr("class", "fa fa-spinner fa-pulse");
-                        li.append(loader);
-                        if(backup.last_status != "Running") {
-                            loader.hide();
-                        }
-                    }
-                    ul.append(li);
-                    $("#backup-table").append(ul);
-                });
-
             }
-            window.setInterval(function() {
-                render_backup_sets("");
-            }, 3000);
+            ul.append(li);
+            $("#backup-table").append(ul);
+        });
 
-        </script>
+    }
+    window.setInterval(function() {
+        render_backup_sets("");
+    }, 3000);
 
-        <div class="row">
-            <div class="small-12 columns panel alert hide" id="gpg-alert">
-                <span>
-                    <i class="fa fa-exclamation-circle"></i>
-                    BaaS uses <a href="#"
-                        onclick="gui.Shell.openExternal('https://www.gnupg.org/download/index.html');">
-                        GnuPG</a>
-                    in order to encrypt your backups, though
-                    no gpg installation was found on your system.
-                    You must install gpg separately.
-                </span>
-            </div>
-        </div>
-        <div class="row">
-            <div class="small-12 columns panel hide" id="cloud-alert">
-                <span>
-                    <i class="fa fa-exclamation-circle"></i>
-                    No cloud settings found. To start you must set a
-                    <a onclick="$('#cloud-settings-link').trigger('click');">
-                    cloud configuration.</a>
-                </span>
-            </div>
-        </div>
-        <div class="row">
-            <div class="small-12 columns panel hide" id="backup-alert">
-                <span>
-                    <i class="fa fa-exclamation-circle"></i>
-                    No backup sets found.
-                    <a onclick="$('#backup-tab-link').trigger('click');">
-                    Create a new one.</a>
-                </span>
-            </div>
-        </div>
-        <div class="row">
-            <div class="small-12 columns" id="backup-table">
-            </div>
-        </div>
-        <div id="delete-modal" class="reveal-modal medium"
-            data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
-            <p id="del-modal-p"></p>
-            <a id="del-modal-cancel" class="button radius small"
-                onclick="$('#delete-modal').foundation('reveal', 'close');">
-                Cancel
-            </a>
-            <a id="del-modal-accept" class="button radius small alert right"
-                onclick="$('#delete-modal').foundation('reveal', 'close');">
-                Delete
-            </a>
-            <a class="close-reveal-modal" aria-label="Close">&#215;</a>
-        </div>
+</script>
 
-        <script type="text/javascript">
-            $(document).foundation();
-        </script>
+<div class="row">
+    <div class="small-12 columns panel alert hide" id="gpg-alert">
+        <span>
+            <i class="fa fa-exclamation-circle"></i>
+            BaaS uses <a href="#"
+                onclick="gui.Shell.openExternal('https://www.gnupg.org/download/index.html');">
+                GnuPG</a>
+            in order to encrypt your backups, though
+            no gpg installation was found on your system.
+            You must install gpg separately.
+        </span>
+    </div>
+</div>
+<div class="row">
+    <div class="small-12 columns panel hide" id="cloud-alert">
+        <span>
+            <i class="fa fa-exclamation-circle"></i>
+            No cloud settings found. To start you must set a
+            <a onclick="$('#cloud-settings-link').trigger('click');">
+            cloud configuration.</a>
+        </span>
+    </div>
+</div>
+<div class="row">
+    <div class="small-12 columns panel hide" id="backup-alert">
+        <span>
+            <i class="fa fa-exclamation-circle"></i>
+            No backup sets found.
+            <a onclick="$('#backup-tab-link').trigger('click');">
+            Create a new one.</a>
+        </span>
+    </div>
+</div>
+<div class="row">
+    <div class="small-12 columns" id="backup-table">
+    </div>
+</div>
+<div id="delete-modal" class="reveal-modal medium"
+    data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+    <p id="del-modal-p"></p>
+    <a id="del-modal-cancel" class="button radius small"
+        onclick="$('#delete-modal').foundation('reveal', 'close');">
+        Cancel
+    </a>
+    <a id="del-modal-accept" class="button radius small alert right"
+        onclick="$('#delete-modal').foundation('reveal', 'close');">
+        Delete
+    </a>
+    <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+</div>
+
+<script type="text/javascript">
+    $(document).foundation();
+</script>

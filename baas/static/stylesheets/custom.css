@@ -65,6 +65,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     min-height: 170px;
     margin: 5px;
     font-size: 14px;
+    word-break: break-all;
 }
 .selected-bar {
     background: #2BA6CB;
