@@ -13,18 +13,27 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-var dup_verbosity = " -v8 ";
+function get_backup_set() {
+    var cloud = $("#cloud").val().replace(/^\s+|\s+$/gm,'');
+    var backup_name = $("#backup-name").val().replace(/^\s+|\s+$/gm,'');
+    return backups[cloud + "/" + backup_name];
+}
 
 function backup(restore) {
     $("#loader").show();
     if($("#error-alert")) $("#error-alert").hide();
+    $("#msg").html("");
     if(!restore) {
         save_backup_set(false);
         disable_form(true);
         disable_actions(true);
         disable_buttons(true);
+
+        call_duplicity("backup", get_backup_set(), false);
+    } else {
+        $('#res-passphrase-error small').hide();
+        call_duplicity("restore", null, false);
     }
-    run_duplicity(restore, false);
 }
 
 function get_env_values() {
@@ -55,225 +64,82 @@ function build_win_commands() {
         "export SWIFT_PREAUTHURL=" + env_values[1] + ";" +
         "export SWIFT_PREAUTHTOKEN=" + env_values[2] + ";";
 }
-function parse_cloud_error(restore, stderr, backup) {
+function parse_cloud_error(data) {
     var cloud_error =
         new RegExp("AttributeError 'NoneType' object has no attribute 'find'")
-        .exec(stderr);
+        .exec(data);
     if(cloud_error) {
         toggle_error(false, "");
         show_alert_box("A problem occured.<br>" +
-                       "Please check your <a href='#'" +
-                       " onclick=$('#cloud-settings-link').trigger('click')>cloud settings</a>",
-                       "error", false);
-        if(!restore && backup) {
-            backups[backup].last_status = "Failed";
-            write_conf_file(BACKUP_CONF_FILE, backups);
-            disable_buttons(false);
-        }
+                       "Please check your <a href='#' " +
+                       "onclick=$('#cloud-settings-link').trigger('click')>" +
+                       "cloud settings</a>", "error", false);
         return true;
     }
     return false;
 }
 
-function build_extra_args(field_value, type) {
+function build_extra_args(field_value, type, params) {
     var args = field_value.split(",");
-    var result = "";
     $.each(args, function(i, value) {
         value = value.trim();
         if(!value) return true;
         if(process.platform == 'win32') {
-            win_value = value.replace(/\\/g, "/");
-            result += " --" + type + " " + escape_quote_str(win_value) + " ";
-        } else {
-            result += " --" + type + " " + escape_quote_str(value) + " ";
+            value = value.replace(/\\/g, "/");
         }
+        var arg1 = "--" + type;
+        params.push(arg1);
+        params.push(value);
     });
-    return result;
 }
 
-function run_duplicity(restore, force) {
-
-    var container_name = "";
-    var cloud = "";
-    var time_arg = "";
-    var file_arg = "";
-    var file_to_restore = $("#res-file").val();
-    var exclude_arg = "";
-    var include_arg = "";
-    var type_arg = "";
-
-    if(restore) {
-        container_name = $("#res-backup-name").val();
-        cloud = $("#res-cloud").val();
-        var timestamp = $("#timestamp").val();
-        if(timestamp) {
-            time_arg = " --time " + timestamp;
-        }
-        if(file_to_restore) {
-            file_arg = " --file-to-restore " +
-                escape_quote_str(file_to_restore) + " ";
-        }
+function check_restore_errors(data) {
+    var exist_error =
+        new RegExp("Restore destination directory.* " +
+            "already exists.\nWill not overwrite.")
+            .exec(data);
+    var gpg_error = new RegExp("GPGError: GPG Failed").
+        exec(data);
+    if(exist_error) {
+        toggle_error(false, "");
+        $("#modal-confirm").foundation("reveal", "open");
+        var i = 0;
+        $("#modal-confirm").on('close.fndtn.reveal',
+            function(e) {
+                if(e.namespace !== "fndtn.reveal") return;
+                    i++;
+                    $(this).click(function(event) {
+                    // event is fired more than once
+                    // so have to check
+                        if(event.target.id == "modal-accept" &&
+                            i == 1) {
+                            $("#loader").show();
+                            call_duplicity("restore", null, true);
+                        }
+                    });
+                }
+            );
+    } else if(gpg_error) {
+        toggle_error(false, "");
+        $('#res-passphrase-error small').
+            text(errors.passphrase_wrong);
+        $('#res-passphrase-error small').show();
     } else {
-        container_name = $("#backup-name").val();
-        cloud = $("#cloud").val();
-        var exclude = $("#exclude").val();
-        if(exclude) {
-            exclude_arg = build_extra_args(exclude, "exclude");
-        }
-        var include = $("#include").val();
-        if(include) {
-            include_arg = build_extra_args(include, "include");
-        }
-        var backup_type = $("input[name=backup-type]:checked").val();
-        type_arg = " " + backup_type + " ";
-
-        backups[cloud + "/" + container_name].last_status = "Running";
+        $('#res-passphrase-error small').hide();
+        show_alert_box("A problem occured during restoring",
+            "error", false);
+        toggle_error(true, data.toString());
     }
+}
 
-    var directory = "";
-    if(restore) {
-        if(file_to_restore) {
-            directory = path.join($("#res-directory").html(),
-                    file_to_restore);
-            fs.stat(directory, function (err, stats) {
-                if(err) {
-                    try {
-                        mkdirp.sync(directory);
-                    } catch(e) {
-                        toggle_error(e, e);
-                    }
-                }
-            });
-        } else {
-            directory = $("#res-directory").html();
-        }
+function toggle_msgs(data, msgDiv) {
+    if(data) {
+        $("#" + msgDiv).addClass("panel");
+        $("#" + msgDiv).append(data.toString());
+        $("#" + msgDiv).animate({scrollTop: "+=300px"}, "slow");
     } else {
-        directory = $("#directory").html();
-    }
-
-    var log_file = path.join(BAAS_LOG_DIR, "dup_" +
-            new Date().toISOString() + ".log");
-    var log_arg = " --log-file '" + log_file + "' ";
-
-    var force_arg = (force) ? " --force " : "";
-    var exclude_device_files_arg = (restore) ? " " :
-        " --exclude-device-files ";
-
-    cacert_arg = " --ssl-cacert-file " + clouds[cloud].cert + " ";
-
-    function dup_output(error, stdout, stderr) {
-        toggle_error(error, stderr);
-        if(error) {
-            $("#loader").hide();
-            if(parse_cloud_error(restore, stderr,
-                        cloud + "/" + container_name)) {
-                return;
-            } else {
-                if(!restore) {
-                    show_alert_box("There was a problem uploading backup set",
-                            "error", false);
-                    disable_form(false);
-                    disable_actions(true);
-                    backups[cloud + "/" + container_name].last_status =
-                        "Failed";
-                } else {
-                    var exist_error =
-                        new RegExp("Restore destination directory.* " +
-                                "already exists.\nWill not overwrite.")
-                        .exec(stderr);
-                    var gpg_error = new RegExp("GPGError: GPG Failed").
-                        exec(stderr);
-                    if(exist_error) {
-                        toggle_error(false, "");
-                        $("#modal-confirm").foundation("reveal", "open");
-                        var i = 0;
-                        $("#modal-confirm").on('close.fndtn.reveal',
-                            function(e) {
-                                if(e.namespace !== "fndtn.reveal") return;
-                                i++;
-                                $(this).click(function(event) {
-                                    // event is fired more than once
-                                    // so have to check
-                                    if(event.target.id == "modal-accept" &&
-                                        i == 1) {
-                                        $("#loader").show();
-                                        run_duplicity(true, true);
-                                    }
-                                });
-                            }
-                        );
-                    } else if(gpg_error) {
-                        toggle_error(false, "");
-                        $('#res-passphrase-error small').
-                            text(errors.passphrase_wrong);
-                        $('#res-passphrase-error small').show();
-                    } else {
-                        $('#res-passphrase-error small').hide();
-                        show_alert_box("A problem occured during restoring",
-                                "error", false);
-                        toggle_error(true, stderr);
-                    }
-                }
-            }
-        } else {
-            $("#loader").hide();
-            show_alert_box("Successfully completed", "success", true);
-            if(!restore) {
-                backups[cloud + "/" + container_name].last_status =
-                    "Completed";
-                backups[cloud + "/" + container_name].last_backup =
-                    new Date();
-                if(typeof backups[cloud + "/" + container_name].first_backup
-                        == 'undefined') {
-                    backups[cloud + "/" + container_name].first_backup =
-                        new Date();
-                }
-                disable_actions(false);
-                $("#inc").prop("disabled", false);
-                $("#inc").prop("checked", true);
-            }
-        }
-        if(!restore) {
-            disable_buttons(false);
-            write_conf_file(BACKUP_CONF_FILE, backups);
-        }
-    }
-
-    if(process.platform == 'win32') {
-        directory = directory.replace(/\\/g, "\\\\");
-        var args = ["-c", "/usr/bin/cygpath " + escape_quote_str(directory)];
-        execFile(CYGWIN_BASH, args,
-            function(error, stdout, stderr) {
-                directory = String(stdout).replace(/(\r\n|\n|\r)/gm, "");
-                toggle_error(error, stderr);
-
-                var dirs = escape_quote_str(directory) + " swift://" +
-                    container_name;
-                if(restore) {
-                    dirs = " swift://" + container_name + " " +
-                        escape_quote_str(directory);
-                }
-                var cmd = build_win_commands();
-                var dup_cmd = DUPLICITY_PATH + " " + type_arg + cacert_arg +
-                    force_arg + exclude_device_files_arg + include_arg +
-                    exclude_arg + file_arg + time_arg + dirs + ";";
-
-                var args = ["-c", cmd + dup_cmd];
-                execFile(CYGWIN_BASH, args, dup_output);
-            }
-        );
-    } else {
-        set_envs();
-
-        var dirs = escape_quote_str(directory) + " swift://" + container_name;
-        if(restore) {
-            dirs = " swift://" + container_name + " " +
-                escape_quote_str(directory);
-        }
-        var dup_cmd = DUPLICITY_PATH + " " + type_arg + cacert_arg +
-            force_arg + exclude_device_files_arg + dup_verbosity + log_arg +
-            include_arg + exclude_arg + file_arg + time_arg + dirs + ";";
-        exec(dup_cmd , dup_output);
+        $("#" + msgDiv).removeClass("panel");
+        $("#" + msgDiv).html("");
     }
 }
 
@@ -282,73 +148,160 @@ function load_status() {
     $("#loader").show();
     $("#status_contents").html("");
 
-    function puts(error, stdout, stderr) {
-        toggle_error(error, stderr);
-        if(!error) {
-            $("#status_contents").html(stdout);
-        } else {
-             parse_cloud_error(false, stderr, false);
-        }
-        $("#loader").hide();
-    }
-    var cacert_arg = " --ssl-cacert-file " +
-        clouds[$("#cloud").val()].cert;
-    var dup_cmd = DUPLICITY_PATH + cacert_arg +
-        " collection-status swift://" + container;
-    if(process.platform == 'win32') {
-        var cmd = build_win_commands();
-        var args = ["-c", cmd + dup_cmd];
-        execFile(CYGWIN_BASH, args, puts);
-    } else {
-        set_envs();
-        exec(dup_cmd, {maxBuffer: 1000*1024} , puts);
-    }
+    call_duplicity("status", get_backup_set(), false);
 }
 
-function remove_all(time, force) {
+function remove_all(force) {
     $("#loader").show();
+    call_duplicity("remove", get_backup_set(), force);
 
-    function puts(error, stdout, stderr) {
-        toggle_error(false, "");
-        if(error) {
-            if(!parse_cloud_error(false, stderr, false)) {
-                $("#cleanup-msg").html(stderr);
-                $("#cleanup-msg").addClass("panel");
-                $("#force-delete").hide();
-            }
-        } else {
-            $("#cleanup-msg").addClass("panel");
-            $("#cleanup-msg").html(stdout);
-            if(!force) {
-                $("#force-delete").show();
-            } else {
-                $("#force-delete").hide();
-            }
-            var nothing_to_del = new RegExp(
-                    "No old backup sets found, nothing deleted").exec(stdout);
-            if(nothing_to_del) {
-                $("#force-delete").hide();
-                $("#remove-all-button").show();
-            }
-        }
-        $("#loader").hide();
-    }
+}
 
-    var force_arg = "";
-    if(force) {
-        force_arg = " --force ";
-    }
-
-    var cacert_arg = " --ssl-cacert-file " +
-        clouds[$("#cloud").val()].cert;
-    var dup_cmd = DUPLICITY_PATH + " remove-older-than " +
-        time + force_arg + cacert_arg + " swift://" + container;
+function call_duplicity(mode, backup_set, force) {
+    var win_cmd = "";
     if(process.platform == 'win32') {
-        var cmd = build_win_commands();
-        var args = ["-c", cmd + dup_cmd];
-        execFile(CYGWIN_BASH, args, puts);
+        win_cmd = build_win_commands();
     } else {
         set_envs();
-        exec(dup_cmd, {maxBuffer: 1000*1024} , puts);
     }
+
+    var args = [];
+    switch(mode) {
+        case "backup":
+            args = [backup_set.backup_type, // full | incremental
+                backup_set.local_dir,
+                "swift://" + backup_set.container];
+
+            args.push("--exclude-device-files");
+            args.push("--num-retries", "2");
+            build_extra_args(backup_set.include, "include", args);
+            build_extra_args(backup_set.exclude, "exclude", args);
+            break;
+
+        case "restore":
+            var container_name = $("#res-backup-name").val();
+            var timestamp = $("#timestamp").val();
+            var file_to_restore = $("#res-file").val();
+            var local_dir = "";
+            if(file_to_restore) {
+                local_dir = path.join($("#res-directory").html(),
+                    file_to_restore);
+                fs.stat(local_dir, function (err, stats) {
+                    if(err) {
+                        try { mkdirp.sync(local_dir); }
+                        catch(e) { toggle_error(e, e); }
+                    }
+                });
+            } else {
+                local_dir = $("#res-directory").html();
+            }
+            args = ["swift://" + container_name, local_dir];
+
+            if(timestamp) args.push("--time", timestamp);
+            if(file_to_restore) args.push("--file-to-restore",
+                file_to_restore);
+            args.push("-v8");
+            break;
+
+        case "status":
+            args = ["collection-status", "swift://" + backup_set.container];
+            break;
+        case "remove":
+            var time = $("#remove-all").val();
+            args = ["remove-older-than", time,
+                 "swift://" + backup_set.container];
+            break;
+        default:
+            break;
+    }
+
+    var log_file = path.join(BAAS_LOG_DIR, "dup_" +
+            new Date().toISOString() + ".log");
+    args.push("--log-file", log_file);
+    if(backup_set) {
+        args.push("--ssl-cacert-file", clouds[backup_set.cloud].cert);
+    } else {
+        var res_cloud = $("#res-cloud").val();
+        args.push("--ssl-cacert-file", clouds[res_cloud].cert);
+    }
+    if(force) args.push("--force");
+
+    // call duplicity
+    var wProcess = spawn(DUPLICITY_PATH, args);
+
+    function dup_call_out(data) {
+        if(mode == "status") {
+            toggle_msgs(data, "status_contents");
+        } else if(mode == "remove") {
+            toggle_msgs(data, "cleanup-msg");
+            var nothing_to_del = new RegExp(
+                "No old backup sets found, nothing deleted").exec(data);
+            if(nothing_to_del) {
+                $("#remove-all-button").show();
+                $("#force-delete").hide();
+            } else {
+                if(!force) $("#force-delete").show();
+                else {
+                    $("#remove-all-button").show();
+                    $("#force-delete").hide();
+                }
+            }
+        } else {
+            toggle_msgs(data, "msg");
+            if(mode == "backup") {
+                backup_set.last_status = "Running";
+            }
+        }
+    }
+
+    function dup_call_err(data) {
+        var cloud_error = false;
+        if(parse_cloud_error(data)) cloud_error = true;
+        if(mode == "backup") {
+            toggle_msgs(data, "msg");
+            disable_form(false);
+            disable_actions(true);
+            backup_set.last_status = "Failed";
+            if(!cloud_error) {
+                show_alert_box("There was a problem uploading backup set",
+                    "error", false);
+            }
+        } else if(mode == "restore") {
+            if(!cloud_error) {
+                check_restore_errors(data);
+            }
+        } else if(mode == "remove") {
+            toggle_msgs(data, "cleanup-msg");
+            $("#force-delete").hide();
+        }
+    }
+
+    function dup_call_exit(code) {
+        $("#loader").hide();
+        if(mode == "backup") {
+            if(code == 0) {
+                show_alert_box("Successfully completed", "success", true);
+                backup_set.last_status = "Completed";
+                backup_set.last_backup = new Date();
+                if(typeof backup_set.first_backup == 'undefined') {
+                    backup_set.first_backup = new Date();
+                }
+                $("#inc").prop("disabled", false);
+                $("#inc").prop("checked", true);
+                disable_actions(false);
+            }
+            disable_buttons(false);
+            write_conf_file(BACKUP_CONF_FILE, backups);
+        } else if(mode == "restore") {
+            if(code == 0) {
+                show_alert_box("Successfully completed", "success", true);
+            }
+        }
+    }
+
+    // bind listeners
+    wProcess.stdout.on('data', dup_call_out);
+    wProcess.stderr.on('data', dup_call_err);
+    wProcess.on('exit', dup_call_exit);
+
 }

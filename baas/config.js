@@ -19,6 +19,7 @@ var mkdirp = require("mkdirp");
 var exec = require('child_process').exec;
 var execFileSync = require('child_process').execFileSync;
 var execFile = require('child_process').execFile;
+var spawn = require('child_process').spawn;
 
 var BAAS_HOME_DIR = '.baas';
 var CLOUDS_CONF_FILE = 'clouds.rc';

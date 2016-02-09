@@ -88,6 +88,8 @@ body legend, .template-list-title {
 #msg, #cleanup-msg {
     word-break: break-word;
     margin-right: 15px;
+    overflow: auto;
+    max-height: 200px;
 }
 .dir-field {
     overflow-x: auto;

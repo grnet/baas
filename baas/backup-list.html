@@ -473,13 +473,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <div class="small-4 columns">
                         <a id="remove-all-button" class="button radius right small"
                             onclick="if(check_remove_all()) {
-                           remove_all($('#remove-all').val(), false);
+                           remove_all(false);
                            $(this).hide()}">
                            <i class="fa fa-trash-o"></i>&nbsp;Remove All</a>
                     </div>
                     <div class="small-4 columns hide" id="force-delete">
                        <a id="remove-all-button-force" class="button radius right small alert"
-                           onclick="if(check_remove_all()) remove_all($('#remove-all').val(), true)">
+                           onclick="if(check_remove_all()) remove_all(true)">
                            <i class="fa fa-trash-o"></i>&nbsp;Force Delete</a>
                     </div>
                 </div>
