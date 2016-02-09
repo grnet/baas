@@ -170,41 +170,21 @@ function get_contents_by_date(value) {
     }
 }
 
-function load_timeview() {
-    $("#backup_details").hide();
-    $("#loader").show();
+function parse_collection_status(data) {
 
-    function puts(error, stdout, stderr) {
-        $("#loader").hide();
-        toggle_error(error, stderr);
-        if(!error) {
-            var datetime_reg = /\d{4}-\d{2}-\d{2}.\d{2}:\d{2}:\d{2}\s+\d+/g;
-            var dates = stdout.match(datetime_reg);
-            var dates_list = "";
-            if(dates) {
-                dates = dates.sort();
-                $.each(dates, function(i, value) {
-                    value = value.substring(0, 19);
-                    var iso_time = value.replace('.', 'T');
-                    dates_list += "<a href='#' onclick='get_contents_by_date(\""
-                        + iso_time + "\")' id='" + iso_time + "'>" +
-                        value.replace('.', ' ') + "</a><br>";
-                });
-            }
-            $("#time-dates").html(dates_list);
-        }
+    var datetime_reg = /\d{4}-\d{2}-\d{2}.\d{2}:\d{2}:\d{2}\s+\d+/g;
+    var dates = data.match(datetime_reg);
+    var dates_list = "";
+    if(dates) {
+        dates = dates.sort();
+        $.each(dates, function(i, value) {
+            value = value.substring(0, 19);
+            var iso_time = value.replace('.', 'T');
+            dates_list += "<a href='#' onclick='get_contents_by_date(\""
+                + iso_time + "\")' id='" + iso_time + "'>" +
+                value.replace('.', ' ') + "</a><br>";
+        });
     }
-    var cacert_arg = " --ssl-cacert-file " +
-        clouds[$("#cloud").val()].cert;
-    var dup_cmd = DUPLICITY_PATH + cacert_arg +
-        " collection-status swift://" + container;
-    if(process.platform == 'win32') {
-        var cmd = build_win_commands();
-        var args = ["-c", cmd + dup_cmd];
-        execFile(CYGWIN_BASH, args, puts);
-    } else {
-        set_envs();
-        exec(dup_cmd, {maxBuffer: 1000*1024} , puts);
-    }
+    $("#time-dates").html(dates_list);
 }
 

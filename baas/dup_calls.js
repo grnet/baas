@@ -145,6 +145,12 @@ function remove_all(force) {
 
 }
 
+function load_timeview() {
+    $('#backup_details').hide();
+    $("#loader").show();
+    call_duplicity("timeview", get_backup_set(), false);
+}
+
 function call_duplicity(mode, backup_set, force) {
     var win_cmd = "";
     if(process.platform == 'win32') {
@@ -192,6 +198,7 @@ function call_duplicity(mode, backup_set, force) {
             break;
 
         case "status":
+        case "timeview":
             args = ["collection-status", "swift://" + backup_set.container];
             break;
         case "remove":
@@ -217,6 +224,7 @@ function call_duplicity(mode, backup_set, force) {
     // call duplicity
     var wProcess = spawn(DUPLICITY_PATH, args);
 
+    var output_str = "";
     function dup_call_out(data) {
         if(mode == "status") {
             toggle_msgs(data, "status_contents");
@@ -234,6 +242,8 @@ function call_duplicity(mode, backup_set, force) {
                     $("#force-delete").hide();
                 }
             }
+        } else if(mode == "timeview") {
+            output_str += data.toString();
         } else {
             toggle_msgs(data, "msg");
             if(mode == "backup") {
@@ -288,13 +298,21 @@ function call_duplicity(mode, backup_set, force) {
             } else {
                 check_restore_errors(code);
             }
+        } else if(mode == "timeview") {
+            if(code == 0) {
+                parse_collection_status(output_str);
+            } else if(code == DUP_ERR_CODES.CONNECTION_FAILED) {
+                show_cloud_error();
+            }
         } else {
              if(code == DUP_ERR_CODES.CONNECTION_FAILED) show_cloud_error();
         }
     }
 
     // bind listeners
+    wProcess.stdout.setEncoding("utf8");
     wProcess.stdout.on('data', dup_call_out);
+    wProcess.stderr.setEncoding('utf8');
     wProcess.stderr.on('data', dup_call_err);
     wProcess.on('exit', dup_call_exit);
 
