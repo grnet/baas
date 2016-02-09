@@ -177,7 +177,7 @@ function load_timeview() {
     function puts(error, stdout, stderr) {
         $("#loader").hide();
         toggle_error(error, stderr);
-        if(!parse_cloud_error(stderr) && !error) {
+        if(!error) {
             var datetime_reg = /\d{4}-\d{2}-\d{2}.\d{2}:\d{2}:\d{2}\s+\d+/g;
             var dates = stdout.match(datetime_reg);
             var dates_list = "";
@@ -192,8 +192,6 @@ function load_timeview() {
                 });
             }
             $("#time-dates").html(dates_list);
-        } else {
-            parse_cloud_error(false, stderr, false);
         }
     }
     var cacert_arg = " --ssl-cacert-file " +

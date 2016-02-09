@@ -13,6 +13,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+var DUP_ERR_CODES = {
+    RESTORE_DIR_EXISTS : 11,
+    GPG_FAILED : 31,
+    CONNECTION_FAILED : 38
+};
+
 function get_backup_set() {
     var cloud = $("#cloud").val().replace(/^\s+|\s+$/gm,'');
     var backup_name = $("#backup-name").val().replace(/^\s+|\s+$/gm,'');
@@ -64,19 +70,12 @@ function build_win_commands() {
         "export SWIFT_PREAUTHURL=" + env_values[1] + ";" +
         "export SWIFT_PREAUTHTOKEN=" + env_values[2] + ";";
 }
-function parse_cloud_error(data) {
-    var cloud_error =
-        new RegExp("AttributeError 'NoneType' object has no attribute 'find'")
-        .exec(data);
-    if(cloud_error) {
-        toggle_error(false, "");
-        show_alert_box("A problem occured.<br>" +
-                       "Please check your <a href='#' " +
-                       "onclick=$('#cloud-settings-link').trigger('click')>" +
-                       "cloud settings</a>", "error", false);
-        return true;
-    }
-    return false;
+function show_cloud_error() {
+    toggle_error(false, "");
+    show_alert_box("A problem occured.<br>" +
+        "Please check your <a href='#' " +
+        "onclick=$('#cloud-settings-link').trigger('click')>" +
+        "cloud settings</a>", "error", false);
 }
 
 function build_extra_args(field_value, type, params) {
@@ -93,14 +92,8 @@ function build_extra_args(field_value, type, params) {
     });
 }
 
-function check_restore_errors(data) {
-    var exist_error =
-        new RegExp("Restore destination directory.* " +
-            "already exists.\nWill not overwrite.")
-            .exec(data);
-    var gpg_error = new RegExp("GPGError: GPG Failed").
-        exec(data);
-    if(exist_error) {
+function check_restore_errors(code) {
+    if(code == DUP_ERR_CODES.RESTORE_DIR_EXISTS) {
         toggle_error(false, "");
         $("#modal-confirm").foundation("reveal", "open");
         var i = 0;
@@ -119,16 +112,11 @@ function check_restore_errors(data) {
                     });
                 }
             );
-    } else if(gpg_error) {
+    } else if(code == DUP_ERR_CODES.GPG_FAILED) {
         toggle_error(false, "");
         $('#res-passphrase-error small').
             text(errors.passphrase_wrong);
         $('#res-passphrase-error small').show();
-    } else {
-        $('#res-passphrase-error small').hide();
-        show_alert_box("A problem occured during restoring",
-            "error", false);
-        toggle_error(true, data.toString());
     }
 }
 
@@ -255,21 +243,16 @@ function call_duplicity(mode, backup_set, force) {
     }
 
     function dup_call_err(data) {
-        var cloud_error = false;
-        if(parse_cloud_error(data)) cloud_error = true;
-        if(mode == "backup") {
-            toggle_msgs(data, "msg");
-        } else if(mode == "restore") {
-            if(!cloud_error) {
-                check_restore_errors(data);
-            }
-        } else if(mode == "remove") {
+        if(mode == "remove") {
             toggle_msgs(data, "cleanup-msg");
             $("#force-delete").hide();
+        } else {
+            toggle_msgs(data, "msg");
         }
     }
 
     function dup_call_exit(code) {
+        console.log("exit code === " + code);
         $("#loader").hide();
         if(mode == "backup") {
             if(code == 0) {
@@ -288,15 +271,25 @@ function call_duplicity(mode, backup_set, force) {
                 }
                 disable_actions(true);
                 backup_set.last_status = "Failed";
-                show_alert_box("There was a problem uploading backup set",
-                    "error", false);
+                if(code == DUP_ERR_CODES.CONNECTION_FAILED) {
+                    show_cloud_error();
+                } else {
+                    show_alert_box("There was a problem uploading backup set",
+                        "error", false);
+                }
             }
             disable_buttons(false);
             write_conf_file(BACKUP_CONF_FILE, backups);
         } else if(mode == "restore") {
             if(code == 0) {
                 show_alert_box("Successfully completed", "success", true);
+            } else if(code == DUP_ERR_CODES.CONNECTION_FAILED) {
+                show_cloud_error();
+            } else {
+                check_restore_errors(code);
             }
+        } else {
+             if(code == DUP_ERR_CODES.CONNECTION_FAILED) show_cloud_error();
         }
     }
 
