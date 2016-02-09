@@ -259,13 +259,6 @@ function call_duplicity(mode, backup_set, force) {
         if(parse_cloud_error(data)) cloud_error = true;
         if(mode == "backup") {
             toggle_msgs(data, "msg");
-            disable_form(false);
-            disable_actions(true);
-            backup_set.last_status = "Failed";
-            if(!cloud_error) {
-                show_alert_box("There was a problem uploading backup set",
-                    "error", false);
-            }
         } else if(mode == "restore") {
             if(!cloud_error) {
                 check_restore_errors(data);
@@ -289,6 +282,14 @@ function call_duplicity(mode, backup_set, force) {
                 $("#inc").prop("disabled", false);
                 $("#inc").prop("checked", true);
                 disable_actions(false);
+            } else {
+                if(typeof backup_set.first_backup == 'undefined') {
+                    disable_form(false);
+                }
+                disable_actions(true);
+                backup_set.last_status = "Failed";
+                show_alert_box("There was a problem uploading backup set",
+                    "error", false);
             }
             disable_buttons(false);
             write_conf_file(BACKUP_CONF_FILE, backups);
