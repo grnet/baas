@@ -221,6 +221,8 @@ function call_duplicity(mode, backup_set, force) {
 
     // call duplicity
     var wProcess = spawn(DUPLICITY_PATH, args);
+    $("html,body").animate(
+            {scrollTop: $("#msg").offset().top}, "slow");
 
     var output_str = "";
     function dup_call_out(data) {
