@@ -149,20 +149,33 @@ function load_timeview() {
     call_duplicity("timeview", get_backup_set(), false);
 }
 
+function array_to_str(args) {
+    var str = "";
+    for(var i = 0; i < args.length; i++) {
+        str += args[i] + " ";
+    }
+    return str;
+}
 function call_duplicity(mode, backup_set, force) {
+    toggle_error(false, "");
     var win_cmd = "";
+    var args = [];
+
     if(process.platform == 'win32') {
         win_cmd = build_win_commands();
+        args.push(win_cmd, DUPLICITY_PATH);
     } else {
         set_envs();
     }
 
-    var args = [];
     switch(mode) {
         case "backup":
-            args = [backup_set.backup_type, // full | incremental
-                backup_set.local_dir,
-                "swift://" + backup_set.container];
+            var local_dir = (process.platform == "win32") ?
+                get_unix_path(backup_set.local_dir) :
+                backup_set.local_dir;
+            args.push(backup_set.backup_type, // full | incremental
+                local_dir,
+                "swift://" + backup_set.container);
 
             args.push("--exclude-device-files");
             args.push("--num-retries", "2");
@@ -187,7 +200,10 @@ function call_duplicity(mode, backup_set, force) {
             } else {
                 local_dir = $("#res-directory").html();
             }
-            args = ["swift://" + container_name, local_dir];
+            if(process.platform == "win32") {
+                local_dir = get_unix_path(local_dir);
+            }
+            args.push("swift://" + container_name, local_dir);
 
             if(timestamp) args.push("--time", timestamp);
             if(file_to_restore) args.push("--file-to-restore",
@@ -197,12 +213,12 @@ function call_duplicity(mode, backup_set, force) {
 
         case "status":
         case "timeview":
-            args = ["collection-status", "swift://" + backup_set.container];
+            args.push("collection-status", "swift://" + backup_set.container);
             break;
         case "remove":
             var time = $("#remove-all").val();
-            args = ["remove-older-than", time,
-                 "swift://" + backup_set.container];
+            args.push("remove-older-than", time,
+                 "swift://" + backup_set.container);
             break;
         default:
             break;
@@ -210,6 +226,9 @@ function call_duplicity(mode, backup_set, force) {
 
     var log_file = path.join(BAAS_LOG_DIR, "dup_" +
             new Date().toISOString() + ".log");
+    if(process.platform == "win32") {
+        log_file = get_unix_path(log_file);
+    }
     args.push("--log-file", log_file);
     if(backup_set) {
         args.push("--ssl-cacert-file", clouds[backup_set.cloud].cert);
@@ -220,7 +239,14 @@ function call_duplicity(mode, backup_set, force) {
     if(force) args.push("--force");
 
     // call duplicity
-    var wProcess = spawn(DUPLICITY_PATH, args);
+    var wProcess = null;
+    if(process.platform == "win32") {
+        var args_str = array_to_str(args);
+        wProcess = spawn(CYGWIN_BASH, ["-c", args_str]);
+    } else {
+        wProcess = spawn(DUPLICITY_PATH, args);
+    }
+
     $("html,body").animate(
             {scrollTop: $("#msg").offset().top}, "slow");
 
