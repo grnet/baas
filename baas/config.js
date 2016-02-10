@@ -66,18 +66,22 @@ var templates_data = {
   }
 }
 
-function get_unix_path(target) {
+function get_unix_path(path) {
+    var args = ["-c", "/usr/bin/cygpath " + escape_quote_str(path)];
+    var out = execFileSync(CYGWIN_BASH, args);
+    var win_value = String(out).replace(/(\r\n|\n|\r)/gm, "");
+    return win_value;
+}
+
+function get_unix_exec_path(target) {
     if(process.platform == 'win32') {
-        var args = ["-c", "/usr/bin/cygpath " + escape_quote_str(exec_path)];
-        var out = execFileSync(CYGWIN_BASH, args);
-        var win_value = String(out).replace(/(\r\n|\n|\r)/gm, "");
-        return win_value + "/" + target;
+        return get_unix_path(exec_path) + "/" + target;
     }
     return path.join(exec_path, target);
 }
 
-var DUPLICITY_PATH = get_unix_path("duplicity");
-var TIMEVIEW_PATH = get_unix_path("timeview.py");
+var DUPLICITY_PATH = get_unix_exec_path("duplicity");
+var TIMEVIEW_PATH = get_unix_exec_path("timeview.py");
 
 function create_conf_files() {
     create_conf_file(CLOUDS_CONF_FILE);
