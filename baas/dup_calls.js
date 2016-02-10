@@ -135,14 +135,12 @@ function load_status() {
     $('#backup_details').hide();
     $("#loader").show();
     $("#status_contents").html("");
-
     call_duplicity("status", get_backup_set(), false);
 }
 
 function remove_all(force) {
     $("#loader").show();
     call_duplicity("remove", get_backup_set(), force);
-
 }
 
 function load_timeview() {
@@ -265,6 +263,7 @@ function call_duplicity(mode, backup_set, force) {
         console.log("exit code === " + code);
         $("#loader").hide();
         if(mode == "backup") {
+            disable_actions(false);
             if(code == 0) {
                 show_alert_box("Successfully completed", "success", true);
                 backup_set.last_status = "Completed";
@@ -274,12 +273,11 @@ function call_duplicity(mode, backup_set, force) {
                 }
                 $("#inc").prop("disabled", false);
                 $("#inc").prop("checked", true);
-                disable_actions(false);
             } else {
                 if(typeof backup_set.first_backup == 'undefined') {
                     disable_form(false);
+                    disable_actions(true);
                 }
-                disable_actions(true);
                 backup_set.last_status = "Failed";
                 if(code == DUP_ERR_CODES.CONNECTION_FAILED) {
                     show_cloud_error();
