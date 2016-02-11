@@ -18,31 +18,28 @@ var url = require('url');
 
 /** @return http: --> http, https: --> https, null otherwise */
 function  getProtocol(prefix) {
-  switch (prefix) {
-    case "http:": return require('http');
-    case "https:": return require('https');
-  }
-
-  return null;
+    switch (prefix) {
+        case "http:": return require('http');
+        case "https:": return require('https');
+    }
+    return null;
 }
 /**
  * Read the path (utf8), chop it to individual certificates
  * @return {[String, ...]} An array with all the certificates
  */
 function splitCA(CAPath) {
-  chain = fs.readFileSync(CAPath, 'utf8').split('\n')
-  ca = [];
-  for (i=0, cert=[]; i < chain.length; i++) {
-    cert.push(chain[i]);
-    line = chain[i];
-    if (line.match(/-END CERTIFICATE-/)) {
-      ca.push(cert.join('\n'));
-      cert = [];
+    chain = fs.readFileSync(CAPath, 'utf8').split('\n')
+    ca = [];
+    for (i=0, cert=[]; i < chain.length; i++) {
+        cert.push(chain[i]);
+        line = chain[i];
+        if (line.match(/-END CERTIFICATE-/)) {
+            ca.push(cert.join('\n'));
+            cert = [];
+        }
     }
-
-  }
-
-  return ca;
+    return ca;
 }
 
 /**
@@ -57,74 +54,74 @@ function splitCA(CAPath) {
  * @param {String } CAPath - the path of the CA certificates bundle file 
  */
 var Client = function(endpointURL, token, CAPath) {
-  var _options = {host: null, headers: { }, };
-  var _url, _parser, _protocol, _token;
+    var _options = {host: null, headers: { }, };
+    var _url, _parser, _protocol, _token;
 
-  this.setURL = function(newURL) {
-    _url = newURL;
-    _parser = url.parse(newURL);
-    _options.host = _parser.host;
-    _protocol = getProtocol(_parser.protocol);
-    if (_protocol) _endpoint = _parser.pathname.replace(/\/$/, "");
-    else throw "Unknown URL protocol";
-  };
-  this.getURL = function() { return _url; };
-  this.equalsURL = function(URL) { return URL === _url; };
-
-  this.setToken = function(newToken) {
-    _token = newToken;
-    if (_token) util._extend(_options.headers, { 'X-Auth-Token': _token, });
-    else delete _options.headers['X-Auth-Token'];
-  };
-  this.getToken = function() { return _token; }
-
-  this.setCA = function(newCAPath) {
-    this.CAPath = newCAPath;
-    if (newCAPath) _options.ca = splitCA(newCAPath);
-    else delete _options.ca;
-  };
-  this.getCA = function() { return _options.ca; };
-
-  this.setURL(endpointURL);
-  this.setToken(token);
-  this.setCA(CAPath);
-
-  this.post = function(path, headers, send_data, status, handle_res, handle_err) {
-    handle_res = handle_res || function(r){ console.log(r); };
-    handle_err = handle_err || function(e){ console.log(e); };
-
-    var post_opts = util._extend({
-      method: 'POST',
-      path: _endpoint + path,
-    }, _options);
-    post_opts.headers = util._extend({}, _options.headers);
-
-    util._extend(post_opts.headers, headers);
-    if (send_data) {
-      h = post_opts.headers;
-      util._extend(post_opts.headers, {
-        'Content-Type':  h['Content-Type'] || 'application/json',
-        'Content-Length': h['Content-Length'] || Buffer.byteLength(send_data),
-      });
+    this.setURL = function(newURL) {
+        _url = newURL;
+        _parser = url.parse(newURL);
+        _options.host = _parser.host;
+        _protocol = getProtocol(_parser.protocol);
+        if (_protocol) _endpoint = _parser.pathname.replace(/\/$/, "");
+        else throw "Unknown URL protocol";
     };
+    this.getURL = function() { return _url; };
+    this.equalsURL = function(URL) { return URL === _url; };
 
-    _req = _protocol.request(post_opts, function(res){
-      _recv_data = '';
-      res.on('data', function(d) { _recv_data+=d; });
+    this.setToken = function(newToken) {
+        _token = newToken;
+        if (_token) util._extend(_options.headers, { 'X-Auth-Token': _token, });
+        else delete _options.headers['X-Auth-Token'];
+    };
+    this.getToken = function() { return _token; }
 
-      res.on('end', function() {
-        if ((status || 200) !== res.statusCode) {
-          handle_err(res.statusCode + " " + res.statusMessage, res.headers);
-        } else handle_res(_recv_data, res.headers);
+    this.setCA = function(newCAPath) {
+        this.CAPath = newCAPath;
+        if (newCAPath) _options.ca = splitCA(newCAPath);
+        else delete _options.ca;
+    };
+    this.getCA = function() { return _options.ca; };
 
-      });
-    });
+    this.setURL(endpointURL);
+    this.setToken(token);
+    this.setCA(CAPath);
 
-    if (send_data) _req.write(send_data);
-    _req.end();
-    _req.on('error', handle_err);
-  };
+    this.post = function(path, headers, send_data, status, handle_res, handle_err) {
+        handle_res = handle_res || function(r){ console.log(r); };
+        handle_err = handle_err || function(e){ console.log(e); };
 
+        var post_opts = util._extend({
+            method: 'POST',
+            path: _endpoint + path,
+        }, _options);
+        post_opts.headers = util._extend({}, _options.headers);
+
+        util._extend(post_opts.headers, headers);
+        if (send_data) {
+            h = post_opts.headers;
+            util._extend(post_opts.headers, {
+                'Content-Type':  h['Content-Type'] || 'application/json',
+                'Content-Length': h['Content-Length'] ||
+                    Buffer.byteLength(send_data),
+            });
+        };
+
+        _req = _protocol.request(post_opts, function(res){
+            _recv_data = '';
+            res.on('data', function(d) { _recv_data+=d; });
+
+            res.on('end', function() {
+                if ((status || 200) !== res.statusCode) {
+                    handle_err(res.statusCode + " " +
+                        res.statusMessage, res.headers);
+                } else handle_res(_recv_data, res.headers);
+            });
+        });
+
+        if (send_data) _req.write(send_data);
+        _req.end();
+        _req.on('error', handle_err);
+    };
 };
 
 module.exports = { Client: Client };

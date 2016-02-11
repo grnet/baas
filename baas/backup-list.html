@@ -14,227 +14,233 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-        <script type="text/javascript">
+<script type="text/javascript">
 
-            function disable_buttons(disable) {
-                $("#backup_button").attr("disabled", disable);
-                if(disable) {
-                    $("#backup_button").attr("onclick", "");
-                } else {
-                    $("#backup_button").attr("onclick", "if(check_fields()) backup(false);");
-                }
-                var save_button = $("#save_button");
-                if(save_button) {
-                    $("#save_button").attr("disabled", disable);
-                    if(disable) {
-                        $("#save_button").attr("onclick", "");
-                    } else {
-                        $("#save_button").attr("onclick", "if(check_fields()) save_backup_set(false);");
-                    }
-                }
+    function disable_buttons(disable) {
+        $("#backup_button").attr("disabled", disable);
+        if(disable) {
+            $("#backup_button").attr("onclick", "");
+        } else {
+            $("#backup_button")
+                .attr("onclick", "if(check_fields()) backup(false);");
+        }
+        var save_button = $("#save_button");
+        if(save_button) {
+            $("#save_button").attr("disabled", disable);
+            if(disable) {
+                $("#save_button").attr("onclick", "");
+            } else {
+                $("#save_button")
+                    .attr("onclick",
+                    "if(check_fields()) save_backup_set(false);");
             }
+        }
+    }
 
-            function populate_template_list(data) {
-                if(typeof templates === 'undefined') {
-                    if(data != "") {
-                        templates = JSON.parse(data);
-                    } else {
-                        templates = new Object();
-                    }
-                }
-                $("#template_list").empty();
-                var ul = $("<ul></ul>")
-                    .attr("class", "no-bullet template-list");
-                var li = $("<li>Load Template:</li>")
-                    .attr("class", "template-list-title");
-                ul.append(li);
+    function populate_template_list(data) {
+        if(typeof templates === 'undefined') {
+            if(data != "") {
+                templates = JSON.parse(data);
+            } else {
+                templates = new Object();
+            }
+        }
+        $("#template_list").empty();
+        var ul = $("<ul></ul>")
+            .attr("class", "no-bullet template-list");
+        var li = $("<li>Load Template:</li>")
+            .attr("class", "template-list-title");
+        ul.append(li);
 
-                $.each(templates, function(i, template) {
-                    var li = $("<li></li>");
-                    var a = $("<a>" + template.name + "&nbsp;<i class='fa fa-arrow-circle-right'></a>")
-                        .attr("href", "#")
-                        .click(function() {
-                            load_backup(template);
-                            $("#template_list").hide();
-                        });
-                    li.append(a);
-                    ul.append(li);
+        $.each(templates, function(i, template) {
+            var li = $("<li></li>");
+            var a = $("<a>" + template.name +
+                "&nbsp;<i class='fa fa-arrow-circle-right'></a>")
+                .attr("href", "#")
+                .click(function() {
+                    load_backup(template);
+                    $("#template_list").hide();
                 });
-                $("#template_list").append(ul);
-            }
+            li.append(a);
+            ul.append(li);
+        });
+        $("#template_list").append(ul);
+    }
 
-            if(typeof templates === 'undefined') {
-                load_data_from_file(TEMPLATES_FILE, populate_template_list);
+    if(typeof templates === 'undefined') {
+        load_data_from_file(TEMPLATES_FILE, populate_template_list);
+    } else {
+        populate_template_list("");
+    }
+
+    populate_clouds("cloud", "");
+
+    if(typeof selected_backup != 'undefined' && selected_backup &&
+        typeof backups[selected_backup] != 'undefined') {
+        $("#selected-bar").html(selected_backup);
+        $("#selected-bar").show();
+        load_backup(backups[selected_backup]);
+        if(typeof backups[selected_backup].last_status != 'undefined' &&
+            backups[selected_backup].last_status == "Running") {
+            disable_buttons(true);
+            disable_actions(true);
+            disable_form(true);
+            $("#loader").show();
+        }
+        if(typeof backups[selected_backup].first_backup != 'undefined') {
+            $("#inc").prop("checked", true);
+        } else {
+            $("#full").prop("checked", true);
+            $("#inc").prop("disabled", true);
+
+        }
+    } else {
+        $("#selected-bar").hide();
+        $("#inc").prop("disabled", true);
+        load_backup();
+    }
+
+    function check_backup_name() {
+        var backup_name = $('#backup-name').val().replace(/^\s+|\s+$/gm,'');
+        if(!backup_name) {
+            $('#backup-name-error small').text(errors.backup_name_empty);
+            $('#backup-name-error small').show();
+            return false;
+        } else {
+            var pattern = /^Backup[\w.\-]+$/;
+            if(!backup_name.match(pattern)) {
+                $('#backup-name-error small').text(errors.backup_name_illegal);
+                $('#backup-name-error small').show();
+                return false;
             } else {
-                populate_template_list("");
+                $('#backup-name-error small').hide();
             }
+        }
+        return true;
+    }
 
-            populate_clouds("cloud", "");
+    function check_cloud() {
+        var cloud = $("#cloud").val();
+        if(!cloud) {
+            $('#cloud-error small').text(errors.cloud_empty);
+            $('#cloud-error small').show();
+            return false;
+        } else {
+            $('#cloud-error small').hide();
+        }
+        return true;
+    }
 
-            if(typeof selected_backup != 'undefined' && selected_backup &&
-                typeof backups[selected_backup] != 'undefined') {
-                $("#selected-bar").html(selected_backup);
-                $("#selected-bar").show();
-                load_backup(backups[selected_backup]);
-                if(typeof backups[selected_backup].last_status != 'undefined' &&
-                    backups[selected_backup].last_status == "Running") {
-                    disable_buttons(true);
-                    disable_actions(true);
-                    disable_form(true);
-                    $("#loader").show();
-                }
-                if(typeof backups[selected_backup].first_backup != 'undefined') {
-                    $("#inc").prop("checked", true);
-                } else {
-                    $("#full").prop("checked", true);
-                    $("#inc").prop("disabled", true);
+    function check_passphrase() {
+        var passphrase = $("#passphrase").val();
+        if(!passphrase) {
+            $('#passphrase-error small').text(errors.passphrase_empty);
+            $('#passphrase-error small').show();
+            return false;
+        } else {
+            $('#passphrase-error small').hide();
+        }
+        return true;
+    }
 
-                }
-            } else {
-                $("#selected-bar").hide();
-                $("#inc").prop("disabled", true);
-                load_backup();
-            }
+    function disable_form(disable) {
+        $("#backup-name").prop("disabled", disable);
+        $("#choose-dir").prop("disabled", disable);
+        $("#cloud").prop("disabled", disable);
+        var save_pass = $("#save_passphrase").is(":checked");
+        if(save_pass) {
+            $("#passphrase").prop("disabled", disable);
+        }
+        if(disable) {
+            $("#save_button").hide();
+            $("#go_to_restore_button").show();
+        } else {
+            $("#save_button").show();
+            $("#go_to_restore_button").hide();
+        }
+    }
 
-            function check_backup_name() {
-                var backup_name = $('#backup-name').val().replace(/^\s+|\s+$/gm,'');
-                if(!backup_name) {
-                    $('#backup-name-error small').text(errors.backup_name_empty);
-                    $('#backup-name-error small').show();
-                    return false;
-                } else {
-                    var pattern = /^Backup[\w.\-]+$/;
-                    if(!backup_name.match(pattern)) {
-                        $('#backup-name-error small').text(errors.backup_name_illegal);
-                        $('#backup-name-error small').show();
-                        return false;
-                    } else {
-                        $('#backup-name-error small').hide();
-                    }
-                }
-                return true;
-            }
+    function disable_actions(disable) {
+        $("#backup_details_link").prop("disabled", disable);
+        $("#status_link").prop("disabled", disable);
+        $("#timeview_link").prop("disabled", disable);
+        $("#cleanup_link").prop("disabled", disable);
+        if(disable) {
+            $("#backup_details_link").attr("click", "");
+            $("#status_link").click(function(e) { e.preventDefault(); });
+            $("#status_link").unbind("click");
+            $("#timeview_link").click(function(e) { e.preventDefault(); });
+            $("#timeview_link").unbind("click");
+            $("#cleanup_link").click(function(e) { e.preventDefault(); });
+            $("#cleanup_link").unbind("click");
+        } else {
+            $("#backup_detais_link").click(function(e) { load_backup(); });
+            $("#status_link").click(function(e) { load_status(); });
+            $("#timeview_link").click(function(e) { load_timeview(); });
+            $("#cleanup_link").click(function(e) { load_cleanup(); });
+        }
+    }
 
-            function check_cloud() {
-                var cloud = $("#cloud").val();
-                if(!cloud) {
-                    $('#cloud-error small').text(errors.cloud_empty);
-                    $('#cloud-error small').show();
-                    return false;
-                } else {
-                    $('#cloud-error small').hide();
-                }
-                return true;
-            }
+    function check_fields() {
+        return(check_directory("directory")
+            && check_cloud()
+            && check_backup_name()
+            && check_passphrase());
+    }
 
-            function check_passphrase() {
-                var passphrase = $("#passphrase").val();
-                if(!passphrase) {
-                    $('#passphrase-error small').text(errors.passphrase_empty);
-                    $('#passphrase-error small').show();
-                    return false;
-                } else {
-                    $('#passphrase-error small').hide();
-                }
-                return true;
-            }
+    function go_to_restore() {
+        g_res_directory = RESTORE_DEFAULT_DIR;
+        g_passphrase = $("#passphrase").val();
+        g_res_file = "";
+        g_timestamp = "";
+        $("#restore-tab-link").trigger("click");
+    }
 
-            function disable_form(disable) {
-                $("#backup-name").prop("disabled", disable);
-                $("#choose-dir").prop("disabled", disable);
-                $("#cloud").prop("disabled", disable);
-                var save_pass = $("#save_passphrase").is(":checked");
-                if(save_pass) {
-                    $("#passphrase").prop("disabled", disable);
-                }
-                if(disable) {
-                    $("#save_button").hide();
-                    $("#go_to_restore_button").show();
-                } else {
-                    $("#save_button").show();
-                    $("#go_to_restore_button").hide();
-                }
-            }
+    function load_cleanup() {
+        $("#backup_details").hide();
+        $("#cleanup-msg").html("");
+        $("#cleanup-msg").removeClass("panel");
+        $("#remove-all-button").show();
+        $("#force-delete").hide();
+    }
 
-            function disable_actions(disable) {
-                $("#backup_details_link").prop("disabled", disable);
-                $("#status_link").prop("disabled", disable);
-                $("#timeview_link").prop("disabled", disable);
-                $("#cleanup_link").prop("disabled", disable);
-                if(disable) {
-                    $("#backup_details_link").attr("click", "");
-                    $("#status_link").click(function(e) { e.preventDefault(); });
-                    $("#status_link").unbind("click");
-                    $("#timeview_link").click(function(e) { e.preventDefault(); });
-                    $("#timeview_link").unbind("click");
-                    $("#cleanup_link").click(function(e) { e.preventDefault(); });
-                    $("#cleanup_link").unbind("click");
-                } else {
-                    $("#backup_detais_link").click(function(e) { load_backup(); });
-                    $("#status_link").click(function(e) { load_status(); });
-                    $("#timeview_link").click(function(e) { load_timeview(); });
-                    $("#cleanup_link").click(function(e) { load_cleanup(); });
-                }
-            }
+    function check_remove_all() {
+        var remove_all_time = $("#remove-all").val();
+        if(!remove_all_time) {
+            $('#remove-all-error small').text(errors.remove_all_time_empty);
+            $('#remove-all-error small').show();
+            return false;
+        } else {
+            $('#remove-all-error small').hide();
+        }
+        return true;
+    }
 
-            function check_fields() {
-                return(check_directory("directory")
-                    && check_cloud()
-                    && check_backup_name()
-                    && check_passphrase());
-            }
-
-            function go_to_restore() {
-                g_res_directory = RESTORE_DEFAULT_DIR;
-                g_passphrase = $("#passphrase").val();
-                g_res_file = "";
-                g_timestamp = "";
-                $("#restore-tab-link").trigger("click");
-            }
-
-            function load_cleanup() {
-                $("#backup_details").hide();
-                $("#cleanup-msg").html("");
-                $("#cleanup-msg").removeClass("panel");
-                $("#remove-all-button").show();
-                $("#force-delete").hide();
-            }
-
-            function check_remove_all() {
-                var remove_all_time = $("#remove-all").val();
-                if(!remove_all_time) {
-                    $('#remove-all-error small').text(errors.remove_all_time_empty);
-                    $('#remove-all-error small').show();
-                    return false;
-                } else {
-                    $('#remove-all-error small').hide();
-                }
-                return true;
-            }
-
-            function toggle_settings() {
-                var l_html = $("#more_icon").html();
-                if(l_html == "&nbsp;More") {
-                    $("#more_settings").show();
-                    $("#more_icon").html("&nbsp;Less");
-                    $("#more_icon").removeClass("fa fa-plus-square-o");
-                    $("#more_icon").addClass("fa fa-minus-square-o");
-                } else {
-                    $("#more_settings").hide();
-                    $("#more_icon").html("&nbsp;More");
-                    $("#more_icon").removeClass("fa fa-minus-square-o");
-                    $("#more_icon").addClass("fa fa-plus-square-o");
-                }
-            }
-        </script>
+    function toggle_settings() {
+        var l_html = $("#more_icon").html();
+        if(l_html == "&nbsp;More") {
+            $("#more_settings").show();
+            $("#more_icon").html("&nbsp;Less");
+            $("#more_icon").removeClass("fa fa-plus-square-o");
+            $("#more_icon").addClass("fa fa-minus-square-o");
+        } else {
+            $("#more_settings").hide();
+            $("#more_icon").html("&nbsp;More");
+            $("#more_icon").removeClass("fa fa-minus-square-o");
+            $("#more_icon").addClass("fa fa-plus-square-o");
+        }
+    }
+</script>
 
 <div class="row">
     <div class="small-2 columns" id="sidebar">
-        <a href="#" onclick="$('#template_list').show();load_backup();" class="button radius small add-button">
+        <a href="#" onclick="$('#template_list').show();load_backup();"
+            class="button radius small add-button">
             <i class="fa fa-plus-circle">&nbsp;Add</i>
         </a>
     </div>
-    <div class="small-9 columns selected-bar text-center" id="selected-bar"></div>
+    <div class="small-9 columns selected-bar text-center" id="selected-bar">
+    </div>
     <div class="small-1 columns"></div>
 </div>
 <div class="row">
@@ -244,17 +250,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <div class="small-10 columns">
         <ul class="tabs" data-tab>
             <li class="tab-title radius" id="backup_details_tab">
-                <a href="#backup_details" onclick="$('#backup_details').show()"
+                <a href="#backup_details"
+                    onclick="$('#backup_details').show()"
                     id="backup_details_link">Settings</a>
             </li>
             <li class="tab-title">
-                <a href="#timeview" class="radius" id="timeview_link">Timeview</a>
+                <a href="#timeview" class="radius" id="timeview_link">
+                    Timeview
+                </a>
             </li>
             <li class="tab-title">
                 <a href="#status" class="radius" id="status_link">Status</a>
             </li>
             <li class="tab-title">
-                <a href="#cleanup" class="radius" id="cleanup_link">Cleanup</a>
+                <a href="#cleanup" class="radius" id="cleanup_link">
+                    Cleanup
+                </a>
             </li>
         </ul>
         <div class="tabs-content">
@@ -264,14 +275,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <legend>From</legend>
                         <div class="clearfix">
                             <div class="small-3 columns">
-                                <label id="directory_label" for="directory" class="right">
+                                <label id="directory_label" for="directory"
+                                    class="right">
                                     Local directory
                                 </label>
                             </div>
-                            <div id="directory" class="small-6 columns dir-field"></div>
-                            <div id="dirdialogue_label" onclick="$('#choose-dir').trigger('click');"
+                            <div id="directory"
+                                class="small-6 columns dir-field"></div>
+                            <div id="dirdialogue_label"
+                                onclick="$('#choose-dir').trigger('click');"
                                 class="small-3 columns" id="dirpick">
-                                <i class="fa fa-folder-o blue-folder">&nbsp;</i>
+                                <i class="fa fa-folder-o blue-folder">
+                                    &nbsp;
+                                </i>
                             </div>
                         </div>
                         <div class="clearfix">
@@ -289,9 +305,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <legend>To</legend>
                         <div class="clearfix">
                             <div class="small-3 columns">
-                                 <label id="cloud_label" for="cloud" class="right inline">Cloud</label>
+                                 <label id="cloud_label" for="cloud"
+                                    class="right inline">Cloud</label>
                             </div>
-                            <div class="small-9 columns error" id="cloud-error">
+                            <div class="small-9 columns error"
+                                id="cloud-error">
                                 <select id="cloud" onchange="check_cloud();">
                                 </select>
                                 <small class="error"></small>
@@ -299,12 +317,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </div>
                         <div class="clearfix">
                             <div class="small-3 columns">
-                                 <label id="backup_name_label" for="backup-name" class="right inline">
-                                    Name&nbsp;<i class="fa fa-info-circle green-info"
-                                     onclick="$('#name-info').slideDown();"></i>
+                                 <label id="backup_name_label"
+                                    for="backup-name" class="right inline">
+                                    Name&nbsp;
+                                    <i class="fa fa-info-circle green-info"
+                                        onclick="$('#name-info').slideDown();">
+                                    </i>
                                  </label>
                             </div>
-                            <div class="small-9 columns error" id="backup-name-error">
+                            <div class="small-9 columns error"
+                                id="backup-name-error">
                                 <input type="text" id="backup-name"
                                 placeholder="Backup[A-Za-z0-9-_]"
                                 value="Backup"
@@ -312,22 +334,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <small class="error"></small>
                             </div>
                             <div class="small-3 columns">&nbsp;</div>
-                            <div class="small-9 columns hide info-text panel" id="name-info">
-                                <i class="fa fa-times right" onclick="$('#name-info').slideUp();"></i>
-                                Backup name will also appear as a container in your cloud
+                            <div class="small-9 columns hide info-text panel"
+                                id="name-info">
+                                <i class="fa fa-times right"
+                                    onclick="$('#name-info').slideUp();"></i>
+                                Backup name will also appear as a container
+                                in your cloud
                             </div>
                         </div>
                         <div class="clearfix">
                             <div class="small-3 columns">
-                                <label id="passphrase_label" for="passphrase" class="right inline">Passphrase</label>
+                                <label id="passphrase_label" for="passphrase"
+                                    class="right inline">Passphrase</label>
                             </div>
-                            <div class="small-6 columns error" id="passphrase-error">
-                                <input type="password" id="passphrase" placeholder="Passphrase">
+                            <div class="small-6 columns error"
+                                id="passphrase-error">
+                                <input type="password" id="passphrase"
+                                    placeholder="Passphrase">
                                 <small class="error"></small>
                             </div>
                             <div class="small-3 columns">
-                                <label for="save_passphrase" class="left">Save&nbsp;
-                                <input id="save_passphrase" type="checkbox" class="right">
+                                <label for="save_passphrase" class="left">
+                                    Save&nbsp;
+                                    <input id="save_passphrase"
+                                        type="checkbox" class="right">
                                 </label>
                             </div>
                         </div>
@@ -335,32 +365,40 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <div class="clearfix pad-bottom">
                         <div class="small-3 columns">
                             <a onclick="toggle_settings()">
-                                <i class="fa fa-plus-square-o" id="more_icon">&nbsp;More</i>
+                                <i class="fa fa-plus-square-o"
+                                    id="more_icon">&nbsp;More</i>
                             <a/>
                         </div>
                     </div>
                     <fieldset id="more_settings" class="hide">
                         <div class="clearfix">
                             <div class="small-3 columns">
-                                 <label id="backup-type-label" for="backup-type" class="right inline">
+                                 <label id="backup-type-label"
+                                    for="backup-type" class="right inline">
                                     Backup Type
                                  </label>
                             </div>
                             <div class="small-9 columns">
-                                <input type="radio" name="backup-type" value="full" id="full" checked="checked">
+                                <input type="radio" name="backup-type"
+                                    value="full" id="full" checked="checked">
                                     <label for="full">Full</label>
-                                <input type="radio" name="backup-type" value="incremental" id="inc">
+                                <input type="radio" name="backup-type"
+                                    value="incremental" id="inc">
                                     <label for="inc">Incremental</label>
                             </div>
                         </div>
                         <div class="clearfix">
                             <div class="small-3 columns">
-                                 <label id="exclude-label" for="exclude" class="right inline">
-                                     Exclude&nbsp;<i class="fa fa-info-circle green-info"
-                                     onclick="$('#include-help').slideDown();"></i>
-                                 </label>
+                                <label id="exclude-label" for="exclude"
+                                    class="right inline">
+                                    Exclude&nbsp;
+                                    <i class="fa fa-info-circle green-info"
+                                    onclick="$('#include-help').slideDown();">
+                                    </i>
+                                </label>
                             </div>
-                            <div class="small-9 columns error" id="exclude-error">
+                            <div class="small-9 columns error"
+                                id="exclude-error">
                                 <input type="text" id="exclude"
                                 placeholder="Exclude folders or files">
                                 <small class="error"></small>
@@ -368,62 +406,87 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </div>
                         <div class="clearfix">
                             <div class="small-3 columns">
-                                 <label id="include-label" for="include" class="right inline">
-                                     Include&nbsp;<i class="fa fa-info-circle green-info"
-                                        onclick="$('#include-help').slideDown();"></i>
+                                 <label id="include-label" for="include"
+                                    class="right inline">
+                                    Include&nbsp;
+                                    <i class="fa fa-info-circle green-info"
+                                        onclick="$('#include-help')
+                                            .slideDown();">
+                                    </i>
                                  </label>
                             </div>
-                            <div class="small-9 columns error" id="include-error">
+                            <div class="small-9 columns error"
+                                id="include-error">
                                 <input type="text" id="include"
                                 placeholder="Include folders or files">
                                 <small class="error"></small>
                             </div>
                             <div class="small-3 columns">&nbsp;</div>
-                            <div class="small-9 columns hide info-text panel" id="include-help">
-                                <i class="fa fa-times right" onclick="$('#include-help').slideUp();"></i>
-                                Include and Exclude fields accept some extended shell globbing patterns:
+                            <div class="small-9 columns hide info-text panel"
+                                id="include-help">
+                                <i class="fa fa-times right"
+                                    onclick="$('#include-help').slideUp();">
+                                </i>
+                                Include and Exclude fields accept some
+                                extended shell globbing patterns:
                                 <br>* Matches any string not containing '/'
                                 <br>? Matches any character except '/'
-                                <br>[...] Expands to a single character of those characters specified
-                                    (ranges are acceptable)
+                                <br>[...] Expands to a single character of
+                                    those characters specified (ranges are
+                                    acceptable)
                                 <br>** Matches any string
                             </div>
                         </div>
                     </fieldset>
                     <div class="clearfix">
                         <div class="small-6 columns">
-                            <a id="backup_button" class="button radius left small"
-                            onclick="if(check_fields()) backup(false);">
-                            <i class="fa fa-cloud-upload"></i>&nbsp;Backup Now</a>
+                            <a id="backup_button"
+                                class="button radius left small"
+                                onclick="if(check_fields()) backup(false);">
+                                <i class="fa fa-cloud-upload"></i>
+                                &nbsp;Backup Now
+                            </a>
                         </div>
                         <div class="small-6 columns">
-                            <a id="save_button" class="button radius right small success"
-                            onclick="if(check_fields()) save_backup_set(false);">
+                            <a id="save_button"
+                                class="button radius right small success"
+                                onclick=
+                                    "if(check_fields()) save_backup_set(false);">
                             <i class="fa fa-floppy-o"></i>&nbsp;Save</a>
                         </div>
                         <div class="small-3 columns">
-                            <a id="go_to_restore_button" class="button radius right small"
-                            onclick="go_to_restore()">
-                            <i class="fa fa-cloud-download"></i>&nbsp;Restore</a>
+                            <a id="go_to_restore_button"
+                                class="button radius right small"
+                                onclick="go_to_restore()">
+                                <i class="fa fa-cloud-download"></i>
+                                &nbsp;Restore
+                            </a>
                         </div>
                     </div>
                     <div class="clearfix">
                         <div class="small-8 columns">
                         </div>
                         <div class="small-4 columns">
-                            <a id="save_template_button" class="button radius right small success"
-                                onclick="if(check_backup_name() && check_cloud()) save_backup_set(true);">
-                            <i class="fa fa-floppy-o"></i>&nbsp;Save as Template</a>
+                            <a id="save_template_button"
+                                class="button radius right small success"
+                                onclick=
+                                    "if(check_backup_name() && check_cloud())
+                                        save_backup_set(true);">
+                                <i class="fa fa-floppy-o"></i>
+                                &nbsp;Save as Template
+                            </a>
                         </div>
                     </div>
                 </form>
             </div>
-            <div class="content" id="status"><pre id="status_contents"></pre></div>
+            <div class="content" id="status">
+                <pre id="status_contents"></pre>
+            </div>
             <div class="content" id="timeview">
                 <div class="clearfix">
                     <div class="small-9 columns error" id="time-head-error">
-                        <input type="hidden" id="time-path" placeholder="Select path"
-                            value="/">
+                        <input type="hidden" id="time-path"
+                            placeholder="Select path" value="/">
                         <small class="error"></small>
                     </div>
                 </div>
@@ -431,16 +494,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <ul class="breadcrumbs" id="breadcrumbs"></ul>
                 </div>
                 <div class="clearfix">
-                    <div class="small-4 columns left scroll-list" id="time-dates"></div>
-                    <div class="small-8 columns scroll-list" id="time-contents"></div>
+                    <div class="small-4 columns left scroll-list"
+                        id="time-dates"></div>
+                    <div class="small-8 columns scroll-list"
+                        id="time-contents"></div>
                 </div>
             </div>
             <div class="content" id="cleanup">
                 <div class="clearfix">
                     <div class="small-3 columns">
-                         <label id="remove-all-label" for="remove-all" class="right">
-                             Remove backup sets<br>older than&nbsp;<i class="fa fa-info-circle green-info"
-                                onclick="$('#remove-all-help').slideDown();"></i>
+                         <label id="remove-all-label" for="remove-all"
+                            class="right">
+                            Remove backup sets<br>older than&nbsp;
+                            <i class="fa fa-info-circle green-info"
+                                onclick="$('#remove-all-help').slideDown();">
+                            </i>
                          </label>
                     </div>
                     <div class="small-9 columns error" id="remove-all-error">
@@ -448,20 +516,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <small class="error"></small>
                     </div>
                     <div class="small-3 columns">&nbsp;</div>
-                    <div class="small-9 columns hide info-text panel" id="remove-all-help">
-                        <i class="fa fa-times right" onclick="$('#remove-all-help').slideUp();"></i>
+                    <div class="small-9 columns hide info-text panel"
+                        id="remove-all-help">
+                        <i class="fa fa-times right"
+                            onclick="$('#remove-all-help').slideUp();"></i>
                         Delete all backup sets older than the given time.
                         Accepts following formats<br>
                         1. String "now" refers to current time<br>
-                        2. A sequences of digits, like "123456890" (indicating the time in seconds after the epoch)<br>
-                        3. A string like "2002-01-25T07:00:00+02:00" in datetime format<br>
-                        4. A number followed by one of the characters s, m, h, D, W, M, or Y
-                        (indicating seconds, minutes, hours, days, weeks, months, or years respectively),
-                        or a series of such pairs. In this case the string refers to the time that preceded
-                        the current time by the length of the interval.
-                        For instance, "1h78m" indicates the time that was one hour and 78 minutes ago.<br>
-                        5. A date format of the form YYYY/MM/DD, YYYY-MM-DD, MM/DD/YYYY, or MM-DD-YYYY,
-                        which indicates midnight on the day in question, relative to the current time zone settings.
+                        2. A sequences of digits, like "123456890"
+                        (indicating the time in seconds after the epoch)<br>
+                        3. A string like "2002-01-25T07:00:00+02:00" in
+                        datetime format<br>
+                        4. A number followed by one of the characters s, m,
+                        h, D, W, M, or Y (indicating seconds, minutes, hours,
+                        days, weeks, months, or years respectively),
+                        or a series of such pairs. In this case the string
+                        refers to the time that preceded the current time by
+                        the length of the interval. For instance, "1h78m"
+                        indicates the time that was one hour and 78 minutes
+                        ago.<br>
+                        5. A date format of the form YYYY/MM/DD, YYYY-MM-DD,
+                        MM/DD/YYYY, or MM-DD-YYYY, which indicates midnight
+                        on the day in question, relative to the current time
+                        zone settings.
                     </div>
                 </div>
                 <div class="row">
@@ -471,16 +548,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <div class="clearfix">
                     <div class="small-8 columns">&nbsp;</div>
                     <div class="small-4 columns">
-                        <a id="remove-all-button" class="button radius right small"
+                        <a id="remove-all-button"
+                            class="button radius right small"
                             onclick="if(check_remove_all()) {
-                           remove_all(false);
-                           $(this).hide()}">
-                           <i class="fa fa-trash-o"></i>&nbsp;Remove All</a>
+                                remove_all(false);
+                                $(this).hide()}">
+                            <i class="fa fa-trash-o"></i>&nbsp;Remove All
+                        </a>
                     </div>
                     <div class="small-4 columns hide" id="force-delete">
-                       <a id="remove-all-button-force" class="button radius right small alert"
-                           onclick="if(check_remove_all()) remove_all(true)">
-                           <i class="fa fa-trash-o"></i>&nbsp;Force Delete</a>
+                       <a id="remove-all-button-force"
+                            class="button radius right small alert"
+                            onclick="if(check_remove_all()) remove_all(true)">
+                            <i class="fa fa-trash-o"></i>&nbsp;Force Delete
+                        </a>
                     </div>
                 </div>
             </div>
