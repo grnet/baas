@@ -211,3 +211,18 @@ function delete_backup(backup) {
     $(".tabs").hide();
     $(".tabs-content").hide();
 }
+
+function toggle_settings(hDiv, moreIcon) {
+    var l_html = $("#" + moreIcon).html();
+    if(l_html == "&nbsp;More") {
+        $("#" + hDiv).show();
+        $("#" + moreIcon).html("&nbsp;Less");
+        $("#" + moreIcon).removeClass("fa fa-plus-square-o");
+        $("#" + moreIcon).addClass("fa fa-minus-square-o");
+    } else {
+        $("#" + hDiv).hide();
+        $("#" + moreIcon).html("&nbsp;More");
+        $("#" + moreIcon).removeClass("fa fa-minus-square-o");
+        $("#" + moreIcon).addClass("fa fa-plus-square-o");
+    }
+}

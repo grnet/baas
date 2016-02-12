@@ -215,21 +215,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
         return true;
     }
-
-    function toggle_settings() {
-        var l_html = $("#more_icon").html();
-        if(l_html == "&nbsp;More") {
-            $("#more_settings").show();
-            $("#more_icon").html("&nbsp;Less");
-            $("#more_icon").removeClass("fa fa-plus-square-o");
-            $("#more_icon").addClass("fa fa-minus-square-o");
-        } else {
-            $("#more_settings").hide();
-            $("#more_icon").html("&nbsp;More");
-            $("#more_icon").removeClass("fa fa-minus-square-o");
-            $("#more_icon").addClass("fa fa-plus-square-o");
-        }
-    }
 </script>
 
 <div class="row">
@@ -364,7 +349,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </fieldset>
                     <div class="clearfix pad-bottom">
                         <div class="small-3 columns">
-                            <a onclick="toggle_settings()">
+                            <a onclick="toggle_settings('more_settings',
+                                'more_icon')">
                                 <i class="fa fa-plus-square-o"
                                     id="more_icon">&nbsp;More</i>
                             <a/>
