@@ -119,7 +119,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </div>
                     <input type="file" id="choose-res-dir" nwdirectory
                         style="display:none;"
-                        onchange="$('#res-directory').html($(this).val());
+                        onchange="if($(this).val())
+                            $('#res-directory').html($(this).val());
                             check_directory('res-directory');" />
                 </div>
             </fieldset>

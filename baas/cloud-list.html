@@ -470,7 +470,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </div>
                     <input type="file" id="choose-cert-path" nwfile
                         style="display:none;"
-                        onchange="$('#cert-path').html($(this).val());
+                        onchange="if($(this).val())
+                            $('#cert-path').html($(this).val());
                         toggle_default_button()"/>
                     <div class="small-3 columns">
                         <a href="#"

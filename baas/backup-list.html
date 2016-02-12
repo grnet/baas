@@ -282,7 +282,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                             <input type="file" id="choose-dir" nwdirectory
                                 style="display:none;"
-                                onchange="$('#directory').html($(this).val());
+                                onchange="if($(this).val())
+                                    $('#directory').html($(this).val());
                                     check_directory('directory');" />
                         </div>
                     </fieldset>
