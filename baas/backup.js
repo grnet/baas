@@ -212,16 +212,16 @@ function delete_backup(backup) {
     $(".tabs-content").hide();
 }
 
-function toggle_settings(hDiv, moreIcon) {
+function toggle_settings(hDiv, moreIcon, more_label, less_label) {
     var l_html = $("#" + moreIcon).html();
-    if(l_html == "&nbsp;More") {
+    if(l_html == "&nbsp;" + more_label) {
         $("#" + hDiv).show();
-        $("#" + moreIcon).html("&nbsp;Less");
+        $("#" + moreIcon).html("&nbsp;" + less_label);
         $("#" + moreIcon).removeClass("fa fa-plus-square-o");
         $("#" + moreIcon).addClass("fa fa-minus-square-o");
     } else {
         $("#" + hDiv).hide();
-        $("#" + moreIcon).html("&nbsp;More");
+        $("#" + moreIcon).html("&nbsp;" + more_label);
         $("#" + moreIcon).removeClass("fa fa-minus-square-o");
         $("#" + moreIcon).addClass("fa fa-plus-square-o");
     }
