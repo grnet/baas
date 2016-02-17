@@ -79,7 +79,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     font-size: smaller;
 }
 body .tabs {
-    line-height: 0.4;
+    line-height: 0.1;
     margin-left: 100px;
 }
 body legend, .template-list-title {
@@ -119,4 +119,9 @@ body legend, .template-list-title {
 }
 .pad-bottom {
      padding-bottom: 20px;
+}
+
+body fieldset {
+    margin: 5px;
+    padding: 5px;
 }
