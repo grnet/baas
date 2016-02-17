@@ -128,24 +128,28 @@ function toggle_msgs(data, msgDiv) {
     } else {
         $("#" + msgDiv).removeClass("panel");
         $("#" + msgDiv).html("");
+        if($("#error-alert")) $("#error-alert").hide();
     }
 }
 
 function load_status() {
     $('#backup_details').hide();
     $("#loader").show();
+    toggle_msgs(null, "msg");
     $("#status_contents").html("");
     call_duplicity("status", get_backup_set(), false);
 }
 
 function remove_all(force) {
     $("#loader").show();
+    toggle_msgs(null, "msg");
     call_duplicity("remove", get_backup_set(), force);
 }
 
 function load_timeview() {
     $('#backup_details').hide();
     $("#loader").show();
+    toggle_msgs(null, "msg");
     call_duplicity("timeview", get_backup_set(), false);
 }
 
