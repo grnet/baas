@@ -34,49 +34,51 @@ function show_contents_by_date(error, stdout, stderr) {
     toggle_error(error, stderr);
     $("#time-contents").empty();
 
-    var ul = $("<ul></ul>")
-        .attr("class", "no-bullet")
-        .attr("id", "timeview-contents-list");
-    var contents = JSON.parse(stdout);
-    $.each(contents, function(i, el) {
-        var f = "open_folder('" + escape_illegal_chars(el.name) + "')";
-        var restore_f = "show_rest_icon('" + i + "')";
-        var title = (el.name.length > 30) ? el.name : "";
-        var el_link = $("<a></a>")
-            .attr("href", "#")
-            .attr("title", title)
-            .attr("onclick", restore_f);
-        if(el.type == 'dir') {
-            el_link.attr("ondblclick", f);
-        }
-        var locale_date = new Date(el.timestamp).toLocaleString();
-        var filename = (el.name.length > 30) ?
-            el.name.substring(0,7) + "..." +
-            el.name.substring(el.name.length-7, el.name.length) :
-            el.name;
-        var li = $("<li>&nbsp;<span>" + filename +
-            "&nbsp;</span><span class='right'>"
-            + locale_date + "</span></li>")
-            .attr("id", el.name);
-        var icon_class = (el.type == 'dir')
-            ? "fa fa-folder yellow-folder left" :
-            "fa fa-file-text-o green-file left";
-        var icon = $("<i></i>")
-            .attr("class", icon_class);
-        var rest_icon = $("<i></i>")
-            .attr("id", "rest_icon_" + i)
-            .attr("title", "Restore")
-            .attr("class", "hide")
-            .attr("onclick", "go_to_restore_single('" +
-                    escape_illegal_chars(el.name) + "')");
+    if(!error) {
+        var ul = $("<ul></ul>")
+            .attr("class", "no-bullet")
+            .attr("id", "timeview-contents-list");
+        var contents = JSON.parse(stdout);
+        $.each(contents, function(i, el) {
+            var f = "open_folder('" + escape_illegal_chars(el.name) + "')";
+            var restore_f = "show_rest_icon('" + i + "')";
+            var title = (el.name.length > 30) ? el.name : "";
+            var el_link = $("<a></a>")
+                .attr("href", "#")
+                .attr("title", title)
+                .attr("onclick", restore_f);
+            if(el.type == 'dir') {
+                el_link.attr("ondblclick", f);
+            }
+            var locale_date = new Date(el.timestamp).toLocaleString();
+            var filename = (el.name.length > 30) ?
+                el.name.substring(0,7) + "..." +
+                el.name.substring(el.name.length-7, el.name.length) :
+                el.name;
+            var li = $("<li>&nbsp;<span>" + filename +
+                "&nbsp;</span><span class='right'>"
+                + locale_date + "</span></li>")
+                .attr("id", el.name);
+            var icon_class = (el.type == 'dir')
+                ? "fa fa-folder yellow-folder left" :
+                "fa fa-file-text-o green-file left";
+            var icon = $("<i></i>")
+                .attr("class", icon_class);
+            var rest_icon = $("<i></i>")
+                .attr("id", "rest_icon_" + i)
+                .attr("title", "Restore")
+                .attr("class", "hide")
+                .attr("onclick", "go_to_restore_single('" +
+                        escape_illegal_chars(el.name) + "')");
 
-        li.append(icon);
-        li.append(rest_icon);
-        el_link.append(li);
-        ul.append(el_link);
-    });
+            li.append(icon);
+            li.append(rest_icon);
+            el_link.append(li);
+            ul.append(el_link);
+        });
 
-    $("#time-contents").append(ul);
+        $("#time-contents").append(ul);
+    }
     $("#loader").hide();
 }
 
