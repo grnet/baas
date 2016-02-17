@@ -71,7 +71,7 @@ function build_win_commands() {
         "export SWIFT_PREAUTHTOKEN=" + env_values[2] + ";";
 }
 function show_cloud_error() {
-    toggle_error(false, "");
+    toggle_msgs(false, "msg", false);
     show_alert_box("A problem occured.<br>" +
         "Please check your <a href='#' " +
         "onclick=$('#cloud-settings-link').trigger('click')>" +
@@ -94,7 +94,7 @@ function build_extra_args(field_value, type, params) {
 
 function check_restore_errors(code) {
     if(code == DUP_ERR_CODES.RESTORE_DIR_EXISTS) {
-        toggle_error(false, "");
+        toggle_msgs(false, "msg", false);
         $("#modal-confirm").foundation("reveal", "open");
         var i = 0;
         $("#modal-confirm").on('close.fndtn.reveal',
@@ -112,44 +112,36 @@ function check_restore_errors(code) {
                     });
                 }
             );
-    } else if(code == DUP_ERR_CODES.GPG_FAILED) {
-        toggle_error(false, "");
+        return true;
+    }
+    if(code == DUP_ERR_CODES.GPG_FAILED) {
+        toggle_msgs(false, "msg", false);
         $('#res-passphrase-error small').
             text(errors.passphrase_wrong);
         $('#res-passphrase-error small').show();
+        return true;
     }
-}
-
-function toggle_msgs(data, msgDiv) {
-    if(data) {
-        $("#" + msgDiv).addClass("panel");
-        $("#" + msgDiv).append(data.toString());
-        $("#" + msgDiv).animate({scrollTop: "+=300px"}, "slow");
-    } else {
-        $("#" + msgDiv).removeClass("panel");
-        $("#" + msgDiv).html("");
-        if($("#error-alert")) $("#error-alert").hide();
-    }
+    return false;
 }
 
 function load_status() {
     $('#backup_details').hide();
     $("#loader").show();
-    toggle_msgs(null, "msg");
+    toggle_msgs(false, "msg", false);
     $("#status_contents").html("");
     call_duplicity("status", get_backup_set(), false);
 }
 
 function remove_all(force) {
     $("#loader").show();
-    toggle_msgs(null, "msg");
+    toggle_msgs(false, "msg", false);
     call_duplicity("remove", get_backup_set(), force);
 }
 
 function load_timeview() {
     $('#backup_details').hide();
     $("#loader").show();
-    toggle_msgs(null, "msg");
+    toggle_msgs(false, "msg", false);
     call_duplicity("timeview", get_backup_set(), false);
 }
 
@@ -161,7 +153,7 @@ function array_to_str(args) {
     return str;
 }
 function call_duplicity(mode, backup_set, force) {
-    toggle_error(false, "");
+    toggle_msgs(false, "msg", false);
     var win_cmd = "";
     var args = [];
 
@@ -198,7 +190,7 @@ function call_duplicity(mode, backup_set, force) {
                 fs.stat(local_dir, function (err, stats) {
                     if(err) {
                         try { mkdirp.sync(local_dir); }
-                        catch(e) { toggle_error(e, e); }
+                        catch(e) { toggle_msgs(e, "msg", false); }
                     }
                 });
             } else {
@@ -257,9 +249,9 @@ function call_duplicity(mode, backup_set, force) {
     var output_str = "";
     function dup_call_out(data) {
         if(mode == "status") {
-            toggle_msgs(data, "status_contents");
+            toggle_msgs(data.toString(), "status_contents", true);
         } else if(mode == "remove") {
-            toggle_msgs(data, "cleanup-msg");
+            toggle_msgs(data.toString(), "cleanup-msg", true);
             var nothing_to_del = new RegExp(
                 "No old backup sets found, nothing deleted").exec(data);
             if(nothing_to_del) {
@@ -275,7 +267,7 @@ function call_duplicity(mode, backup_set, force) {
         } else if(mode == "timeview") {
             output_str += data.toString();
         } else {
-            toggle_msgs(data, "msg");
+            toggle_msgs(data.toString(), "msg", true);
             if(mode == "backup") {
                 backup_set.last_status = "Running";
             }
@@ -284,10 +276,10 @@ function call_duplicity(mode, backup_set, force) {
 
     function dup_call_err(data) {
         if(mode == "remove") {
-            toggle_msgs(data, "cleanup-msg");
+            toggle_msgs(data.toString(), "cleanup-msg", true);
             $("#force-delete").hide();
         } else {
-            toggle_msgs(data, "msg");
+            toggle_msgs(data.toString(), "msg", true);
         }
     }
 
@@ -325,8 +317,9 @@ function call_duplicity(mode, backup_set, force) {
                 show_alert_box("Successfully completed", "success", true);
             } else if(code == DUP_ERR_CODES.CONNECTION_FAILED) {
                 show_cloud_error();
-            } else {
-                check_restore_errors(code);
+            } else if(!check_restore_errors(code)) {
+                show_alert_box("A problem occured during restoring",
+                    "error", false);
             }
         } else if(mode == "timeview") {
             if(code == 0) {

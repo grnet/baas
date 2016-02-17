@@ -28,14 +28,21 @@ var errors = {
     remove_all_time_empty: 'Provide a valid timestamp'
 };
 
-function toggle_error(error, msg) {
-    if(error) {
-        $("#msg").html(msg);
-        $("#msg").addClass("panel");
-        $("html,body").animate({scrollTop: $("#msg").offset().top}, "slow");
+function toggle_msgs(data, msgDiv, append) {
+    if(data) {
+        if(append) {
+            $("#" + msgDiv).append(data);
+            $("#" + msgDiv).animate({scrollTop: "+=300px"}, "slow");
+        } else {
+            $("#" + msgDiv).html(data);
+        }
+        $("#" + msgDiv).addClass("panel");
+        $("html,body").animate({scrollTop:
+            $("#" + msgDiv).offset().top}, "slow");
     } else {
-        $("#msg").html("");
-        $("#msg").removeClass("panel");
+        $("#" + msgDiv).html("");
+        $("#" + msgDiv).removeClass("panel");
+        if($("#error-alert")) $("#error-alert").hide();
     }
 }
 
@@ -90,7 +97,7 @@ function load_backup(backup) {
     $("#time-dates").html("");
     $("#time-contents").html("");
     $("#time-path").val("/");
-    toggle_error(false, "");
+    toggle_msgs(false, "msg", false);
 
     hide_error_divs();
 

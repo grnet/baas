@@ -31,7 +31,7 @@ function escape_illegal_chars(s) {
 }
 
 function show_contents_by_date(error, stdout, stderr) {
-    toggle_error(error, stderr);
+    toggle_msgs(stderr, "msg", false);
     $("#time-contents").empty();
 
     if(!error) {
