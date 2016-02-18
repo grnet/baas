@@ -151,7 +151,7 @@ function show_alert_box(msg, alert_type, hide) {
         $("#" + alert_type + "-alert").delay(1200).fadeOut(400);
     }
     $("html,body").animate({
-        scrollTop: $("#msg").offset().top},
+        scrollTop: $("#" + alert_type + "-alert").offset().top},
         "slow"
     );
 }
