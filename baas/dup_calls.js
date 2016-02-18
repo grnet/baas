@@ -177,6 +177,7 @@ function call_duplicity(mode, backup_set, force) {
             args.push("--num-retries", "2");
             build_extra_args(backup_set.include, "include", args);
             build_extra_args(backup_set.exclude, "exclude", args);
+            args.push("-v8");
             break;
 
         case "restore":
