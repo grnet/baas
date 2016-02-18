@@ -244,14 +244,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <div class="small-3 columns">
             <a onclick="toggle_settings('msg', 'more_log_icon',
                 'Show activity log', 'Hide activity log');
-                $('html,body').animate({scrolltop: '500px'}, 'slow');">
+                $('html,body').animate({scrollTop:
+                    $('#msg_div').offset().top}, 1000);">
                 <i class="fa fa-plus-square-o"
                     id="more_log_icon">&nbsp;Show activity log</i>
             <a/>
         </div>
     </div>
 </div>
-<div class="row">
+<div class="row" id="msg_div">
     <div class="small-1 columns"></div>
     <pre id="msg" class="small-11 columns hide"></pre>
 </div>

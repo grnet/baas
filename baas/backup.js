@@ -35,13 +35,10 @@ function toggle_msgs(data, msgDiv, append) {
             if(msgDiv == "msg") {
                 $("#show_log").removeClass("hide");
             }
-            $("#" + msgDiv).animate({scrollTop: "+=300px"}, "slow");
         } else {
             $("#" + msgDiv).html(data);
         }
         $("#" + msgDiv).addClass("panel");
-      //  $("html,body").animate({scrollTop:
-        //    $(document).height()}, "slow");
     } else {
         $("#" + msgDiv).html("");
         $("#" + msgDiv).removeClass("panel");
