@@ -78,7 +78,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <legend>From</legend>
                 <div class="clearfix">
                     <div class="small-3 columns">
-                         <label id="res_cloud_label" for="res-cloud" class="right inline">Cloud</label>
+                         <label id="res_cloud_label" for="res-cloud"
+                            class="right inline">Cloud</label>
                     </div>
                     <div class="small-9 columns error" id="res-cloud-error">
                         <select id="res-cloud" onchange="check_res_cloud();">
@@ -88,9 +89,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 </div>
                 <div class="clearfix">
                     <div class="small-3 columns">
-                         <label id="res_backup_name_label" for="res-backup-name" class="right inline">Name</label>
+                        <label id="res_backup_name_label"
+                            for="res-backup-name" class="right inline">
+                            Name
+                    </label>
                     </div>
-                    <div class="small-9 columns error" id="res-backup-name-error">
+                    <div class="small-9 columns error"
+                        id="res-backup-name-error">
                         <input type="text" id="res-backup-name"
                         placeholder="Backup[A-Za-z0-9-_]"
                         onchange="check_res_backup_name();">
@@ -102,12 +107,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <legend>To</legend>
                 <div class="clearfix">
                     <div class="small-3 columns">
-                        <label id="res_directory_label" for="res-directory" class="right">
+                        <label id="res_directory_label"
+                            for="res-directory" class="right">
                             Local directory
                         </label>
                     </div>
-                    <div id="res-directory" class="small-6 columns dir-field"></div>
-                    <div id="res-dirdialogue_label" onclick="$('#choose-res-dir').trigger('click');"
+                    <div id="res-directory"
+                        class="small-6 columns dir-field"></div>
+                    <div id="res-dirdialogue_label"
+                        onclick="$('#choose-res-dir').trigger('click');"
                         class="small-3 columns" id="resdirpick">
                         <i class="fa fa-folder-o blue-folder">&nbsp;</i>
                     </div>
@@ -127,16 +135,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <fieldset>
                 <div class="clearfix">
                     <div class="small-3 columns">
-                        <label id="res_passphrase_label" for="res_passphrase" class="right inline">Passphrase</label>
+                        <label id="res_passphrase_label"
+                            for="res_passphrase" class="right inline">
+                            Passphrase
+                        </label>
                     </div>
-                    <div class="small-9 columns error" id="res-passphrase-error">
-                        <input type="password" id="res-passphrase" placeholder="Passphrase">
+                    <div class="small-9 columns error"
+                        id="res-passphrase-error">
+                        <input type="password" id="res-passphrase"
+                            placeholder="Passphrase">
                         <small class="error"></small>
                     </div>
                 </div>
                 <div class="clearfix">
                     <div class="small-3 columns">
-                         <label id="res-file-label" for="res-file" class="right inline">
+                         <label id="res-file-label" for="res-file"
+                            class="right inline">
                              File to Restore
                          </label>
                     </div>
@@ -148,9 +162,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 </div>
                 <div class="clearfix">
                     <div class="small-3 columns">
-                        <label id="timestamp-label" for="timestamp" class="right inline">
-                            Timestamp&nbsp;<i class="fa fa-info-circle green-info"
-                                onclick="$('#timestamp-help').slideDown();"></i>
+                        <label id="timestamp-label" for="timestamp"
+                            class="right inline">
+                            Timestamp&nbsp;
+                            <i class="fa fa-info-circle green-info"
+                                onclick="$('#timestamp-help').slideDown();">
+                            </i>
                         </label>
                     </div>
                     <div class="small-9 columns error" id="timestamp-error">
@@ -159,23 +176,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <small class="error"></small>
                     </div>
                     <div class="small-3 columns">&nbsp;</div>
-                    <div class="small-9 columns hide info-text panel" id="timestamp-help">
-                        <i class="fa fa-times right" onclick="$('#timestamp-help').slideUp();"></i>
+                    <div class="small-9 columns hide info-text panel"
+                        id="timestamp-help">
+                        <i class="fa fa-times right"
+                            onclick="$('#timestamp-help').slideUp();"></i>
                         Accepts following formats<br>
                         1. String "now" refers to current time<br>
                         2. A sequences of digits, like "123456890"
-                            (indicating the time in seconds after the epoch)<br>
-                        3. A string like "2002-01-25T07:00:00+02:00" in datetime format<br>
-                        4. A number followed by one of the characters s, m, h, D, W, M, or Y
-                            (indicating seconds, minutes, hours, days, weeks, months,
-                            or years respectively), or a series of such pairs.
-                            In this case the string refers to the time that preceded
-                            the current time by the length of the interval.
-                            For instance, "1h78m" indicates the time that was
-                            one hour and 78 minutes ago.<br>
-                        5. A date format of the form YYYY/MM/DD, YYYY-MM-DD, MM/DD/YYYY,
-                            or MM-DD-YYYY, which indicates midnight on the day in question,
-                            relative to the current time zone settings.
+                            (indicating the time in seconds after the epoch)
+                        <br>
+                        3. A string like "2002-01-25T07:00:00+02:00" in
+                        datetime format<br>
+                        4. A number followed by one of the characters s, m, h,
+                        D, W, M, or Y (indicating seconds, minutes, hours,
+                        days, weeks, months, or years respectively), or a
+                        series of such pairs.
+                        In this case the string refers to the time that
+                        preceded the current time by the length of the
+                        interval. For instance, "1h78m" indicates the time
+                        that was one hour and 78 minutes ago.<br>
+                        5. A date format of the form YYYY/MM/DD, YYYY-MM-DD,
+                        MM/DD/YYYY or MM-DD-YYYY, which indicates midnight
+                        on the day in question, relative to the current time
+                        zone settings.
                     </div>
                 </div>
             </fieldset>
