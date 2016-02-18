@@ -92,7 +92,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         } else {
             $("#full").prop("checked", true);
             $("#inc").prop("disabled", true);
-
         }
     } else {
         $("#selected-bar").hide();
@@ -217,6 +216,77 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
         return true;
     }
+
+    function humanFileSize(bytes, si) {
+        var thresh = si ? 1000 : 1024;
+        if(Math.abs(bytes) < thresh) {
+            return bytes + ' B';
+        }
+        var units = si
+            ? ['kB','MB','GB','TB','PB','EB','ZB','YB']
+            : ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
+        var u = -1;
+        do {
+            bytes /= thresh;
+            ++u;
+        } while(Math.abs(bytes) >= thresh && u < units.length - 1);
+        return bytes.toFixed(1)+' '+units[u];
+    }
+
+    function calc_limit(q) {
+        var taken_by_others = q.project_usage - q.usage;
+        var effective_limit =
+            Math.min(q.limit, q.project_limit - taken_by_others);
+        var remaining = effective_limit - q.usage;
+        return humanFileSize(remaining, false);
+    }
+
+    function populate_projects(data) {
+        var project = JSON.parse(data);
+        $("#project").append($("<option></option>")
+            .attr("value", project.id)
+            .text(project.name + " (" +
+            projects[project.id].effective_limit + " left)"));
+        $("#loader").hide();
+    }
+
+    var projects = [];
+    function get_quotas(data) {
+        var cloud = $("#cloud").val();
+        var project_ids = JSON.parse(data);
+
+        projects = project_ids;
+        $.each(project_ids, function(project_id, i) {
+            projects[project_id].effective_limit =
+                calc_limit(i['pithos.diskspace']);
+            var astakos = getClient('astakos_account',
+                clouds[cloud].astakos_account, clouds[cloud].token,
+                clouds[cloud].cert);
+            astakos.get('/projects/' + project_id,
+                {'X-Auth-Token' : clouds[cloud].token}, 200,
+                populate_projects, handle_err);
+        });
+    }
+
+    function handle_err(data) {
+        console.error("error === " + data);
+        toggle_msgs(data, "msg", false);
+        $("#loader").hide();
+    }
+
+    function get_projects() {
+        $("#loader").show();
+        var cloud = $("#cloud").val();
+        $("#project").empty();
+        if(cloud) {
+            var astakos = getClient('astakos_account',
+                clouds[cloud].astakos_account, clouds[cloud].token,
+                clouds[cloud].cert);
+            astakos.get('/quotas',
+                {'X-Auth-Token' : clouds[cloud].token}, 200,
+                get_quotas, handle_err);
+        }
+    }
 </script>
 
 <div class="row">
@@ -299,7 +369,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                             <div class="small-9 columns error"
                                 id="cloud-error">
-                                <select id="cloud" onchange="check_cloud();">
+                                <select id="cloud" onchange="check_cloud();
+                                    get_projects()">
+                                </select>
+                                <small class="error"></small>
+                            </div>
+                        </div>
+                        <div class="clearfix">
+                            <div class="small-3 columns">
+                                 <label id="project_label" for="project"
+                                    class="right inline">Project</label>
+                            </div>
+                            <div class="small-9 columns error"
+                                id="project-error">
+                                <select id="project">
                                 </select>
                                 <small class="error"></small>
                             </div>

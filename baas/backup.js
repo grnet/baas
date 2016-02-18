@@ -81,6 +81,7 @@ function hide_error_divs() {
     $('#directory-error small').hide();
     $('#res-directory-error small').hide();
     $('#cloud-error small').hide();
+    $('#project-error small').hide();
     $('#res-cloud-error small').hide();
     $('#passphrase-error small').hide();
     $('#res-passphrase-error small').hide();

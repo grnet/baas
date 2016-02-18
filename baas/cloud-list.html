@@ -120,6 +120,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     var url_error = null;
     var pithos_public = null;
     var account_ui = null;
+    var astakos_account = null;
 
     function check_cloud_url() {
         var url = $('#cloud-url').val().replace(/^\s+|\s+$/gm,'');
@@ -158,6 +159,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     endpoint['endpoints'][0]['SNF:uiURL'];
                             } catch(err) {
                                 console.log('Failed to get account_ui '
+                                    + err);
+                            }
+                            try {
+                                astakos_account =
+                                    endpoint['endpoints'][0]['publicURL'];
+                            } catch(err) {
+                                console.log('Failed to get astakos_account '
                                     + err);
                             }
                         break;
@@ -270,6 +278,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         cloud.auth_url = url;
         cloud.token = token;
         cloud.pithos_public = pithos_public;
+        cloud.astakos_account = astakos_account;
         cloud.uuid = uuid;
         if(cert != DEFAULT_CERT) cloud.cert = cert;
 

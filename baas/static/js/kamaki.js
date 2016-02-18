@@ -122,6 +122,37 @@ var Client = function(endpointURL, token, CAPath) {
         _req.end();
         _req.on('error', handle_err);
     };
+
+    this.get = function(path, headers, status, handle_res, handle_err) {
+        handle_res = handle_res || function(r){ console.log(r); };
+        handle_err = handle_err || function(e){ console.log(e); };
+
+        var get_opts = util._extend({
+            path: _endpoint + path,
+        }, _options);
+        get_opts.headers = util._extend({}, _options.headers);
+
+        util._extend(get_opts.headers, headers);
+        h = get_opts.headers;
+        util._extend(get_opts.headers, {
+            'Content-Type':  h['Content-Type'] || 'application/json'
+        });
+
+        _req = _protocol.request(get_opts, function(res){
+            _recv_data = '';
+            res.on('data', function(d) { _recv_data+=d; });
+
+            res.on('end', function() {
+                if ((status || 200) !== res.statusCode) {
+                    handle_err(res.statusCode + " " +
+                        res.statusMessage, res.headers);
+                } else handle_res(_recv_data, res.headers);
+            });
+        });
+
+        _req.end();
+        _req.on('error', handle_err);
+    };
 };
 
 module.exports = { Client: Client };
