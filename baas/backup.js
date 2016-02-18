@@ -32,17 +32,23 @@ function toggle_msgs(data, msgDiv, append) {
     if(data) {
         if(append) {
             $("#" + msgDiv).append(data);
+            if(msgDiv == "msg") {
+                $("#show_log").removeClass("hide");
+            }
             $("#" + msgDiv).animate({scrollTop: "+=300px"}, "slow");
         } else {
             $("#" + msgDiv).html(data);
         }
         $("#" + msgDiv).addClass("panel");
-        $("html,body").animate({scrollTop:
-            $("#" + msgDiv).offset().top}, "slow");
+      //  $("html,body").animate({scrollTop:
+        //    $(document).height()}, "slow");
     } else {
         $("#" + msgDiv).html("");
         $("#" + msgDiv).removeClass("panel");
         if($("#error-alert")) $("#error-alert").hide();
+        if(msgDiv == "msg") {
+            $("#show_log").addClass("hide");
+        }
     }
 }
 
@@ -192,7 +198,7 @@ function save_backup_set(is_template) {
         selected_backup = cloud + "/" + backup_name;
         render_backup_sets("");
 
-        show_alert_box("Successfully saved backup set", "success", true);
+        //show_alert_box("Successfully saved backup set", "success", true);
         write_conf_file(BACKUP_CONF_FILE, backups);
     } else {
          var template = {};
