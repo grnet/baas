@@ -71,14 +71,6 @@ function make_env() {
     return env;
 }
 
-function show_cloud_error() {
-    toggle_msgs(false, "msg", false);
-    show_alert_box("A problem occured.<br>" +
-        "Please check your <a href='#' " +
-        "onclick=$('#cloud-settings-link').trigger('click')>" +
-        "cloud settings</a>", "error", false);
-}
-
 function build_extra_args(field_value, type, params) {
     var args = field_value.split(",");
     $.each(args, function(i, value) {
@@ -153,12 +145,42 @@ function array_to_str(args) {
     }
     return str;
 }
-function call_duplicity(mode, backup_set, force) {
-    toggle_msgs(false, "msg", false);
-    var win_cmd = "";
+
+function handle_error(data) {
+    toggle_msgs(data.toString(), "msg", false);
+    $("#loader").hide();
+}
+
+function handle_success() {
+    spawn_dup_process(arguments[0].args, arguments[0].backup_set,
+            arguments[0].backup_name, arguments[0].mode);
+}
+
+function create_container(args, backup_set, backup_name, mode) {
+    try {
+        var astakos =
+            getClient('astakos',
+                    clouds[backup_set.cloud].pithos_public,
+                    clouds[backup_set.cloud].token,
+                    clouds[backup_set.cloud].cert);
+
+        var pithos_url =
+            "/" + clouds[backup_set.cloud].uuid + "/" + backup_set.container;
+        var headers = {"X-Container-Policy-project" : $("#project").val()};
+        astakos.put(pithos_url, headers, null, [201, 202],
+                handle_success.bind(null, {args: args, backup_set: backup_set,
+                backup_name: backup_name, mode: mode}),
+                handle_error);
+    } catch (err) {
+        toggle_msgs(err, "msg", false);
+        return false;
+    }
+    return true;
+}
+
+function build_dup_args(mode, backup_set, force, backup_name) {
     var args = [];
     args.push(DUPLICITY_PATH);
-
 
     switch(mode) {
         case "backup":
@@ -228,10 +250,6 @@ function call_duplicity(mode, backup_set, force) {
     args.push("--log-file", log_file);
     args.push("--archive-dir", BAAS_ARCHIVE_DIR);
     args.push("--gpg-homedir", GPG_DIR);
-
-    var backup_name = (backup_set) ?
-        hashed_backup_name(backup_set.cloud, backup_set.name) :
-        hashed_backup_name($("#res-cloud").val(), $("#res-backup-name"));
     args.push("--name", backup_name);
 
     var sel_cloud = (backup_set) ? backup_set.cloud :
@@ -242,9 +260,12 @@ function call_duplicity(mode, backup_set, force) {
 
     if(force) args.push("--force");
 
+    return args;
+}
+
+function spawn_dup_process(args, backup_set, backup_name, mode) {
     // call duplicity
-    var wProcess = null;
-    wProcess = spawn(ENV_CMD, args, {env: make_env()});
+    var wProcess = spawn(ENV_CMD, args, {env: make_env()});
     running_processes.push([wProcess, backup_name]);
 
     var output_str = "";
@@ -296,6 +317,7 @@ function call_duplicity(mode, backup_set, force) {
                 backup_set.last_backup = new Date();
                 if(typeof backup_set.first_backup == 'undefined') {
                     backup_set.first_backup = new Date();
+                    $("#project_div").hide();
                 }
                 $("#inc").prop("disabled", false);
                 $("#inc").prop("checked", true);
@@ -325,7 +347,7 @@ function call_duplicity(mode, backup_set, force) {
             }
         } else if(mode == "timeview") {
             if(code == 0) {
-                parse_collection_status(output_str, log_file);
+                parse_collection_status(output_str, args[4]);
             } else if(code == DUP_ERR_CODES.CONNECTION_FAILED) {
                 show_cloud_error();
             }
@@ -340,5 +362,19 @@ function call_duplicity(mode, backup_set, force) {
     wProcess.stderr.setEncoding('utf8');
     wProcess.stderr.on('data', dup_call_err);
     wProcess.on('exit', dup_call_exit);
+}
 
+function call_duplicity(mode, backup_set, force) {
+
+    toggle_msgs(false, "msg", false);
+    var backup_name = (backup_set) ?
+        hashed_backup_name(backup_set.cloud, backup_set.name) :
+        hashed_backup_name($("#res-cloud").val(), $("#res-backup-name"));
+
+    var args = build_dup_args(mode, backup_set, force, backup_name);
+    if(mode == "backup" && typeof backup_set.first_backup === 'undefined') {
+        create_container(args, backup_set, backup_name, mode);
+    } else {
+        spawn_dup_process(args, backup_set, backup_name, mode);
+    }
 }

@@ -150,6 +150,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         if(save_pass) {
             $("#passphrase").prop("disabled", disable);
         }
+        var project = $("#project_div");
+        if(project) {
+            $("#project").prop("disabled", disable);
+        }
         if(disable) {
             $("#save_button").hide();
             $("#go_to_restore_button").show();
@@ -250,6 +254,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         $("#loader").hide();
     }
 
+    function handle_err(data) {
+        console.error("error === " + data);
+        $("#loader").hide();
+        toggle_msgs(data, "msg", false);
+        if(data.toString().indexOf("401 UNAUTHORIZED") > -1) {
+            show_cloud_error();
+        }
+    }
+
     var projects = [];
     function get_quotas(data) {
         var cloud = $("#cloud").val();
@@ -268,10 +281,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         });
     }
 
-    function handle_err(data) {
-        console.error("error === " + data);
-        toggle_msgs(data, "msg", false);
-        $("#loader").hide();
+    function show_cloud_error() {
+        toggle_msgs(false, "msg", false);
+        show_alert_box("A problem occured.<br>" +
+            "Please check your <a href='#' " +
+            "onclick=$('#cloud-settings-link').trigger('click')>" +
+            "cloud settings</a>", "error", false);
     }
 
     function get_projects() {
@@ -375,7 +390,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <small class="error"></small>
                             </div>
                         </div>
-                        <div class="clearfix">
+                        <div class="clearfix" id="project_div">
                             <div class="small-3 columns">
                                  <label id="project_label" for="project"
                                     class="right inline">Project</label>

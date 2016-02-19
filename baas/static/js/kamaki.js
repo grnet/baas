@@ -86,7 +86,9 @@ var Client = function(endpointURL, token, CAPath) {
     this.setToken(token);
     this.setCA(CAPath);
 
-    this.post = function(path, headers, send_data, status, handle_res, handle_err) {
+    this.post = function(path, headers, send_data,
+            status, handle_res, handle_err) {
+
         handle_res = handle_res || function(r){ console.log(r); };
         handle_err = handle_err || function(e){ console.log(e); };
 
@@ -95,8 +97,8 @@ var Client = function(endpointURL, token, CAPath) {
             path: _endpoint + path,
         }, _options);
         post_opts.headers = util._extend({}, _options.headers);
-
         util._extend(post_opts.headers, headers);
+
         if (send_data) {
             h = post_opts.headers;
             util._extend(post_opts.headers, {
@@ -150,6 +152,45 @@ var Client = function(endpointURL, token, CAPath) {
             });
         });
 
+        _req.end();
+        _req.on('error', handle_err);
+    };
+
+    this.put = function(path, headers, send_data,
+            status, handle_res, handle_err) {
+
+        handle_res = handle_res || function(r){ console.log(r); };
+        handle_err = handle_err || function(e){ console.log(e); };
+
+        var put_opts = util._extend({
+            method: 'PUT',
+            path: _endpoint + path,
+        }, _options);
+        put_opts.headers = util._extend({}, _options.headers);
+        util._extend(put_opts.headers, headers);
+
+        if (send_data) {
+            h = put_opts.headers;
+            util._extend(put_opts.headers, {
+                'Content-Type':  h['Content-Type'] || 'application/json',
+                'Content-Length': h['Content-Length'] ||
+                    Buffer.byteLength(send_data),
+            });
+        };
+
+        _req = _protocol.request(put_opts, function(res){
+            _recv_data = '';
+            res.on('data', function(d) { _recv_data+=d; });
+
+            res.on('end', function() {
+                if ((status || [200]).indexOf(res.statusCode) < 0) {
+                    handle_err(res.statusCode + " " +
+                        res.statusMessage, res.headers);
+                } else handle_res(_recv_data, res.headers);
+            });
+        });
+
+        if (send_data) _req.write(send_data);
         _req.end();
         _req.on('error', handle_err);
     };

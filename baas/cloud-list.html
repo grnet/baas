@@ -221,10 +221,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 }
                 var send_data =
                     JSON.stringify({ auth: { token: { id: token } } });
-                astakos.post(
-                    '/tokens', null, send_data, 200,
-                    handle_result,
-                    handle_err
+                astakos.post('/tokens', null, send_data, 200,
+                    handle_result, handle_err
                 );
             } else {
                 $('#token-error small').text(errors.token_cloudless);
@@ -325,7 +323,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         var lurl = account_ui + '/logout?next=' + pithos_public
         got_cookie = false;
         cred_win = gui.Window.open(lurl, {
-            focus: true, width: 820, height: 780, toolbar: false
+            focus: true, width: 820, height: 700, toolbar: false
         });
         cred_win.cookies.onChanged.addListener(function(info) {
             if (info.cookie.name === cookie_name) {

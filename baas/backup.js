@@ -37,6 +37,7 @@ function toggle_msgs(data, msgDiv, append) {
             }
         } else {
             $("#" + msgDiv).html(data);
+            $("#msg").removeClass("hide");
         }
         $("#" + msgDiv).addClass("panel");
     } else {
@@ -117,9 +118,12 @@ function load_backup(backup) {
         if(backup.first_backup) {
             disable_form(true);
             disable_actions(false);
+            $("#project_div").hide();
         } else {
             disable_actions(true);
             disable_form(false);
+            $("#project_div").show();
+            $("#cloud").trigger("change");
         }
         $("#exclude").val(backup.exclude);
         $("#include").val(backup.include);
@@ -132,6 +136,8 @@ function load_backup(backup) {
         $("#directory").html('');
         $("#res-directory").html('');
         $("#cloud").val('');
+        $("#project_div").show();
+        $("#project").val('');
         $("#passphrase").val('');
         $("#exclude").val('');
         $("#include").val('');
