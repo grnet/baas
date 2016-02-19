@@ -123,6 +123,7 @@ function load_backup(backup) {
         $("#exclude").val(backup.exclude);
         $("#include").val(backup.include);
     } else {
+        $("#loader").hide();
         container = "";
         selected_backup = "";
         $("#selected-bar").hide();
@@ -137,6 +138,7 @@ function load_backup(backup) {
         $("#inc").prop("disabled", true);
         disable_form(false);
         disable_actions(true);
+        disable_buttons(false);
     }
     $("#backup_details").show();
 }
