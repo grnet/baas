@@ -47,7 +47,7 @@ build\cygwin_build\bin\bash.exe -c "/usr/bin/python bundle.py <platform>"
 
 ## Copyright and license
 
-Copyright (C) 2015 GRNET S.A.
+Copyright (C) 2015-2016 GRNET S.A.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
