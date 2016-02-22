@@ -271,7 +271,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         cloud.token = token;
         cloud.pithos_public = pithos_public;
         cloud.uuid = uuid;
-        if(cert) cloud.cert = cert;
+        if(cert != DEFAULT_CERT) cloud.cert = cert;
 
         clouds[cloud_name] = cloud;
         render_clouds("");

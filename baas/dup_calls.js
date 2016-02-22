@@ -237,8 +237,10 @@ function call_duplicity(mode, backup_set, force) {
         $("#res-cloud").val() + "/" + $("#res-backup-name");
     args.push("--name", SHA256(backup_name));
 
-    var cert = (backup_set) ? clouds[backup_set.cloud].cert :
-        clouds[$("#res-cloud").val()].cert;
+    var sel_cloud = (backup_set) ? backup_set.cloud :
+        $("#res-cloud").val();
+    var cert = (clouds[sel_cloud].cert) ?
+        clouds[sel_cloud].cert : DEFAULT_CERT;
     args.push("--ssl-cacert-file", cert);
 
     if(force) args.push("--force");

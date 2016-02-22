@@ -157,8 +157,9 @@ function get_contents_by_date(value) {
         init_path = time_path;
     }
     var datapath = path.join(BAAS_CACHE_DIR, 'timeviews');
-    var cacert_file = " " +
-        escape_quote_str(clouds[$("#cloud").val()].cert) + " ";
+    var cert = (clouds[$("#cloud").val()].cert) ?
+        clouds[$("#cloud").val()].cert : DEFAULT_CERT;
+    var cacert_file = " " + escape_quote_str(cert) + " ";
     var archive_dir = " " + escape_quote_str(BAAS_ARCHIVE_DIR);
     var backup_name = " " +
         SHA256($("#backup_name").val() + "/" + $("#cloud").val());
