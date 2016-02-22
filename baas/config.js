@@ -44,7 +44,9 @@ if(process.platform == 'darwin') {
 
 var DEFAULT_CERT = path.join(exec_path, 'cacert.pem');
 
-var CYGWIN_BASH = path.join(exec_path, "cygwin", "bin", "bash.exe");
+var CYGWIN_BIN = path.join(exec_path, "cygwin", "bin");
+var CYGWIN_BASH = path.join(CYGWIN_BIN, "bash.exe");
+var CYGWIN_CYGPATH = path.join(CYGWIN_BIN, "cygpath.exe");
 
 function get_user_home() {
     return process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
@@ -72,8 +74,7 @@ var templates_data = {
 }
 
 function get_unix_path(path) {
-    var args = ["-c", "/usr/bin/cygpath " + escape_quote_str(path)];
-    var out = execFileSync(CYGWIN_BASH, args);
+    var out = execFileSync(CYGWIN_CYGPATH, [path]);
     var win_value = String(out).replace(/(\r\n|\n|\r)/gm, "");
     return win_value;
 }
