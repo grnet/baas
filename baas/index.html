@@ -46,6 +46,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             win.resizeTo(900, 750);
             win.focus();
 
+            win.on('close', function() {
+              this.hide(); // Pretend to be closed already
+              kill_processes();
+              this.close(true);
+            });
+
             $(document).ready(function() {
                 $("#activity-link").trigger("click").addClass("active");
             });

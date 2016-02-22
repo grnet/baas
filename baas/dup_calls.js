@@ -178,6 +178,7 @@ function call_duplicity(mode, backup_set, force) {
             build_extra_args(backup_set.include, "include", args);
             build_extra_args(backup_set.exclude, "exclude", args);
             args.push("-v8");
+
             $('html,body').animate({
                 scrollTop: $("#msg_div").offset().top}, 1000);
             break;
@@ -245,6 +246,7 @@ function call_duplicity(mode, backup_set, force) {
     } else {
         wProcess = spawn(DUPLICITY_PATH, args);
     }
+    running_processes.push(wProcess);
 
     var output_str = "";
     function dup_call_out(data) {
@@ -285,6 +287,7 @@ function call_duplicity(mode, backup_set, force) {
 
     function dup_call_exit(code) {
         console.log("exit code === " + code);
+        running_processes.pop(wProcess);
         $("#loader").hide();
         if(mode == "backup") {
             disable_actions(false);

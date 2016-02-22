@@ -25,9 +25,12 @@ var BAAS_HOME_DIR = '.baas';
 var CLOUDS_CONF_FILE = 'clouds.rc';
 var BACKUP_CONF_FILE = 'backups.rc';
 var TEMPLATES_FILE = 'templates.rc';
+
 var BAAS_LOG_DIR = path.join(get_user_home(), BAAS_HOME_DIR, 'log');
 var BAAS_CACHE_DIR = path.join(get_user_home(), BAAS_HOME_DIR, 'cache');
 var RESTORE_DEFAULT_DIR = path.join(get_user_home(), "Downloads");
+
+var running_processes = [];
 
 var exec_path = path.dirname(process.execPath);
 if(process.platform == 'darwin') {
@@ -187,4 +190,18 @@ function getClient(name, URL, token, CAPath) {
     else clients[name] = new kamaki.Client(URL, token, CAPath);
     if (clients[name].getCA() !== CAPath) clients[name].setCA(CAPath);
     return clients[name];
+}
+
+function kill_callback(error, stdout, stderr) {
+    if(error) {
+        console.error(stderr);
+    }
+    console.log(stdout);
+}
+
+function kill_processes() {
+    for(var i = 0; i < running_processes.length; i++) {
+        console.log(running_processes[i]);
+        running_processes[i].kill();
+    }
 }
