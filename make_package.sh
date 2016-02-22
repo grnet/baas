@@ -44,7 +44,9 @@ npm install
 cd ..
 
 rm -rf build/baas
-nwbuild -p $PLATFORM -v $NW_VERSION baas
+NWCACHE=build/nwcache
+mkdir -p $NWCACHE
+nwbuild --cacheDir $NWCACHE -p $PLATFORM -v $NW_VERSION baas
 
 if [[ "$OS_NAME" = "Darwin" ]]
 then DIST=dist
