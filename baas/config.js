@@ -28,9 +28,11 @@ var TEMPLATES_FILE = 'templates.rc';
 
 var BAAS_LOG_DIR = path.join(get_user_home(), BAAS_HOME_DIR, 'log');
 var BAAS_CACHE_DIR = path.join(get_user_home(), BAAS_HOME_DIR, 'cache');
+var BAAS_ARCHIVE_DIR = path.join(BAAS_CACHE_DIR, 'duplicity');
 var RESTORE_DEFAULT_DIR = path.join(get_user_home(), "Downloads");
 
 var running_processes = [];
+var SHA256 = require("crypto-js/sha256");
 
 var exec_path = path.dirname(process.execPath);
 if(process.platform == 'darwin') {
@@ -94,6 +96,9 @@ function create_conf_files() {
         if(err) console.error(err);
     });
     mkdirp(BAAS_CACHE_DIR, function(err) {
+        if(err) console.error(err);
+    });
+    mkdirp(BAAS_ARCHIVE_DIR, function(err) {
         if(err) console.error(err);
     });
 }

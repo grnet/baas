@@ -19,6 +19,7 @@ import os
 from subprocess import Popen, PIPE
 import json
 import errno
+import hashlib
 
 
 path_types = {'reg', 'dir', 'sym', 'fifo', 'sock', 'chr', 'blk'}
@@ -79,11 +80,14 @@ def put_timepoint(config, timepoint, data):
         f.write(json.dumps(root, indent=2))
 
 
-def fetch_timepoint(config, timepoint, cacert_file):
+def fetch_timepoint(config, timepoint):
     curpath = os.path.dirname(os.path.realpath(__file__))
     duplicity = os.path.join(curpath, 'duplicity')
     args = [duplicity, 'list-current-files', '-t', timepoint,
-            '--ssl-cacert-file', cacert_file, config['target_url']]
+            '--ssl-cacert-file', config['cacert_file'],
+            '--archive-dir', config['archive_dir'],
+            '--name', config['backup_name'],
+            config['target_url']]
 
     proc = Popen(args, stdout=PIPE, stderr=PIPE)
     procout, procerr = proc.communicate()
@@ -94,7 +98,7 @@ def fetch_timepoint(config, timepoint, cacert_file):
     put_timepoint(config, timepoint, procout)
 
 
-def get_timepoint(config, timepoint, path, cacert_file):
+def get_timepoint(config, timepoint, path):
     datafile = path_join(config['datapath'], timepoint)
     retries = 1
     while True:
@@ -106,7 +110,7 @@ def get_timepoint(config, timepoint, path, cacert_file):
             if e.errno != errno.ENOENT or retries == 0:
                 raise
 
-        fetch_timepoint(config, timepoint, cacert_file)
+        fetch_timepoint(config, timepoint)
         if retries <= 0:
             raise e
         retries -= 1
@@ -151,33 +155,37 @@ def get_config():
 def main():
     from sys import argv, stdin, stdout
     def help():
-        print "Usage: %s <datapath> <target_url> <cacert_file> [get <absolute_timepoint> <path> | list]" % argv[0]
+        print "Usage: %s <datapath> <target_url> <cacert_file> <archive_dir> <backup_name> [get <absolute_timepoint> <path> | list]" % argv[0]
         raise SystemExit(1)
 
-    if len(argv) < 5:
+    if len(argv) < 7:
         help()
 
     datapath = argv[1]
     ensure_datapath(datapath)
     target_url = argv[2]
 
-    cmd = argv[4]
+    cmd = argv[6]
     if cmd not in ['get', 'list']:
         help()
 
     cacert_file = argv[3]
+    archive_dir = argv[4]
+    backup_name = hashlib.sha256(argv[5]).hexdigest()
     #config = get_config()
     config = {'datapath': datapath,
             'target_url': target_url,
-            'cacert_file': cacert_file}
+            'cacert_file': cacert_file,
+            'archive_dir': archive_dir,
+            'backup_name': backup_name}
 
     if cmd == 'get':
-        if len(argv) < 7:
+        if len(argv) < 9:
             help()
 
-        timepoint = argv[5]
-        path = unicode(argv[6], encoding='UTF-8')
-        r = get_timepoint(config, timepoint, path, cacert_file)
+        timepoint = argv[7]
+        path = unicode(argv[8], encoding='UTF-8')
+        r = get_timepoint(config, timepoint, path)
         print json.dumps(r, indent=2)
 
     elif cmd == 'list':

@@ -230,12 +230,17 @@ function call_duplicity(mode, backup_set, force) {
         log_file = get_unix_path(log_file);
     }
     args.push("--log-file", log_file);
-    if(backup_set) {
-        args.push("--ssl-cacert-file", clouds[backup_set.cloud].cert);
-    } else {
-        var res_cloud = $("#res-cloud").val();
-        args.push("--ssl-cacert-file", clouds[res_cloud].cert);
-    }
+    args.push("--archive-dir", BAAS_ARCHIVE_DIR);
+
+    var backup_name = (backup_set) ?
+        backup_set.cloud + "/" + backup_set.name :
+        $("#res-cloud").val() + "/" + $("#res-backup-name");
+    args.push("--name", SHA256(backup_name));
+
+    var cert = (backup_set) ? clouds[backup_set.cloud].cert :
+        clouds[$("#res-cloud").val()].cert;
+    args.push("--ssl-cacert-file", cert);
+
     if(force) args.push("--force");
 
     // call duplicity
