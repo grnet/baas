@@ -1,0 +1,17 @@
+=== modified file 'bin/duplicity'
+--- bin/duplicity	2016-01-24 18:11:37 +0000
++++ bin/duplicity	2016-02-23 14:37:53 +0000
+@@ -1262,9 +1262,9 @@
+                            log.ErrorCode.get_ulimit_failed)
+         maxopen = min([l for l in (soft, hard) if l > -1])
+         if maxopen < 1024:
+-            log.FatalError(_("Max open files of %s is too low, should be >= 1024.\n"
+-                             "Use 'ulimit -n 1024' or higher to correct.\n") % (maxopen,),
+-                           log.ErrorCode.maxopen_too_low)
++            log.Info(_("Increasing max open files from %s to %s") %
++                     (maxopen, 1024))
++            resource.setrlimit(resource.RLIMIT_NOFILE, (1024, 3200))
+ 
+ 
+ def log_startup_parms(verbosity=log.INFO):
+
