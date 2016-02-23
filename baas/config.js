@@ -45,8 +45,10 @@ if(process.platform == 'darwin') {
 var DEFAULT_CERT = path.join(exec_path, 'cacert.pem');
 
 var CYGWIN_BIN = path.join(exec_path, "cygwin", "bin");
-var CYGWIN_BASH = path.join(CYGWIN_BIN, "bash.exe");
 var CYGWIN_CYGPATH = path.join(CYGWIN_BIN, "cygpath.exe");
+var CYGWIN_ENV = path.join(CYGWIN_BIN, "env.exe");
+
+var ENV_CMD = (process.platform == 'win32') ? CYGWIN_ENV : "/usr/bin/env";
 
 function get_user_home() {
     return process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
@@ -84,6 +86,10 @@ function get_unix_exec_path(target) {
         return get_unix_path(exec_path) + "/" + target;
     }
     return path.join(exec_path, target);
+}
+
+if(process.platform == "win32") {
+    BAAS_ARCHIVE_DIR = get_unix_path(BAAS_ARCHIVE_DIR);
 }
 
 var DUPLICITY_PATH = get_unix_exec_path("duplicity");
@@ -173,12 +179,6 @@ function load_data_from_file(filename, callback) {
             callback(data);
         });
     });
-}
-
-function escape_quote_str(str) {
-    if(!str) return "";
-    var escaped_quoted = str.replace(/'/g, "'\\''");
-    return "'" + escaped_quoted + "'";
 }
 
 var clients = { };

@@ -54,22 +54,23 @@ function get_env_values() {
     return [passphrase, cloud.pithos_public + '/' + cloud.uuid, cloud.token];
 }
 
-function set_envs() {
+function make_env() {
+    var env = {};
+    for(var k in process.env) {
+        if(k.toUpperCase() != "PATH" || process.platform != "win32") {
+            env[k] = process.env[k];
+	}
+    }
     var env_values = get_env_values();
-    process.env['PASSPHRASE'] = env_values[0];
-    process.env['SWIFT_PREAUTHURL'] = env_values[1];
-    process.env['SWIFT_PREAUTHTOKEN'] = env_values[2];
+    env['PASSPHRASE'] = env_values[0];
+    env['SWIFT_PREAUTHURL'] = env_values[1];
+    env['SWIFT_PREAUTHTOKEN'] = env_values[2];
+    if(process.platform == "win32") {
+        env["PATH"] = "/bin:/usr/bin";
+    }
+    return env;
 }
 
-function build_win_commands() {
-    var env_values = get_env_values();
-
-    return "export PATH=/usr/bin/:$PATH;" +
-        "ulimit -n 1024;" +
-        "export PASSPHRASE=" + env_values[0] + ";" +
-        "export SWIFT_PREAUTHURL=" + env_values[1] + ";" +
-        "export SWIFT_PREAUTHTOKEN=" + env_values[2] + ";";
-}
 function show_cloud_error() {
     toggle_msgs(false, "msg", false);
     show_alert_box("A problem occured.<br>" +
@@ -156,13 +157,8 @@ function call_duplicity(mode, backup_set, force) {
     toggle_msgs(false, "msg", false);
     var win_cmd = "";
     var args = [];
+    args.push(DUPLICITY_PATH);
 
-    if(process.platform == 'win32') {
-        win_cmd = build_win_commands();
-        args.push(win_cmd, DUPLICITY_PATH);
-    } else {
-        set_envs();
-    }
 
     switch(mode) {
         case "backup":
@@ -247,12 +243,7 @@ function call_duplicity(mode, backup_set, force) {
 
     // call duplicity
     var wProcess = null;
-    if(process.platform == "win32") {
-        var args_str = array_to_str(args);
-        wProcess = spawn(CYGWIN_BASH, ["-c", args_str]);
-    } else {
-        wProcess = spawn(DUPLICITY_PATH, args);
-    }
+    wProcess = spawn(ENV_CMD, args, {env: make_env()});
     running_processes.push(wProcess);
 
     var output_str = "";

@@ -159,22 +159,13 @@ function get_contents_by_date(value) {
     var datapath = path.join(BAAS_CACHE_DIR, 'timeviews');
     var cert = (clouds[$("#cloud").val()].cert) ?
         clouds[$("#cloud").val()].cert : DEFAULT_CERT;
-    var cacert_file = " " + escape_quote_str(cert) + " ";
-    var archive_dir = " " + escape_quote_str(BAAS_ARCHIVE_DIR);
-    var backup_name = " " +
-        SHA256($("#backup_name").val() + "/" + $("#cloud").val());
+    var archive_dir = BAAS_ARCHIVE_DIR;
+    var backup_name = SHA256($("#backup_name").val() + "/" + $("#cloud").val());
 
-    var time_cmd = "python " + TIMEVIEW_PATH + " " + datapath + " swift://" +
-        container + cacert_file + archive_dir + backup_name + " get "
-        + value + " " + escape_quote_str(time_path);
-
-    if(process.platform == 'win32') {
-        var cmd = build_win_commands();
-        var args = ["-c", cmd + time_cmd];
-        execFile(CYGWIN_BASH, args, show_contents_by_date);
-    } else {
-        exec(time_cmd, show_contents_by_date);
-    }
+    var args = ["python", TIMEVIEW_PATH, datapath,
+                "swift://" + container, cert, archive_dir,
+                backup_name, "get", value, time_path];
+    execFile(ENV_CMD, args, {env: make_env()}, show_contents_by_date);
 }
 
 function parse_collection_status(data) {
