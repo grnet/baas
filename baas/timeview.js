@@ -160,7 +160,7 @@ function get_contents_by_date(value) {
         clouds[$("#cloud").val()].cert : DEFAULT_CERT;
     var archive_dir = BAAS_ARCHIVE_DIR;
     var backup_name = hashed_backup_name(
-        $("#cloud").val(), $("#backup_name").val());
+        $("#cloud").val(), $("#backup-name").val());
     var datapath = path.join(BAAS_CACHE_DIR, 'timeviews', backup_name);
 
     var args = ["python", TIMEVIEW_PATH, datapath,
