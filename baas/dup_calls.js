@@ -231,7 +231,8 @@ function call_duplicity(mode, backup_set, force) {
     var backup_name = (backup_set) ?
         backup_set.cloud + "/" + backup_set.name :
         $("#res-cloud").val() + "/" + $("#res-backup-name");
-    args.push("--name", SHA256(backup_name));
+    backup_name = SHA256(backup_name).toString();
+    args.push("--name", backup_name);
 
     var sel_cloud = (backup_set) ? backup_set.cloud :
         $("#res-cloud").val();
@@ -244,7 +245,7 @@ function call_duplicity(mode, backup_set, force) {
     // call duplicity
     var wProcess = null;
     wProcess = spawn(ENV_CMD, args, {env: make_env()});
-    running_processes.push(wProcess);
+    running_processes.push([wProcess, backup_name]);
 
     var output_str = "";
     function dup_call_out(data) {

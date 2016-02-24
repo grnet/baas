@@ -207,7 +207,13 @@ function kill_callback(error, stdout, stderr) {
 
 function kill_processes() {
     for(var i = 0; i < running_processes.length; i++) {
-        console.log(running_processes[i]);
-        running_processes[i].kill();
+        console.log("About to kill " + running_processes[i][0].pid);
+        running_processes[i][0].kill();
+        var lockfile =
+            path.join(BAAS_ARCHIVE_DIR, running_processes[i][1],
+                    "lockfile.lock");
+        console.log("About to unlink lockfile " + lockfile);
+        fs.unlinkSync(lockfile);
+
     }
 }
