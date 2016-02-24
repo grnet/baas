@@ -173,7 +173,7 @@ function call_duplicity(mode, backup_set, force) {
             args.push("--num-retries", "2");
             build_extra_args(backup_set.include, "include", args);
             build_extra_args(backup_set.exclude, "exclude", args);
-            args.push("-v8");
+            args.push("-v4");
 
             $('html,body').animate({
                 scrollTop: $("#msg_div").offset().top}, 1000);
@@ -204,7 +204,7 @@ function call_duplicity(mode, backup_set, force) {
             if(timestamp) args.push("--time", timestamp);
             if(file_to_restore) args.push("--file-to-restore",
                 file_to_restore);
-            args.push("-v8");
+            args.push("-v4");
             break;
 
         case "status":
