@@ -217,3 +217,8 @@ function kill_processes() {
 
     }
 }
+
+function hashed_backup_name(cloud, name) {
+    var full_name = cloud + "/" + name;
+    return SHA256(full_name).toString();
+}

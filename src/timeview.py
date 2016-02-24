@@ -19,7 +19,6 @@ import os
 from subprocess import Popen, PIPE
 import json
 import errno
-import hashlib
 
 
 path_types = {'reg', 'dir', 'sym', 'fifo', 'sock', 'chr', 'blk'}
@@ -171,7 +170,7 @@ def main():
 
     cacert_file = argv[3]
     archive_dir = argv[4]
-    backup_name = hashlib.sha256(argv[5]).hexdigest()
+    backup_name = argv[5]
     #config = get_config()
     config = {'datapath': datapath,
             'target_url': target_url,

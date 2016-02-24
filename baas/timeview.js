@@ -160,7 +160,8 @@ function get_contents_by_date(value) {
     var cert = (clouds[$("#cloud").val()].cert) ?
         clouds[$("#cloud").val()].cert : DEFAULT_CERT;
     var archive_dir = BAAS_ARCHIVE_DIR;
-    var backup_name = SHA256($("#backup_name").val() + "/" + $("#cloud").val());
+    var backup_name = hashed_backup_name(
+        $("#cloud").val(), $("#backup_name").val());
 
     var args = ["python", TIMEVIEW_PATH, datapath,
                 "swift://" + container, cert, archive_dir,

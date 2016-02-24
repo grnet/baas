@@ -229,9 +229,8 @@ function call_duplicity(mode, backup_set, force) {
     args.push("--archive-dir", BAAS_ARCHIVE_DIR);
 
     var backup_name = (backup_set) ?
-        backup_set.cloud + "/" + backup_set.name :
-        $("#res-cloud").val() + "/" + $("#res-backup-name");
-    backup_name = SHA256(backup_name).toString();
+        hashed_backup_name(backup_set.cloud, backup_set.name) :
+        hashed_backup_name($("#res-cloud").val(), $("#res-backup-name"));
     args.push("--name", backup_name);
 
     var sel_cloud = (backup_set) ? backup_set.cloud :
