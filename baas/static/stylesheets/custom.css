@@ -91,6 +91,10 @@ body legend, .template-list-title {
     overflow: auto;
     max-height: 200px;
 }
+#status_contents {
+    word-break: break-word;
+    max-height: inherit;
+}
 .dir-field {
     overflow-x: auto;
     word-break: break-word;
