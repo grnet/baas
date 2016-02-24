@@ -212,9 +212,14 @@ function kill_processes() {
         var lockfile =
             path.join(BAAS_ARCHIVE_DIR, running_processes[i][1],
                     "lockfile.lock");
-        console.log("About to unlink lockfile " + lockfile);
-        fs.unlinkSync(lockfile);
-
+        fs.stat(lockfile, function (err, stats) {
+            if(err) return console.log(err);
+            if(stats.isFile()) {
+                fs.unlink(lockfile, function(error) {
+                    if(error) return console.log(error);
+                });
+            }
+        });
     }
 }
 
