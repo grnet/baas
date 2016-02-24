@@ -60,12 +60,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     background: #146A84;
 }
 .backup-box {
-    border: 1px dotted #6e6e6e;
     border-radius: 4px;
-    min-height: 170px;
-    margin: 5px;
+    min-height: 180px;
     font-size: 14px;
     word-break: break-all;
+    background: aliceblue;
+    padding: 10px;
 }
 .selected-bar {
     background: #2BA6CB;
@@ -128,4 +128,10 @@ body legend, .template-list-title {
 body fieldset {
     margin: 5px;
     padding: 5px;
+}
+.fail-span {
+    color: orangered;
+}
+.succeed-span {
+    color: forestgreen;
 }
