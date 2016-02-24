@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<!--
+Copyright (C) 2015-2016 GRNET S.A.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<html>
+    <head>
+        <title>About BaaS</title>
+    </head>
+
+    <body>
+    <div class="wrapper home">
+        <div class="row">
+            <div class="small-6 columns">
+                <header>
+                    <img src="static/images/logo.png" class="logo" alt="BaaS"/>
+                </header>
+            </div>
+            <div class="small-6 columns">
+                <p><b>BaaS</b> (Backup as a Service) is a service provided to
+                Synnefo users in order to backup their data to Pithos
+                Storage. It supports encrypted, incremental backups in a
+                space and bandwidth-efficient way
+            </p>
+            </div>
+        </div>
+        <p class="disclaimer"><b>Version: </b><span id="version"></span></p>
+            <p class="disclaimer">Developed and supported by the
+            Okeanos/Synnefo development team of GRNET<br/>
+            <b>contact: synnefo@googlegroups.com</b></p>
+
+            <h3 class="disclaimer">Copyright 2015-2016 Greek Research and
+                Technology Network<br/>License:</h3>
+            <embed class="licence" src="LICENSE" />
+        </div>
+        <footer class="footer">
+        <p class="disclaimer">The project is co-financed by Greece
+        and the European Union</p>
+            <ul class="logos">
+                <li id="eu"> <img src="static/images/eu.png" /> </li>
+                <li id="dg"> <img src="static/images/dg.png" /> </li>
+                <li id="nsrf"> <img src="static/images/nsrf.png" /> </li>
+                <li id="grnet"> <img src="static/images/grnet.png" /> </li>
+            </ul>
+        </footer>
+        <script>
+          document.getElementById("version").innerHTML = baas_version;
+        </script>
+    </body>
+
+</html>

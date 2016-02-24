@@ -31,6 +31,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <script type="text/javascript">
             create_baas_dir();
             var gui = require('nw.gui');
+            var baas_version = gui.App.manifest.version;
+
             var win = gui.Window.get();
 
             // check operating system for the menu
@@ -69,7 +71,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     </head>
 
     <body>
-        <div class="blue-bar icon-bar four-up">
+        <div class="blue-bar icon-bar five-up">
             <a class="item" id="activity-link"
                 onclick="$('#main').load('activity.html');
                 activate_tab(this.id);">
@@ -93,6 +95,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 activate_tab(this.id);">
                 <i class="fa fa-cloud"></i>
                 <label>Cloud Settings</label>
+            </a>
+            <a class="item" id="about-link"
+                onclick="$('#main').load('about.html');
+                activate_tab(this.id);">
+                <i class="fa fa-info"></i>
+                <label>About</label>
             </a>
         </div>
         <div id="main"></div>

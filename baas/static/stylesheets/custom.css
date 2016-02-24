@@ -135,3 +135,50 @@ body fieldset {
 .succeed-span {
     color: forestgreen;
 }
+.home {
+    text-align: center;
+    padding-bottom: 120px;
+}
+.disclaimer {
+    margin: 0;
+    font-size: 11px;
+    padding-bottom: 0.5em;
+    letter-spacing: 1px;
+}
+.licence {
+    margin: 0 auto;
+    width: 600px;
+    height: 215px;
+    overflow: auto;
+    background: #e0e0e0;
+}
+.logos li {
+    list-style: none outside none;
+    display: inline-block;
+    line-height: 35px;
+    height: 35px;
+    margin: 0 10px;
+}
+.logos #grnet img { width: 76px; }
+.logos #eu img { width: 144px; }
+.logos #dg img { width: 130px; }
+.logos #nsrf img { width: 56px; }
+.footer {
+    border-top: 1px solid #c2c2c2;
+    text-align: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+}
+.wrapper {
+    padding: 10px 15px 10px 15px;
+    max-width: 640px;
+    min-width: 220px;
+    margin: 0 auto;
+    position: relative;
+}
+.wrapper p {
+    font-size: 0.8rem;
+}
