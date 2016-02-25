@@ -22,6 +22,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 .side-nav .left {
     word-break: break-all;
 }
+.go-to-backup {
+    word-break: break-all;
+    max-width: 170px;
+}
 .blue-folder {
     color: #008CBA;
 }
@@ -66,6 +70,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     word-break: break-all;
     background: aliceblue;
     padding: 10px;
+    box-shadow: 3px 3px 3px #888888;
 }
 .selected-bar {
     background: #2BA6CB;

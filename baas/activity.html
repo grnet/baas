@@ -99,7 +99,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             var a = $("<a>" + backup.cloud + "/" + backup.name + "</a>")
                 .attr("href", "#")
                 .attr("id", "box_a_" + backup.name)
-                .attr("class", "left")
+                .attr("class", "left go-to-backup")
                 .attr("onclick", "go_to_backup('" +
                     backup.cloud + "/" + backup.name + "')");
             li.append(a);
@@ -112,7 +112,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 });
             li.append(a_del);
 
-            li.append("<br>");
+            li.append("<hr>");
             var local_dir = $("<span>" + backup.local_dir + "</span>");
             li.append(local_dir);
 
