@@ -198,13 +198,6 @@ function getClient(name, URL, token, CAPath) {
     return clients[name];
 }
 
-function kill_callback(error, stdout, stderr) {
-    if(error) {
-        console.error(stderr);
-    }
-    console.log(stdout);
-}
-
 function kill_processes() {
     for(var i = 0; i < running_processes.length; i++) {
         console.log("About to kill " + running_processes[i][0].pid);
@@ -212,14 +205,14 @@ function kill_processes() {
         var lockfile =
             path.join(BAAS_ARCHIVE_DIR, running_processes[i][1],
                     "lockfile.lock");
-        fs.stat(lockfile, function (err, stats) {
-            if(err) return console.log(err);
+        try {
+            var stats = fs.statSync(lockfile);
             if(stats.isFile()) {
-                fs.unlink(lockfile, function(error) {
-                    if(error) return console.log(error);
-                });
+                fs.unlinkSync(lockfile);
             }
-        });
+        } catch(e) {
+            console.log("No lockfile " + lockfile + " found");
+        }
     }
 }
 
