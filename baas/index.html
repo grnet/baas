@@ -48,10 +48,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             win.resizeTo(900, 750);
             win.focus();
 
-            win.on('close', function() {
-              this.hide(); // Pretend to be closed already
-              kill_processes();
-              this.close(true);
+            process.on('exit', function(code) {
+                console.log("Process exiting with code " + code);
+                kill_processes();
+            });
+            process.on('SIGINT', function() {
+                process.exit();
+            });
+            process.on('SIGTERM', function() {
+                process.exit();
             });
 
             $(document).ready(function() {
