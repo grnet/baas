@@ -15,8 +15,6 @@ Take a Back up
 To create a new Backup set go to ``Backup`` section and click *Add*.
 You can provide your own settings or start from an existing template.
 
-You can also provide *Exclude* and *Include* options.
-
 .. image:: images/new-backup.png
 
 Click on *Save* button to save current settings or *Backup Now* to save settings
