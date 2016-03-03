@@ -31,6 +31,11 @@ var BAAS_CACHE_DIR = path.join(get_user_home(), BAAS_HOME_DIR, 'cache');
 var BAAS_ARCHIVE_DIR = path.join(BAAS_CACHE_DIR, 'duplicity');
 var RESTORE_DEFAULT_DIR = path.join(get_user_home(), "Downloads");
 
+var GPG_DIR = path.join(get_user_home(), '.gnupg');
+if(process.platform == "win32") {
+    GPG_DIR = get_unix_path(GPG_DIR);
+}
+
 var running_processes = [];
 var SHA256 = require("crypto-js/sha256");
 

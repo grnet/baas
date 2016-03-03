@@ -227,6 +227,7 @@ function call_duplicity(mode, backup_set, force) {
     }
     args.push("--log-file", log_file);
     args.push("--archive-dir", BAAS_ARCHIVE_DIR);
+    args.push("--gpg-homedir", GPG_DIR);
 
     var backup_name = (backup_set) ?
         hashed_backup_name(backup_set.cloud, backup_set.name) :

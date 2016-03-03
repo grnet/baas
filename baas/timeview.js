@@ -158,14 +158,13 @@ function get_contents_by_date(value) {
     }
     var cert = (clouds[$("#cloud").val()].cert) ?
         clouds[$("#cloud").val()].cert : DEFAULT_CERT;
-    var archive_dir = BAAS_ARCHIVE_DIR;
     var backup_name = hashed_backup_name(
         $("#cloud").val(), $("#backup-name").val());
     var datapath = path.join(BAAS_CACHE_DIR, 'timeviews', backup_name);
 
     var args = ["python", TIMEVIEW_PATH, datapath,
-                "swift://" + container, cert, archive_dir,
-                backup_name, "get", value, time_path];
+                "swift://" + container, cert, BAAS_ARCHIVE_DIR,
+                GPG_DIR, backup_name, "get", value, time_path];
     execFile(ENV_CMD, args, {env: make_env()}, show_contents_by_date);
 }
 

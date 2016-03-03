@@ -85,6 +85,7 @@ def fetch_timepoint(config, timepoint):
     args = [duplicity, 'list-current-files', '-t', timepoint,
             '--ssl-cacert-file', config['cacert_file'],
             '--archive-dir', config['archive_dir'],
+            '--gpg-homedir', config['gpg_homedir'],
             '--name', config['backup_name'],
             config['target_url']]
 
@@ -154,36 +155,38 @@ def get_config():
 def main():
     from sys import argv, stdin, stdout
     def help():
-        print "Usage: %s <datapath> <target_url> <cacert_file> <archive_dir> <backup_name> [get <absolute_timepoint> <path> | list]" % argv[0]
+        print "Usage: %s <datapath> <target_url> <cacert_file> <archive_dir> <gpg_homedir> <backup_name> [get <absolute_timepoint> <path> | list]" % argv[0]
         raise SystemExit(1)
 
-    if len(argv) < 7:
+    if len(argv) < 8:
         help()
 
     datapath = argv[1]
     ensure_datapath(datapath)
     target_url = argv[2]
 
-    cmd = argv[6]
+    cmd = argv[7]
     if cmd not in ['get', 'list']:
         help()
 
     cacert_file = argv[3]
     archive_dir = argv[4]
-    backup_name = argv[5]
+    gpg_homedir = argv[5]
+    backup_name = argv[6]
     #config = get_config()
     config = {'datapath': datapath,
             'target_url': target_url,
             'cacert_file': cacert_file,
             'archive_dir': archive_dir,
+            'gpg_homedir': gpg_homedir,
             'backup_name': backup_name}
 
     if cmd == 'get':
-        if len(argv) < 9:
+        if len(argv) < 10:
             help()
 
-        timepoint = argv[7]
-        path = unicode(argv[8], encoding='UTF-8')
+        timepoint = argv[8]
+        path = unicode(argv[9], encoding='UTF-8')
         r = get_timepoint(config, timepoint, path)
         print json.dumps(r, indent=2)
 
