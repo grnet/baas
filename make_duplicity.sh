@@ -74,6 +74,7 @@ patch -N -p0 < $ROOTPATH/src/duplicity-patches/timeview.patch
 patch -N -p0 < $ROOTPATH/src/duplicity-patches/syspath.patch
 patch -N -p0 < $ROOTPATH/src/duplicity-patches/cacert.patch
 patch -N -p0 < $ROOTPATH/src/duplicity-patches/setrlimit.patch
+patch -N -p0 < $ROOTPATH/src/duplicity-patches/gpg_homedir.patch
 LIBRSYNC_DIR=/usr/local python setup.py build --executable="/usr/bin/env python"
 cd build/lib.*
 cp -pr * $DUPL/lib

@@ -1,0 +1,41 @@
+=== modified file 'duplicity/commandline.py'
+--- duplicity/commandline.py	2016-02-10 17:15:49 +0000
++++ duplicity/commandline.py	2016-03-04 13:32:51 +0000
+@@ -398,6 +398,8 @@
+ 
+     parser.add_option("--gpg-binary", type="file", metavar=_("path"))
+ 
++    parser.add_option("--gpg-homedir", metavar=_("path"))
++
+     parser.add_option("--gpg-options", action="extend", metavar=_("options"))
+ 
+     # TRANSL: Used in usage help to represent an ID for a hidden GnuPG key. Example:
+
+=== modified file 'duplicity/globals.py'
+--- duplicity/globals.py	2015-10-10 00:02:35 +0000
++++ duplicity/globals.py	2016-03-04 13:33:18 +0000
+@@ -88,6 +88,9 @@
+ # Options to pass to gpg
+ gpg_options = ''
+ 
++# Option 'homedir' to pass to gpg
++gpg_homedir = ''
++
+ # Maximum file blocksize
+ max_blocksize = 2048
+ 
+
+=== modified file 'duplicity/gpg.py'
+--- duplicity/gpg.py	2015-11-05 15:36:58 +0000
++++ duplicity/gpg.py	2016-03-04 13:35:50 +0000
+@@ -124,6 +124,9 @@
+         if globals.gpg_options:
+             for opt in globals.gpg_options.split():
+                 gnupg.options.extra_args.append(opt)
++        if globals.gpg_homedir:
++            gnupg.options.extra_args.append('--homedir')
++            gnupg.options.extra_args.append(globals.gpg_homedir)
+ 
+         cmdlist = []
+         if profile.sign_key:
+
