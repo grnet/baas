@@ -325,7 +325,7 @@ function call_duplicity(mode, backup_set, force) {
             }
         } else if(mode == "timeview") {
             if(code == 0) {
-                parse_collection_status(output_str);
+                parse_collection_status(output_str, log_file);
             } else if(code == DUP_ERR_CODES.CONNECTION_FAILED) {
                 show_cloud_error();
             }

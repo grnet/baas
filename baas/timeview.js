@@ -132,6 +132,8 @@ function fill_breadcrumbs(path) {
 }
 
 var selected_date = "";
+var log_file_g = null;
+
 function get_contents_by_date(value) {
     $("#loader").show();
     if(selected_date) {
@@ -164,12 +166,13 @@ function get_contents_by_date(value) {
 
     var args = ["python", TIMEVIEW_PATH, datapath,
                 "swift://" + container, cert, BAAS_ARCHIVE_DIR,
-                GPG_DIR, backup_name, "get", value, time_path];
+                GPG_DIR, log_file_g, backup_name, "get", value, time_path];
     execFile(ENV_CMD, args, {env: make_env()}, show_contents_by_date);
 }
 
-function parse_collection_status(data) {
+function parse_collection_status(data, log_file) {
 
+    log_file_g = log_file;
     var datetime_reg = /\d{4}-\d{2}-\d{2}.\d{2}:\d{2}:\d{2}\s+\d+/g;
     var dates = data.match(datetime_reg);
     var dates_list = "";
