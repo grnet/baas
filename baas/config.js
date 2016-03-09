@@ -159,8 +159,9 @@ function write_conf_file(filename, data) {
 
 function write_file_if_empty(filename, data) {
     var file = path.join(get_user_home(), BAAS_HOME_DIR, filename);
-    fs.stat(file, function(err, stats) {
-        if(err || (stats && stats.size == 0)) {
+    fs.readFile(file, "utf8", function(err, contents) {
+        if(err || contents.length == 0 ||
+            contents.toString().trim() == "undefined") {
             fs.writeFile(file, JSON.stringify(data, null, 2), function(error) {
                 if(error) return console.error(error);
                 console.log("Successfully initialized " + file);
