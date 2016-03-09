@@ -26,15 +26,14 @@ var CLOUDS_CONF_FILE = 'clouds.rc';
 var BACKUP_CONF_FILE = 'backups.rc';
 var TEMPLATES_FILE = 'templates.rc';
 
+function get_user_home() {
+    return process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
+}
 var BAAS_LOG_DIR = path.join(get_user_home(), BAAS_HOME_DIR, 'log');
 var BAAS_CACHE_DIR = path.join(get_user_home(), BAAS_HOME_DIR, 'cache');
 var BAAS_ARCHIVE_DIR = path.join(BAAS_CACHE_DIR, 'duplicity');
 var RESTORE_DEFAULT_DIR = path.join(get_user_home(), "Downloads");
-
 var GPG_DIR = path.join(get_user_home(), '.gnupg');
-if(process.platform == "win32") {
-    GPG_DIR = get_unix_path(GPG_DIR);
-}
 
 var running_processes = [];
 var SHA256 = require("crypto-js/sha256");
@@ -48,16 +47,10 @@ if(process.platform == 'darwin') {
 }
 
 var DEFAULT_CERT = path.join(exec_path, 'cacert.pem');
-
 var CYGWIN_BIN = path.join(exec_path, "cygwin", "bin");
 var CYGWIN_CYGPATH = path.join(CYGWIN_BIN, "cygpath.exe");
 var CYGWIN_ENV = path.join(CYGWIN_BIN, "env.exe");
-
 var ENV_CMD = (process.platform == 'win32') ? CYGWIN_ENV : "/usr/bin/env";
-
-function get_user_home() {
-    return process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
-}
 
 var templates_data = {
   "BackupHome": {
@@ -95,6 +88,7 @@ function get_unix_exec_path(target) {
 
 if(process.platform == "win32") {
     BAAS_ARCHIVE_DIR = get_unix_path(BAAS_ARCHIVE_DIR);
+    GPG_DIR = get_unix_path(GPG_DIR);
 }
 
 var DUPLICITY_PATH = get_unix_exec_path("duplicity");
