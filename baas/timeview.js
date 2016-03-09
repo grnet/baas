@@ -164,6 +164,10 @@ function get_contents_by_date(value) {
         $("#cloud").val(), $("#backup-name").val());
     var datapath = path.join(BAAS_CACHE_DIR, 'timeviews', backup_name);
 
+    if(process.platform == "win32") {
+        datapath = get_unix_path(datapath);
+        cert = get_unix_path(cert);
+    }
     var args = ["python", TIMEVIEW_PATH, datapath,
                 "swift://" + container, cert, BAAS_ARCHIVE_DIR,
                 GPG_DIR, log_file_g, backup_name, "get", value, time_path];
