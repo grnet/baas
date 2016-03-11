@@ -14,7 +14,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<script src="backup.js"></script>
 <script type="text/javascript">
 
     function check_gpg() {
@@ -46,8 +45,44 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
         if(Object.keys(clouds).length == 0) {
             $("#cloud-alert").show();
+        } else {
+            update_clouds_settings(clouds);
         }
     }
+
+    function update_clouds_settings(clouds) {
+        function handle_error(data) {
+            console.error("Error updating clouds settings " + data);
+        }
+        function handle_result() {
+            var cloud = arguments[0].cloud;
+            var data = arguments[1];
+            var endpoints = JSON.parse(data).access.serviceCatalog
+            $.each(endpoints, function(i, endpoint) {
+                switch(endpoint.type) {
+                    case 'account':
+                        try {
+                            clouds[cloud.name].astakos_account =
+                                endpoint['endpoints'][0]['publicURL'];
+                            write_conf_file(CLOUDS_CONF_FILE, clouds);
+                        } catch(err) {
+                            console.log('Failed to get astakos_account '
+                                + err);
+                        }
+                    break;
+                }
+            });
+        }
+        $.each(clouds, function(i, cloud) {
+            if(typeof cloud.astakos_account == 'undefined') {
+                var astakos = getClient(
+                        'astakos_notoken', cloud.auth_url, null, cloud.cert);
+                astakos.post('/tokens', null, null, 200,
+                    handle_result.bind(null, {cloud: cloud}), handle_error);
+            }
+        });
+    }
+
 
     load_data_from_file(BACKUP_CONF_FILE, render_backup_sets);
 
