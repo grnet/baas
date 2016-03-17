@@ -189,12 +189,19 @@ var kamaki = require('./static/js/kamaki.js');
  * Create or update a Client object if it's missing or is outdated
  */
 function getClient(name, URL, token, CAPath) {
-    if (clients[name] && clients[name].equalsURL(URL))
-        clients[name].setToken(token);
-    else if (clients[name])
-        clients[name].setURL(URL);
-    else clients[name] = new kamaki.Client(URL, token, CAPath);
-    if (clients[name].getCA() !== CAPath) clients[name].setCA(CAPath);
+    if(clients[name]) {
+        if(!clients[name].equalsURL(URL)) {
+            clients[name].setURL(URL);
+        }
+        if(clients[name].getToken() !== token) {
+            clients[name].setToken(token);
+        }
+        if(clients[name].getCA() !== CAPath) {
+            clients[name].setCA(CAPath);
+        }
+    } else {
+        clients[name] = new kamaki.Client(URL, token, CAPath);
+    }
     return clients[name];
 }
 
