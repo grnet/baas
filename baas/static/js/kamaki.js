@@ -55,7 +55,7 @@ function splitCA(CAPath) {
  */
 var Client = function(endpointURL, token, CAPath) {
     var _options = {host: null, headers: { }, };
-    var _url, _parser, _protocol, _token;
+    var _url, _parser, _protocol, _token, _endpoint;
 
     this.setURL = function(newURL) {
         _url = newURL;
