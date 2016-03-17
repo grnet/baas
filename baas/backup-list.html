@@ -272,9 +272,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         $.each(project_ids, function(project_id, i) {
             projects[project_id].effective_limit =
                 calc_limit(i['pithos.diskspace']);
+            var cert = (clouds[cloud].cert) ?
+                clouds[cloud].cert : DEFAULT_CERT;
             var astakos = getClient('astakos_account',
                 clouds[cloud].astakos_account, clouds[cloud].token,
-                clouds[cloud].cert);
+                cert);
             astakos.get('/projects/' + project_id,
                 {'X-Auth-Token' : clouds[cloud].token}, 200,
                 populate_projects, handle_err);
@@ -294,9 +296,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         var cloud = $("#cloud").val();
         $("#project").empty();
         if(cloud) {
+            var cert = (clouds[cloud].cert) ?
+                clouds[cloud].cert : DEFAULT_CERT;
             var astakos = getClient('astakos_account',
                 clouds[cloud].astakos_account, clouds[cloud].token,
-                clouds[cloud].cert);
+                cert);
             astakos.get('/quotas',
                 {'X-Auth-Token' : clouds[cloud].token}, 200,
                 get_quotas, handle_err);
