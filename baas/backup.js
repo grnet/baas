@@ -135,9 +135,14 @@ function load_backup(backup) {
         $("#backup-name").val('Backup');
         $("#directory").html('');
         $("#res-directory").html('');
-        $("#cloud").val('');
         $("#project_div").show();
-        $("#project").val('');
+        if(clouds && Object.keys(clouds).length == 1) {
+            $("#cloud").val(Object.keys(clouds)[0]);
+            $("#cloud").trigger("change");
+        } else {
+            $("#cloud").val('');
+            $("#project").val('');
+        }
         $("#passphrase").val('');
         $("#exclude").val('');
         $("#include").val('');
