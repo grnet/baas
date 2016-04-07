@@ -16,6 +16,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <script type="text/javascript">
 
+    g_tab_clicked = "";
+    g_value = "";
+
     function disable_buttons(disable) {
         $("#backup_button").attr("disabled", disable);
         if(disable) {
@@ -179,8 +182,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         } else {
             $("#backup_detais_link").click(function(e) { load_backup(); });
             $("#status_link").click(function(e) { load_status(); });
-            $("#timeview_link").click(function(e) { load_timeview(); });
-            $("#cleanup_link").click(function(e) { load_cleanup(); });
+            $("#timeview_link").click(function(e) {
+                if(check_empty_passphrase()) {
+                    load_timeview();
+                } else {
+                    g_tab_clicked = "load_timeview";
+                }
+            });
+            $("#cleanup_link").click(function(e) {
+                if(check_empty_passphrase()) {
+                    load_cleanup();
+                } else {
+                    g_tab_clicked = "load_cleanup";
+                }
+            });
         }
     }
 
@@ -305,6 +320,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 {'X-Auth-Token' : clouds[cloud].token}, 200,
                 get_quotas, handle_err);
         }
+    }
+
+    function submit_passphrase() {
+        $('#passphrase').val($('#passphrase_m').val());
+        $('#passphrase-modal').foundation('reveal', 'close');
+        if($("#save_passphrase_m").is(":checked")) {
+            $("#save_passphrase").attr("checked", true);
+            save_backup_set(false);
+        }
+        window[g_tab_clicked](g_value);
     }
 </script>
 
@@ -438,18 +463,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <label id="passphrase_label" for="passphrase"
                                     class="right inline">Passphrase</label>
                             </div>
-                            <div class="small-6 columns error"
+                            <div class="small-5 columns error"
                                 id="passphrase-error">
                                 <input type="password" id="passphrase"
                                     placeholder="Passphrase">
                                 <small class="error"></small>
                             </div>
-                            <div class="small-3 columns">
-                                <label for="save_passphrase" class="left">
-                                    Save&nbsp;
-                                    <input id="save_passphrase"
-                                        type="checkbox" class="right">
+                            <div class="small-2 columns">
+                                <label for="save_passphrase" class="right inline">
+                                    Save
                                 </label>
+                            </div>
+                            <div class="small-2 columns">
+                                <input id="save_passphrase"
+                                    type="checkbox">
                             </div>
                         </div>
                     </fieldset>
@@ -695,6 +722,38 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <div class="row" id="msg_div">
     <div class="small-1 columns"></div>
     <pre id="msg" class="small-11 columns hide"></pre>
+</div>
+<div id="passphrase-modal" class="reveal-modal" data-reveal
+    aria-labelledby="firstModalTitle" aria-hidden="true" role="dialog">
+
+    <div class="small-3 columns">
+        <label id="passphrase_m_label" for="passphrase_m"
+            class="right inline">Passphrase</label>
+    </div>
+    <div class="small-6 columns error"
+        id="passphrase-m-error">
+        <input type="password" id="passphrase_m"
+            placeholder="Passphrase">
+        <small class="error"></small>
+    </div>
+    <div class="small-8 columns">
+        <input id="save_passphrase_m" type="checkbox">
+        <label for="save_passphrase_m">
+            Save passphrase and never ask me again
+        </label>
+    </div>
+    <div class="clearfix">
+        <div class="small-8 columns">
+        </div>
+        <div class="small-4 columns">
+            <a id="submit_passphrase"
+                class="button radius right small success"
+                onclick="submit_passphrase()">
+                &nbsp;Submit
+            </a>
+        </div>
+    </div>
+    <a class="close-reveal-modal" aria-label="Close">&#215;</a>
 </div>
 <script type="text/javascript">
     $(document).foundation();

@@ -31,7 +31,6 @@ function escape_illegal_chars(s) {
 }
 
 function show_contents_by_date(error, stdout, stderr) {
-    toggle_msgs(stderr, "msg", false);
     $("#time-contents").empty();
 
     if(!error) {
@@ -78,6 +77,13 @@ function show_contents_by_date(error, stdout, stderr) {
         });
 
         $("#time-contents").append(ul);
+    } else {
+        var bad_key = new RegExp("decryption failed: bad key").exec(stderr);
+        if(bad_key) {
+            show_passphrase_modal(true);
+        } else {
+            toggle_msgs(stderr, "msg", false);
+        }
     }
     $("#loader").hide();
 }
@@ -172,6 +178,8 @@ function get_contents_by_date(value) {
                 "swift://" + container, cert, BAAS_ARCHIVE_DIR,
                 GPG_DIR, log_file_g, backup_name, "get", value, time_path];
     execFile(ENV_CMD, args, {env: make_env()}, show_contents_by_date);
+    g_tab_clicked = "get_contents_by_date";
+    g_value = value;
 }
 
 function parse_collection_status(data, log_file) {

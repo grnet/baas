@@ -128,6 +128,8 @@ function load_status() {
 function remove_all(force) {
     $("#loader").show();
     toggle_msgs(false, "msg", false);
+    g_value = force;
+    g_tab_clicked = "remove_all";
     call_duplicity("remove", get_backup_set(), force);
 }
 
@@ -268,6 +270,7 @@ function spawn_dup_process(args, backup_set, backup_name, mode) {
     var wProcess = spawn(ENV_CMD, args, {env: make_env()});
     running_processes.push([wProcess, backup_name]);
 
+    var force = (args.indexOf("--force") > -1) ? true : false;
     var output_str = "";
     function dup_call_out(data) {
         if(mode == "status") {
@@ -350,6 +353,13 @@ function spawn_dup_process(args, backup_set, backup_name, mode) {
                 parse_collection_status(output_str, args[4]);
             } else if(code == DUP_ERR_CODES.CONNECTION_FAILED) {
                 show_cloud_error();
+            }
+        } else if(mode == "remove") {
+            if(code == DUP_ERR_CODES.CONNECTION_FAILED) {
+                show_cloud_error();
+            } else if(code == DUP_ERR_CODES.GPG_FAILED) {
+                toggle_msgs("", "cleanup-msg", false);
+                show_passphrase_modal(true);
             }
         } else {
              if(code == DUP_ERR_CODES.CONNECTION_FAILED) show_cloud_error();

@@ -86,6 +86,7 @@ function hide_error_divs() {
     $('#res-cloud-error small').hide();
     $('#passphrase-error small').hide();
     $('#res-passphrase-error small').hide();
+    $('#passphrase-m-error small').hide();
     $('#exclude-error small').hide();
     $('#include-error small').hide();
     $('#res-file-error small').hide();
@@ -249,4 +250,21 @@ function toggle_settings(hDiv, moreIcon, more_label, less_label) {
         $("#" + moreIcon).removeClass("fa fa-minus-square-o");
         $("#" + moreIcon).addClass("fa fa-plus-square-o");
     }
+}
+
+function show_passphrase_modal(error) {
+    if(error) {
+        $("#passphrase-m-error small").text(errors.passphrase_wrong);
+        $("#passphrase-m-error small").show();
+    }
+    $("#passphrase-modal").foundation("reveal", "open");
+}
+
+function check_empty_passphrase() {
+    var passphrase = $("#passphrase").val();
+    if(!passphrase) {
+        show_passphrase_modal(false);
+        return false;
+    }
+    return true;
 }
