@@ -187,3 +187,6 @@ body fieldset {
 .wrapper p {
     font-size: 0.8rem;
 }
+.reveal-modal {
+    max-width: 38.5rem;
+}

@@ -21,6 +21,7 @@ function go_to_restore_single(name) {
 
     g_res_file = time_path + name;
     g_timestamp = selected_date;
+    g_passphrase = $("#passphrase_m").val();
 
     $("#restore-tab-link").trigger("click");
 }

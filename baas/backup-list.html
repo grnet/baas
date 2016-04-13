@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     g_tab_clicked = "";
     g_value = "";
+    g_passphrase = "";
 
     function disable_buttons(disable) {
         $("#backup_button").attr("disabled", disable);
@@ -133,26 +134,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         return true;
     }
 
-    function check_passphrase() {
-        var passphrase = $("#passphrase").val();
-        if(!passphrase) {
-            $('#passphrase-error small').text(errors.passphrase_empty);
-            $('#passphrase-error small').show();
-            return false;
-        } else {
-            $('#passphrase-error small').hide();
-        }
-        return true;
-    }
-
     function disable_form(disable) {
         $("#backup-name").prop("disabled", disable);
         $("#choose-dir").prop("disabled", disable);
         $("#cloud").prop("disabled", disable);
-        var save_pass = $("#save_passphrase").is(":checked");
-        if(save_pass) {
-            $("#passphrase").prop("disabled", disable);
-        }
+
         var project = $("#project_div");
         if(project) {
             $("#project").prop("disabled", disable);
@@ -202,13 +188,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     function check_fields() {
         return(check_directory("directory")
             && check_cloud()
-            && check_backup_name()
-            && check_passphrase());
+            && check_backup_name());
     }
 
     function go_to_restore() {
         g_res_directory = RESTORE_DEFAULT_DIR;
-        g_passphrase = $("#passphrase").val();
+        g_passphrase = $("#passphrase_m").val();
         g_res_file = "";
         g_timestamp = "";
         $("#restore-tab-link").trigger("click");
@@ -323,14 +308,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     function submit_passphrase() {
-        $('#passphrase').val($('#passphrase_m').val());
-        $('#passphrase-modal').foundation('reveal', 'close');
-        if($("#save_passphrase_m").is(":checked")) {
-            $("#save_passphrase").attr("checked", true);
-            save_backup_set(false);
+        if(!$("#passphrase_m").val()) {
+            $("#passphrase-m-error small").text(errors.passphrase_empty);
+            $("#passphrase-m-error small").show();
+        } else {
+            $('#passphrase-modal').foundation('reveal', 'close');
+            if($("#save_passphrase_m").is(":checked")) {
+                if(selected_backup) {
+                    backups[selected_backup].passphrase =
+                        $("#passphrase_m").val();
+                }
+                save_backup_set(false);
+            }
+            window[g_tab_clicked](g_value);
         }
-        window[g_tab_clicked](g_value);
     }
+
 </script>
 
 <div class="row">
@@ -456,27 +449,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     onclick="$('#name-info').slideUp();"></i>
                                 Backup name will also appear as a container
                                 in your cloud
-                            </div>
-                        </div>
-                        <div class="clearfix">
-                            <div class="small-3 columns">
-                                <label id="passphrase_label" for="passphrase"
-                                    class="right inline">Passphrase</label>
-                            </div>
-                            <div class="small-5 columns error"
-                                id="passphrase-error">
-                                <input type="password" id="passphrase"
-                                    placeholder="Passphrase">
-                                <small class="error"></small>
-                            </div>
-                            <div class="small-2 columns">
-                                <label for="save_passphrase" class="right inline">
-                                    Save
-                                </label>
-                            </div>
-                            <div class="small-2 columns">
-                                <input id="save_passphrase"
-                                    type="checkbox">
                             </div>
                         </div>
                     </fieldset>
@@ -725,7 +697,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </div>
 <div id="passphrase-modal" class="reveal-modal" data-reveal
     aria-labelledby="firstModalTitle" aria-hidden="true" role="dialog">
-
+    <h5>Use a passphrase to encrypt/decrypt backups</h5>
+    <div>&nbsp;</div>
     <div class="small-3 columns">
         <label id="passphrase_m_label" for="passphrase_m"
             class="right inline">Passphrase</label>
@@ -753,7 +726,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             </a>
         </div>
     </div>
-    <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+    <a class="close-reveal-modal" aria-label="Close"
+        onclick="if($('#loader')) $('#loader').hide()">&#215;</a>
 </div>
 <script type="text/javascript">
     $(document).foundation();

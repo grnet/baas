@@ -23,7 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     function load_field_values() {
         $("#res-backup-name").val(backups[selected_backup].name);
         $("#res-cloud").val(backups[selected_backup].cloud);
-        $("#res-passphrase").val(backups[selected_backup].passphrase);
+        $("#res-passphrase").val(backups[selected_backup].passphrase ||
+            g_passphrase);
         if(typeof g_res_directory != 'undefined') {
             $("#res-directory").html(g_res_directory);
         }

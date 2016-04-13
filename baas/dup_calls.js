@@ -30,12 +30,17 @@ function backup(restore) {
     if($("#error-alert")) $("#error-alert").hide();
     $("#msg").html("");
     if(!restore) {
-        save_backup_set(false);
-        disable_form(true);
-        disable_actions(true);
-        disable_buttons(true);
+        if(check_empty_passphrase()) {
+            save_backup_set(false);
+            disable_form(true);
+            disable_actions(true);
+            disable_buttons(true);
 
-        call_duplicity("backup", get_backup_set(), false);
+            call_duplicity("backup", get_backup_set(), false);
+        } else {
+            g_tab_clicked = "backup";
+            g_value = false;
+        }
     } else {
         $('#res-passphrase-error small').hide();
         call_duplicity("restore", null, false);
@@ -43,7 +48,7 @@ function backup(restore) {
 }
 
 function get_env_values() {
-    var sel_pass = $('#passphrase').val() ? $('#passphrase') :
+    var sel_pass = $('#passphrase_m').val() ? $('#passphrase_m') :
         $("#res-passphrase");
     var passphrase = sel_pass.val();
 
@@ -332,6 +337,9 @@ function spawn_dup_process(args, backup_set, backup_name, mode) {
                 backup_set.last_status = "Failed";
                 if(code == DUP_ERR_CODES.CONNECTION_FAILED) {
                     show_cloud_error();
+                } else if(code == DUP_ERR_CODES.GPG_FAILED) {
+                    toggle_msgs("", "msg", false);
+                    show_passphrase_modal(true);
                 } else {
                     show_alert_box("There was a problem uploading backup set",
                         "error", false);

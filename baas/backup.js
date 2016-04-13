@@ -84,7 +84,6 @@ function hide_error_divs() {
     $('#cloud-error small').hide();
     $('#project-error small').hide();
     $('#res-cloud-error small').hide();
-    $('#passphrase-error small').hide();
     $('#res-passphrase-error small').hide();
     $('#passphrase-m-error small').hide();
     $('#exclude-error small').hide();
@@ -112,10 +111,8 @@ function load_backup(backup) {
         $("#backup-name").val(backup.name);
         $("#directory").html(backup.local_dir);
         $("#cloud").val(backup.cloud);
-        $("#passphrase").val(backup.passphrase);
-        if(backup.passphrase != "") {
-            $("#save_passphrase").prop("checked", true);
-        }
+        $("#passphrase_m").val(backup.passphrase);
+
         if(backup.first_backup) {
             disable_form(true);
             disable_actions(false);
@@ -144,7 +141,7 @@ function load_backup(backup) {
             $("#cloud").val('');
             $("#project").val('');
         }
-        $("#passphrase").val('');
+        $("#passphrase_m").val('');
         $("#exclude").val('');
         $("#include").val('');
         $("#full").prop("checked", true);
@@ -158,7 +155,8 @@ function load_backup(backup) {
 
 function show_alert_box(msg, alert_type, hide) {
     $("#" + alert_type + "-alert").show();
-    $("#" + alert_type + "-msg").html(msg + "<a href='#' class='close'>&times;</a>");
+    $("#" + alert_type + "-msg").html(msg +
+            "<a href='#' class='close'>&times;</a>");
     if(hide) {
         $("#" + alert_type + "-alert").delay(1200).fadeOut(400);
     }
@@ -172,8 +170,15 @@ function save_backup_set(is_template) {
     var backup_name = $("#backup-name").val().replace(/^\s+|\s+$/gm,'');
     var directory = $("#directory").html();
     var cloud = $("#cloud").val();
-    var save_pass = $("#save_passphrase").is(":checked");
-    var passphrase = (save_pass) ? $("#passphrase").val() : "";
+    var passphrase = "";
+    if(typeof backups[cloud + "/" + backup_name] != 'undefined') {
+        // existing backup
+        passphrase = backups[cloud + "/" + backup_name].passphrase;
+    } else {
+        // new one
+        passphrase = $("#save_passphrase_m").is(":checked") ?
+            $("#passphrase_m").val() : "";
+    }
     var exclude = $("#exclude").val();
     var include = $("#include").val();
 
@@ -261,7 +266,7 @@ function show_passphrase_modal(error) {
 }
 
 function check_empty_passphrase() {
-    var passphrase = $("#passphrase").val();
+    var passphrase = $("#passphrase_m").val();
     if(!passphrase) {
         show_passphrase_modal(false);
         return false;
