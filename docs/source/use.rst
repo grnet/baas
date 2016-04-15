@@ -17,10 +17,15 @@ You can provide your own settings or start from an existing template.
 
 .. image:: images/new-backup.png
 
-Click on *Save* button to save current settings or *Backup Now* to save settings
-and start backup process.
+.. note:: Backup name will also appear as a container in your cloud, assigned to the selected project.
 
-.. note:: Backup name will also appear as a container in your cloud.
+Click on *Save* button to save current settings or *Backup Now* to save settings
+and start backup process. In the latter case you will be prompted to encrypt your
+backup data using a passphrase.
+
+.. image:: images/passphrase.png
+        :width: 500px
+        :align: center
 
 When finished you can check *Status* section for detailed information.
 
