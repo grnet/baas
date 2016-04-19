@@ -92,7 +92,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <div class="small-3 columns">
                         <label id="res_backup_name_label"
                             for="res-backup-name" class="right inline">
-                            Name
+                            Name&nbsp;
+                            <i class="fa fa-info-circle green-info"
+                                onclick="$('#name-info').slideDown();">
+                            </i>
                     </label>
                     </div>
                     <div class="small-9 columns error"
@@ -101,6 +104,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         placeholder="Backup[A-Za-z0-9-_]"
                         onchange="check_res_backup_name();">
                         <small class="error"></small>
+                    </div>
+                    <div class="small-3 columns">&nbsp;</div>
+                    <div class="small-9 columns hide info-text panel"
+                        id="name-info">
+                        <i class="fa fa-times right"
+                            onclick="$('#name-info').slideUp();"></i>
+                            Fill in the container name that was created
+                            during backup process
                     </div>
                 </div>
             </fieldset>
