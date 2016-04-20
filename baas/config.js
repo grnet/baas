@@ -73,6 +73,26 @@ var templates_data = {
   }
 }
 
+var errors = {
+        backup_name_empty: 'Provide a Backup Name',
+        backup_name_illegal: 'Invalid Entry. Name must start with '
+            + '\'Backup\' and followed by characters [A-Za-z0-9-_]',
+        cloud_empty: 'Select cloud configuration',
+        dir_not_chosen : 'Provide a local directory',
+        res_file_illegal: 'Invalid Entry. Provide a valid file name',
+        path_empty: 'Provide a path',
+        passphrase_empty: 'Provide a Passphrase',
+        passphrase_wrong: 'Wrong Passphrase',
+        remove_all_time_empty: 'Provide a valid timestamp',
+        cloud_url_empty: 'Provide a Cloud Authentication URL',
+        cloud_inaccessible: 'Cloud URL did not respond as expected',
+        token_empty: 'Provide a user token',
+        token_error: 'Failed to authenticate',
+        token_cloudless: 'No cloud to try this token against',
+        cloud_name_empty: 'Provide a Cloud Name',
+        cloud_name_illegal: 'Invalid Entry. Allowed characters [A-Za-z0-9-_]'
+    };
+
 function get_unix_path(path) {
     var out = execFileSync(CYGWIN_CYGPATH, [path]);
     var win_value = String(out).replace(/(\r\n|\n|\r)/gm, "");

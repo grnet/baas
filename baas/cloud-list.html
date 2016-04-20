@@ -88,16 +88,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         });
     }
 
-    var errors = {
-        cloud_url_empty: 'Provide a Cloud Authentication URL',
-        cloud_inaccessible: 'Cloud URL did not respond as expected',
-        token_empty: 'Provide a user token',
-        token_error: 'Failed to authenticate',
-        token_cloudless: 'No cloud to try this token against',
-        cloud_name_empty: 'Provide a Cloud Name',
-        cloud_name_illegal: 'Invalid Entry. Allowed characters [A-Za-z0-9-_]'
-    };
-
     function check_cloud_name() {
         var cloud_name = $('#cloud-name').val().replace(/^\s+|\s+$/gm,'');
         if(!cloud_name) {
